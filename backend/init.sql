@@ -1,3 +1,4 @@
+'''
 CREATE TYPE validUsers AS ENUM('student', 'teacher');
 CREATE TYPE testTypes AS ENUM('quiz', 'practice', 'exam');
 CREATE TYPE scoringFormats AS ENUM('highest', 'average');
@@ -81,3 +82,4 @@ CREATE TABLE QuestionAttempts(
     questionId INTEGER REFERENCES Questions(questionId),
     selectedOptionId INTEGER REFERENCES Options(optionId)
 );
+'''
