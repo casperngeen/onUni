@@ -1,5 +1,5 @@
-import { Attempt } from 'src/attempt/attempt.entity';
-import { Course } from 'src/course/course.entity';
+import { Attempt } from '../attempt/attempt.entity';
+import { Course } from 'src/modules/course/course.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
 import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
@@ -19,8 +19,8 @@ export class User {
   @Column('text')
   passwordHash: string;
 
-  @Column('text', { nullable: true })
-  token?: string;
+  @Column({ nullable: true })
+  emailToken?: bigint;
 
   @Column('text', { nullable: true })
   refreshToken?: string;
@@ -40,6 +40,12 @@ export class User {
 
   @ManyToMany(() => Attempt, (attempt) => attempt.users)
   attempts?: Attempt[];
+}
+
+export class UserIdDto {
+  @IsNotEmpty()
+  @IsInt()
+  userId: number;
 }
 
 export class PasswordDto {
@@ -66,13 +72,17 @@ export class SignUpDto extends LoginDto {
   role: roles;
 }
 
-export class SingleTokenDto {
+export class EmailTokenDto {
+  @IsNotEmpty()
+  @IsInt()
+  emailToken: bigint;
+}
+
+export class AuthTokenDto {
   @IsNotEmpty()
   @IsString()
   accessToken: string;
-}
 
-export class DoubleTokenDto extends SingleTokenDto {
   @IsNotEmpty()
   @IsString()
   refreshToken: string;

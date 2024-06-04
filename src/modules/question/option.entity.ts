@@ -1,4 +1,4 @@
-import { Question } from 'src/question/question.entity';
+import { Question } from '../question/question.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity()

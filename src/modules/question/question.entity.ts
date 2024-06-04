@@ -1,5 +1,5 @@
-import { Option } from 'src/option/option.entity';
-import { Test } from 'src/test/test.entity';
+import { Option } from './option.entity';
+import { Test } from '../test/test.entity';
 import {
   Entity,
   Column,

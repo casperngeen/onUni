@@ -1,5 +1,5 @@
-import { Test } from 'src/test/test.entity';
-import { User } from 'src/user/user.entity';
+import { Test } from 'src/modules/test/test.entity';
+import { User } from '../user/user.entity';
 import {
   Entity,
   Column,

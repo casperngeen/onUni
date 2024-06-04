@@ -1,4 +1,5 @@
 import { HttpException } from '@nestjs/common';
+import { GeneralException } from './status.code';
 
 export class BaseException extends HttpException {
   private readonly errorCode: number;
@@ -9,5 +10,11 @@ export class BaseException extends HttpException {
 
   getErrorCode() {
     return this.errorCode;
+  }
+}
+
+export class InvalidInputException extends BaseException {
+  constructor() {
+    super('Input is invalid', 400, GeneralException.INVALID_INPUT);
   }
 }

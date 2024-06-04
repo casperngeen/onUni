@@ -4,31 +4,29 @@ import {
   ArgumentsHost,
   HttpException,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { BaseException } from './exceptions/base.exception';
+import { Response } from 'express';
+import { BaseException } from './base/base.exception';
+import { ResponseHandler } from './base/base.response';
+import { GeneralException } from './base/status.code';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
     const httpCode = exception.getStatus();
 
     if (exception instanceof BaseException) {
       const statusCode = exception.getErrorCode();
-      response.status(httpCode).json({
-        httpCode: httpCode,
-        statusCode: statusCode,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-      });
+      response
+        .status(httpCode)
+        .json(ResponseHandler.fail(statusCode, exception.message));
     } else {
-      response.status(httpCode).json({
-        httpCode: httpCode,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-      });
+      response
+        .status(httpCode)
+        .json(
+          ResponseHandler.fail(GeneralException.UNSPECIFIED, exception.message),
+        );
     }
   }
 }

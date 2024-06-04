@@ -1,14 +1,13 @@
-import { Module } from '@nestjs/common';
-import { AuthModule } from './auth/auth.module';
+import { Logger, Module } from '@nestjs/common';
+import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import dotenv from 'dotenv';
-import { User } from './user/user.entity';
-import { UserModule } from './user/user.module';
-
-dotenv.config();
+import { User } from './modules/user/user.entity';
+import { UserModule } from './modules/user/user.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     // to be updated: to connect with DB
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -22,6 +21,7 @@ dotenv.config();
     }),
     AuthModule,
     UserModule,
+    Logger,
   ],
 })
 export class AppModule {}

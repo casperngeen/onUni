@@ -1,5 +1,5 @@
-import { Course } from 'src/course/course.entity';
-import { Question } from 'src/question/question.entity';
+import { Course } from 'src/modules/course/course.entity';
+import { Question } from 'src/modules/question/question.entity';
 import {
   Entity,
   Column,
