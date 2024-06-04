@@ -1,32 +1,77 @@
 import { Injectable } from '@nestjs/common';
+import { LoggerService } from 'src/modules/logger/logger.service';
 import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import * as stackTrace from 'stack-trace';
+import * as path from 'path';
 
 @Injectable()
 export default class BaseService<T> {
+  protected readonly loggerService: LoggerService;
   constructor(private readonly repository: Repository<T>) {}
 
-  findAll(): Promise<T[]> {
-    return this.repository.find();
+  async findAll(): Promise<T[]> {
+    try {
+      return await this.repository.find();
+    } catch (error) {
+      this.error('Error finding all', error);
+    }
   }
 
-  findOne(t: Partial<T>): Promise<T> {
-    return this.repository.findOne(t);
+  async findOne(t: Partial<T>): Promise<T> {
+    try {
+      return await this.repository.findOne(t);
+    } catch (error) {
+      this.error('Error finding item', error);
+    }
   }
 
-  insert(t: DeepPartial<T>): Promise<T> {
-    return this.repository.save(t);
+  async insert(t: DeepPartial<T>): Promise<T> {
+    try {
+      return await this.repository.save(t);
+    } catch (error) {
+      this.error('Error inserting item', error);
+    }
   }
 
-  update(id: number, t: QueryDeepPartialEntity<T>): Promise<UpdateResult> {
-    return this.repository.update(id, t);
+  async update(
+    id: number,
+    t: QueryDeepPartialEntity<T>,
+  ): Promise<UpdateResult> {
+    try {
+      return await this.repository.update(id, t);
+    } catch (error) {
+      this.error('Error updating item', error);
+    }
   }
 
-  delete(id: number): Promise<DeleteResult> {
-    return this.repository.delete(id);
+  async delete(id: number): Promise<DeleteResult> {
+    try {
+      return await this.repository.delete(id);
+    } catch (error) {
+      this.error('Error deleting item', error);
+    }
   }
 
-  getId(t: T): Promise<number> {
-    return this.repository.getId(t);
+  private getContext(): string {
+    const trace = stackTrace.get();
+    const fileName = trace[2].getFileName();
+    return path.basename(fileName);
+  }
+
+  log(message: string) {
+    this.loggerService.log(message, this.getContext());
+  }
+
+  error(message: string, trace: string) {
+    this.loggerService.error(message, trace, this.getContext());
+  }
+
+  warn(message: string) {
+    this.loggerService.warn(message, this.getContext());
+  }
+
+  debug(message: string) {
+    this.loggerService.debug(message, this.getContext());
   }
 }
