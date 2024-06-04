@@ -3,16 +3,25 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './http.exception.filter';
 import { LoggerService } from './modules/logger/logger.service';
+import { InvalidInputException } from './base/base.exception';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = app.get(LoggerService);
-  logger.log('Application is starting...');
+  logger.log('Application is starting...', 'Main');
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      exceptionFactory: () => {
+        throw new InvalidInputException();
+      },
+    }),
+  );
   app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(3000);
-  logger.log('Application is running on port 3000');
+  logger.log('Application is running on port 3000', 'Main');
 }
 bootstrap();
