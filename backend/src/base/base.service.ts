@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from 'src/modules/logger/logger.service';
-import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
+import {
+  DeepPartial,
+  DeleteResult,
+  FindManyOptions,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { get } from 'stack-trace';
 import * as path from 'path';
@@ -18,11 +24,19 @@ export default class BaseService<T> {
     }
   }
 
+  async find(t: FindManyOptions<T>) {
+    try {
+      return await this.repository.find(t);
+    } catch (error) {
+      this.error(`Error finding match by ${t}`, error);
+    }
+  }
+
   async findOne(t: Partial<T>): Promise<T> {
     try {
       return await this.repository.findOne(t);
     } catch (error) {
-      this.error('Error finding item', error);
+      this.error(`Error finding item ${t}`, error);
     }
   }
 
@@ -30,7 +44,7 @@ export default class BaseService<T> {
     try {
       return await this.repository.save(t);
     } catch (error) {
-      this.error('Error inserting item', error);
+      this.error(`Error inserting item ${t}`, error);
     }
   }
 
@@ -41,7 +55,7 @@ export default class BaseService<T> {
     try {
       return await this.repository.update(id, t);
     } catch (error) {
-      this.error('Error updating item', error);
+      this.error(`Error updating item ${t} with id ${id}`, error);
     }
   }
 
@@ -49,7 +63,7 @@ export default class BaseService<T> {
     try {
       return await this.repository.delete(id);
     } catch (error) {
-      this.error('Error deleting item', error);
+      this.error(`Error deleting item with id ${id}`, error);
     }
   }
 
