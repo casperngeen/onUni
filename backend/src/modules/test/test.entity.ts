@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { Attempt } from '../attempt/attempt.entity';
 
 enum scoringFormats {
   AVERAGE = 'average',
@@ -25,7 +26,7 @@ export class Test {
   @PrimaryGeneratedColumn()
   testId: number;
 
-  @Column({ length: 100 })
+  @Column()
   title: string;
 
   @Column('text')
@@ -42,7 +43,7 @@ export class Test {
   scoringFormat?: scoringFormats;
 
   @Column({ type: 'int', nullable: true })
-  attempts?: number;
+  maxAttempt?: number;
 
   @Column({ type: 'int', nullable: true })
   timeLimit?: number; // time in minutes
@@ -57,11 +58,14 @@ export class Test {
     type: 'enum',
     enum: testTypes,
   })
-  testTypes: testTypes;
+  testType: testTypes;
 
   @ManyToOne(() => Course, (course) => course.tests)
   course: Course;
 
   @OneToMany(() => Question, (question) => question.test)
-  questions: Question[];
+  questions?: Question[];
+
+  @OneToMany(() => Attempt, (attempt) => attempt.test)
+  attempts?: Attempt[];
 }

@@ -26,8 +26,8 @@ export class Course {
   endDate: Date;
 
   @OneToMany(() => Test, (test) => test.course)
-  tests: Test[];
+  tests?: Test[];
 
   @ManyToMany(() => User, (user) => user.courses)
-  users: User[];
+  users?: User[];
 }

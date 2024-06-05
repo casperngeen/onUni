@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { QuestionAttempt } from '../attempt/question.attempt.entity';
 
 @Entity()
 export class Question {
@@ -20,5 +21,11 @@ export class Question {
   test: Test;
 
   @OneToMany(() => Option, (option) => option.question)
-  options: Option[];
+  options?: Option[];
+
+  @OneToMany(
+    () => QuestionAttempt,
+    (questionAttempt) => questionAttempt.question,
+  )
+  questionAttempts?: QuestionAttempt[];
 }

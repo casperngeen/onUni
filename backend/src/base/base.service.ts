@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LoggerService } from 'src/modules/logger/logger.service';
 import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import * as stackTrace from 'stack-trace';
+import { get } from 'stack-trace';
 import * as path from 'path';
 
 @Injectable()
@@ -54,8 +54,8 @@ export default class BaseService<T> {
   }
 
   private getContext(): string {
-    const trace = stackTrace.get();
-    const fileName = trace[2].getFileName();
+    const trace = get();
+    const fileName = trace[0].getFileName();
     return path.basename(fileName);
   }
 

@@ -4,9 +4,11 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToMany,
   ManyToMany,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm';
+import { QuestionAttempt } from './question.attempt.entity';
 
 enum statuses {
   SUBMIT = 'submitted',
@@ -38,9 +40,15 @@ export class Attempt {
   @Column({ type: 'date', nullable: true })
   submitted?: Date;
 
-  @OneToMany(() => Test, (test) => test.course)
-  tests: Test[];
+  @ManyToOne(() => Test, (test) => test.attempts)
+  test: Test;
 
   @ManyToMany(() => User, (user) => user.attempts)
-  users: User[];
+  users?: User[];
+
+  @OneToMany(
+    () => QuestionAttempt,
+    (questionAttempt) => questionAttempt.attempt,
+  )
+  questionAttempts?: QuestionAttempt[];
 }
