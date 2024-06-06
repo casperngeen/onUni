@@ -1,4 +1,7 @@
 '''
+
+NOT UPDATED
+
 CREATE TYPE validUsers AS ENUM('student', 'teacher');
 CREATE TYPE testTypes AS ENUM('quiz', 'practice', 'exam');
 CREATE TYPE scoringFormats AS ENUM('highest', 'average');
