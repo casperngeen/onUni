@@ -15,6 +15,6 @@ export class UnauthorisedUserException extends BaseException {
 
 export class UserNotFoundException extends BaseException {
   constructor() {
-    super('User not found', 404, UserException.USER_NOT_FOUND);
+    super(`User not found`, 404, UserException.USER_NOT_FOUND);
   }
 }
