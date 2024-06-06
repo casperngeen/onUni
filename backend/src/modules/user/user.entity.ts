@@ -1,9 +1,15 @@
 import { Attempt } from '../attempt/attempt.entity';
 import { Course } from 'src/modules/course/course.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
 import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
-export enum roles {
+export enum Roles {
   STUDENT = 'student',
   TEACHER = 'teacher',
 }
@@ -30,15 +36,15 @@ export class User {
   */
   @Column({
     type: 'enum',
-    enum: roles,
-    default: roles.STUDENT,
+    enum: Roles,
+    default: Roles.STUDENT,
   })
-  role: roles;
+  role: Roles;
 
   @ManyToMany(() => Course, (course) => course.users)
   courses?: Course[];
 
-  @ManyToMany(() => Attempt, (attempt) => attempt.users)
+  @OneToMany(() => Attempt, (attempt) => attempt.users)
   attempts?: Attempt[];
 }
 
@@ -68,8 +74,8 @@ export class LoginDto extends PasswordDto {
 
 export class SignUpDto extends LoginDto {
   @IsNotEmpty()
-  @IsEnum(roles)
-  role: roles;
+  @IsEnum(Roles)
+  role: Roles;
 }
 
 export class EmailTokenDto {
@@ -92,6 +98,10 @@ export class PayloadDto {
   @IsInt()
   userId: number;
 
-  @IsEnum(roles)
-  role: roles;
+  @IsEnum(Roles)
+  role: Roles;
+}
+
+export interface UserById {
+  [id: number]: EmailDto;
 }

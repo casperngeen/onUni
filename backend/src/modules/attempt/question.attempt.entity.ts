@@ -10,7 +10,7 @@ export class QuestionAttempt {
   @Column()
   selectedOptionId: number;
 
-  @ManyToOne(() => Question, (question) => question.questionAttempts)
+  @ManyToOne(() => Question)
   question: Question;
 
   @ManyToOne(() => Attempt, (attempt) => attempt.questionAttempts)

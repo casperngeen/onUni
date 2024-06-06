@@ -4,7 +4,6 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToMany,
   ManyToOne,
   OneToMany,
 } from 'typeorm';
@@ -19,7 +18,7 @@ enum statuses {
 @Entity()
 export class Attempt {
   @PrimaryGeneratedColumn()
-  courseId: number;
+  attemptId: number;
 
   @Column({ length: 100 })
   title: string;
@@ -40,15 +39,15 @@ export class Attempt {
   @Column({ type: 'date', nullable: true })
   submitted?: Date;
 
-  @ManyToOne(() => Test, (test) => test.attempts)
-  test: Test;
-
-  @ManyToMany(() => User, (user) => user.attempts)
-  users?: User[];
-
   @OneToMany(
     () => QuestionAttempt,
     (questionAttempt) => questionAttempt.attempt,
   )
   questionAttempts?: QuestionAttempt[];
+
+  @ManyToOne(() => Test, (test) => test.attempts)
+  test: Test;
+
+  @ManyToOne(() => User, (user) => user.attempts)
+  users?: User[];
 }

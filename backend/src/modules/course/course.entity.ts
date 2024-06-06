@@ -7,13 +7,14 @@ import {
   OneToMany,
   ManyToMany,
 } from 'typeorm';
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 @Entity()
 export class Course {
   @PrimaryGeneratedColumn()
   courseId: number;
 
-  @Column({ length: 100 })
+  @Column()
   title: string;
 
   @Column('text')
@@ -30,4 +31,10 @@ export class Course {
 
   @ManyToMany(() => User, (user) => user.courses)
   users?: User[];
+}
+
+export class CourseIdDto {
+  @IsInt()
+  @IsNotEmpty()
+  courseId: number;
 }

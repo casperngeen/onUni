@@ -8,14 +8,15 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Attempt } from '../attempt/attempt.entity';
+import { IsDate, IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
-enum scoringFormats {
+enum ScoringFormats {
   AVERAGE = 'average',
   HIGHEST = 'highest',
   LATEST = 'latest',
 }
 
-enum testTypes {
+enum TestTypes {
   PRACTICE = 'practice',
   EXAM = 'exam',
   QUIZ = 'quiz',
@@ -37,10 +38,10 @@ export class Test {
 
   @Column({
     type: 'enum',
-    enum: scoringFormats,
+    enum: ScoringFormats,
     nullable: true,
   })
-  scoringFormat?: scoringFormats;
+  scoringFormat?: ScoringFormats;
 
   @Column({ type: 'int', nullable: true })
   maxAttempt?: number;
@@ -48,17 +49,14 @@ export class Test {
   @Column({ type: 'int', nullable: true })
   timeLimit?: number; // time in minutes
 
-  @Column({ nullable: true })
-  currentScore?: number; // can be a decimal
-
   @Column({ type: 'int' })
   maxScore: number; // should be an integer
 
   @Column({
     type: 'enum',
-    enum: testTypes,
+    enum: TestTypes,
   })
-  testType: testTypes;
+  testType: TestTypes;
 
   @ManyToOne(() => Course, (course) => course.tests)
   course: Course;
@@ -68,4 +66,46 @@ export class Test {
 
   @OneToMany(() => Attempt, (attempt) => attempt.test)
   attempts?: Attempt[];
+}
+
+export class TestIdDto {
+  @IsInt()
+  @IsNotEmpty()
+  testId: number;
+}
+
+export class TestInfoDto {
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @IsDate()
+  @IsNotEmpty()
+  deadline?: Date;
+
+  @IsEnum(ScoringFormats)
+  scoringFormat?: ScoringFormats;
+
+  @IsInt()
+  @IsNotEmpty()
+  maxAttempt?: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  timeLimit?: number; // time in minutes
+
+  @IsInt()
+  @IsNotEmpty()
+  maxScore: number; // should be an integer
+
+  @IsEnum(TestTypes)
+  testType: TestTypes;
+}
+
+export interface TestById {
+  [id: number]: TestInfoDto;
 }
