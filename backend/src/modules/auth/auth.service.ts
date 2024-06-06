@@ -62,7 +62,10 @@ export class AuthService extends BaseService<User> {
     this.log(`Querying DB for email ${loginDetails.email}...`);
     const user: User = await this.findOne({ email: loginDetails.email });
     if (!user) {
-      this.error('User not found', loginDetails.email);
+      this.error(
+        `User with email ${loginDetails.email} not found`,
+        loginDetails.email,
+      );
       throw new UserNotFoundException();
     }
     this.log(`User ${user.userId} found`);
