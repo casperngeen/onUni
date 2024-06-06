@@ -8,8 +8,8 @@ import {
   UpdateResult,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { get } from 'stack-trace';
-import * as path from 'path';
+import StackTrace from 'stacktrace-js';
+import path from 'path';
 
 @Injectable()
 export default class BaseService<T> {
@@ -68,9 +68,12 @@ export default class BaseService<T> {
   }
 
   private getContext(): string {
-    const trace = get();
-    const fileName = trace[0].getFileName();
-    return path.basename(fileName);
+    const trace = StackTrace.getSync();
+    if (!trace[0]) {
+      return '';
+    }
+
+    return path.basename(trace[0].fileName);
   }
 
   log(message: string) {
