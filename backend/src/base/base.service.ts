@@ -4,21 +4,29 @@ import {
   DeepPartial,
   DeleteResult,
   FindManyOptions,
+  FindOneOptions,
   Repository,
   UpdateResult,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { DatabaseException } from './base.exception';
 
 @Injectable()
 export default class BaseService<T> {
-  protected readonly loggerService: LoggerService;
-  constructor(private readonly repository: Repository<T>) {}
+  private readonly loggerService: LoggerService;
+  constructor(
+    private readonly repository: Repository<T>,
+    loggerService: LoggerService,
+  ) {
+    this.loggerService = loggerService;
+  }
 
   async findAll(): Promise<T[]> {
     try {
       return await this.repository.find();
     } catch (error) {
       this.error('Error finding all', error);
+      throw new DatabaseException();
     }
   }
 
@@ -26,23 +34,26 @@ export default class BaseService<T> {
     try {
       return await this.repository.find(t);
     } catch (error) {
-      this.error(`Error finding match by ${t}`, error);
+      this.error(`Error finding match by ${JSON.stringify(t)}`, error);
+      throw new DatabaseException();
     }
   }
 
-  async findOne(t: Partial<T>): Promise<T> {
+  async findOne(t: FindOneOptions<T>): Promise<T> {
     try {
       return await this.repository.findOne(t);
     } catch (error) {
-      this.error(`Error finding item ${t}`, error);
+      this.error(`Error finding item matching ${JSON.stringify(t)}`, error);
+      throw new DatabaseException();
     }
   }
 
-  async insert(t: DeepPartial<T>): Promise<T> {
+  async upsert(t: DeepPartial<T>): Promise<T> {
     try {
       return await this.repository.save(t);
     } catch (error) {
-      this.error(`Error inserting item ${t}`, error);
+      this.error(`Error upserting item ${JSON.stringify(t)}`, error);
+      throw new DatabaseException();
     }
   }
 
@@ -53,7 +64,11 @@ export default class BaseService<T> {
     try {
       return await this.repository.update(id, t);
     } catch (error) {
-      this.error(`Error updating item ${t} with id ${id}`, error);
+      this.error(
+        `Error updating item ${JSON.stringify(t)} with id ${id}`,
+        error,
+      );
+      throw new DatabaseException();
     }
   }
 
@@ -62,6 +77,7 @@ export default class BaseService<T> {
       return await this.repository.delete(id);
     } catch (error) {
       this.error(`Error deleting item with id ${id}`, error);
+      throw new DatabaseException();
     }
   }
 

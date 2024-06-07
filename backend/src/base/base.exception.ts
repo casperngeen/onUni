@@ -18,3 +18,9 @@ export class InvalidInputException extends BaseException {
     super('Input is invalid', 400, GeneralException.INVALID_INPUT);
   }
 }
+
+export class DatabaseException extends BaseException {
+  constructor() {
+    super('Error in database operation', 400, GeneralException.DATABASE_ERROR);
+  }
+}

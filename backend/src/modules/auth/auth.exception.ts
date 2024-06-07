@@ -3,7 +3,7 @@ import { BaseException } from '../../base/base.exception';
 
 export class ExpiredTokenException extends BaseException {
   constructor() {
-    super('Verification link has expired', 200, AuthException.EXPIRED_TOKEN);
+    super('Token has expired', 200, AuthException.EXPIRED_TOKEN);
   }
 }
 
@@ -22,5 +22,15 @@ export class PasswordIncorrectException extends BaseException {
 export class HashFailedExcepion extends BaseException {
   constructor() {
     super('Hash failed', 500, AuthException.HASH_FAILED);
+  }
+}
+
+export class TokenGenerationFailedException extends BaseException {
+  constructor() {
+    super(
+      'Token generation failed',
+      500,
+      AuthException.TOKEN_GENERATION_FAILED,
+    );
   }
 }

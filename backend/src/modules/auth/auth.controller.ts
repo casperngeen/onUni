@@ -14,7 +14,6 @@ import {
   EmailDto,
   LoginDto,
   PasswordDto,
-  PayloadDto,
   SignUpDto,
 } from '../user/user.entity';
 import { Public } from 'src/public.decorator';
@@ -49,7 +48,7 @@ export class AuthController {
   @Public()
   @Put('changePassword/:token')
   async changePassword(
-    @Param('token') token: bigint,
+    @Param('token') token: number,
     @Body() password: PasswordDto,
     @Res() response: Response,
   ) {
@@ -69,8 +68,9 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Body('user') payload: PayloadDto, @Res() response: Response) {
-    await this.authService.logOut(payload.userId);
+  async logout(@Req() request: Request, @Res() response: Response) {
+    const { userId } = request['user'];
+    await this.authService.logOut(userId);
     response.status(200).json(ResponseHandler.success());
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
 import { Logger, createLogger } from 'winston';
 import { winstonConfig } from './winston.config';
-import path from 'path';
-import StackTrace from 'stacktrace-js';
+import * as path from 'path';
+import * as StackTrace from 'stacktrace-js';
 
 @Injectable()
 export class LoggerService implements NestLoggerService {

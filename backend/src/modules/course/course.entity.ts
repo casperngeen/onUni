@@ -7,7 +7,7 @@ import {
   OneToMany,
   ManyToMany,
 } from 'typeorm';
-import { IsDate, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsISO8601, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 @Entity()
 export class Course {
@@ -27,10 +27,10 @@ export class Course {
   endDate: Date;
 
   @OneToMany(() => Test, (test) => test.course)
-  tests?: Test[];
+  tests: Test[] = [];
 
   @ManyToMany(() => User, (user) => user.courses)
-  users?: User[];
+  users: User[] = [];
 }
 
 export class CourseIdDto {
@@ -49,11 +49,11 @@ export class NewCourseDto {
   description: string;
 
   @IsNotEmpty()
-  @IsDate()
+  @IsISO8601({ strict: true })
   startDate: Date;
 
   @IsNotEmpty()
-  @IsDate()
+  @IsISO8601({ strict: true })
   endDate: Date;
 }
 

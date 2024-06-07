@@ -8,8 +8,9 @@ import {
   DuplicateUserException,
   UserNotFoundException,
 } from './user.exception';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { HashFailedExcepion } from '../auth/auth.exception';
+import { LoggerService } from '../logger/logger.service';
 
 // store in env?
 const DEFAUlT_PASSWORD = 'Onuni123!';
@@ -19,8 +20,9 @@ export class UserService extends BaseService<User> {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    loggerService: LoggerService,
   ) {
-    super(userRepository);
+    super(userRepository, loggerService);
   }
 
   /**
@@ -76,7 +78,7 @@ export class UserService extends BaseService<User> {
   async createNewUser(email: string, role: Roles): Promise<void> {
     this.log(`Query to create new ${role} with email ${email}`);
     this.log('Checking for duplicates...');
-    const user: User = await this.findOne({ email: email });
+    const user: User = await this.findOne({ where: { email: email } });
     if (user) {
       this.error('Duplicate user found', email);
       throw new DuplicateUserException();
@@ -93,7 +95,7 @@ export class UserService extends BaseService<User> {
     }
 
     this.log(`Inserting user with email ${email} into DB...`);
-    await this.insert({
+    await this.upsert({
       passwordHash: hash,
       role: role,
       email: email,
@@ -128,7 +130,7 @@ export class UserService extends BaseService<User> {
     const userId = userIdObject.userId;
     this.log(`Query to remove user ${userId}`);
     this.log(`Checking if user ${userId} exists...`);
-    const user: User = await this.findOne({ userId: userId });
+    const user: User = await this.findOne({ where: { userId: userId } });
     if (!user) {
       this.error(`User ${userId} does not exist`, userId.toString());
       throw new UserNotFoundException();

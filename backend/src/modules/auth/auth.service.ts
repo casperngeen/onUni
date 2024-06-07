@@ -7,19 +7,21 @@ import {
   EmailTokenDto,
   LoginDto,
   PasswordDto,
+  PayloadDto,
   RefreshDetailsDto,
   SignUpDto,
   User,
   UserIdDto,
 } from '../user/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import {
   HashFailedExcepion,
   MailNotSentException,
   PasswordIncorrectException,
+  TokenGenerationFailedException,
 } from '../auth/auth.exception';
-import nodemailer from 'nodemailer';
+// import nodemailer from 'nodemailer';
 import { JwtService } from '@nestjs/jwt';
 import {
   DuplicateUserException,
@@ -27,27 +29,29 @@ import {
   UnauthorisedUserException,
 } from '../user/user.exception';
 import { InvalidInputException } from 'src/base/base.exception';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class AuthService extends BaseService<User> {
-  private transporter: any;
+  //private transporter: any;
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    loggerService: LoggerService,
   ) {
-    super(userRepository);
+    super(userRepository, loggerService);
     // to be updated
-    this.transporter = nodemailer.createTransport({
-      pool: true,
-      host: 'smtp.example.com',
-      port: 465,
-      secure: true, // TLS
-      auth: {
-        user: 'username',
-        pass: 'password',
-      },
-    });
+    // this.transporter = nodemailer.createTransport({
+    //   pool: true,
+    //   host: 'smtp.example.com',
+    //   port: 465,
+    //   secure: true, // TLS
+    //   auth: {
+    //     user: 'username',
+    //     pass: 'password',
+    //   },
+    // });
   }
 
   /**
@@ -59,8 +63,11 @@ export class AuthService extends BaseService<User> {
     this.log(`Log in query: ${loginDetails.email}`);
     // make it unique to user
     this.log(`Querying DB for email ${loginDetails.email}...`);
-    const user: User = await this.findOne({ email: loginDetails.email });
+    const user: User = await this.findOne({
+      where: { email: loginDetails.email },
+    });
     if (!user) {
+      this.log(`${user}`);
       this.error(
         `User with email ${loginDetails.email} not found`,
         loginDetails.email,
@@ -82,7 +89,7 @@ export class AuthService extends BaseService<User> {
       const accessToken: string = await this.generateAccessToken(user);
       const refreshToken: string = await this.generateRefreshToken(user);
       // encrypt the refresh token
-      this.log('Hashing and storing refresh token');
+      this.log('Hashing and storing refresh token...');
       await this.hashAndStore(user.userId, refreshToken);
       this.log('Hashing and storing refresh token completed');
       this.log(`Login for ${loginDetails.email} completed`);
@@ -96,8 +103,8 @@ export class AuthService extends BaseService<User> {
    * @returns Promise resolving to the access token
    */
   async generateAccessToken(user: User): Promise<string> {
-    const payload = {
-      id: user.userId,
+    const payload: PayloadDto = {
+      userId: user.userId,
       role: user.role,
     };
 
@@ -108,7 +115,8 @@ export class AuthService extends BaseService<User> {
       this.log('Access token generated');
       return result;
     } catch (error) {
-      this.error('Error generating access token', error);
+      this.error(`Error generating access token - ${error.toString()}`, error);
+      throw new TokenGenerationFailedException();
     }
   }
 
@@ -118,7 +126,7 @@ export class AuthService extends BaseService<User> {
    * @returns Promise resolving to the refresh token
    */
   async generateRefreshToken(user: User): Promise<string> {
-    const payload = {
+    const payload: PayloadDto = {
       userId: user.userId,
       role: user.role,
     };
@@ -130,7 +138,8 @@ export class AuthService extends BaseService<User> {
       this.log('Refresh token generated');
       return result;
     } catch (error) {
-      this.error('Error generating refresh token', error);
+      this.error(`Error generating refresh token - ${error.toString()}`, error);
+      throw new TokenGenerationFailedException();
     }
   }
 
@@ -141,7 +150,11 @@ export class AuthService extends BaseService<User> {
   async signUp(signUpDetails: SignUpDto): Promise<void> {
     this.log(`Sign up query: ${signUpDetails.email}`);
     this.log('Checking for duplicates...');
-    const user: User = await this.findOne({ email: signUpDetails.email });
+    const user: User = await this.findOne({
+      where: {
+        email: signUpDetails.email,
+      },
+    });
     if (user) {
       this.error('Duplicate user found', signUpDetails.email);
       throw new DuplicateUserException();
@@ -159,12 +172,12 @@ export class AuthService extends BaseService<User> {
       hash = await bcrypt.hash(signUpDetails.password, 10);
       this.log('Password hashed');
     } catch (error) {
-      this.error('Hashing failed', error);
+      this.error(`Hashing failed ${error}`, error);
       throw new HashFailedExcepion();
     }
 
     this.log(`Inserting user ${signUpDetails.email} into DB...`);
-    await this.insert({
+    await this.upsert({
       passwordHash: hash,
       role: signUpDetails.role,
       email: signUpDetails.email,
@@ -180,34 +193,34 @@ export class AuthService extends BaseService<User> {
   async forgetPassword(emailObject: EmailDto): Promise<void> {
     this.log(`Forget password query: ${emailObject.email}`);
     this.log('Finding user based on email...');
-    const user: User = await this.findOne(emailObject);
+    const user: User = await this.findOne({ where: emailObject });
     if (!user) {
       this.error('User not found', emailObject.email);
       throw new UserNotFoundException();
     }
     this.log(`User ${user.userId} found`);
-    const emailToken: bigint = this.getEmailToken();
+    const emailToken: number = this.getEmailToken();
     this.log('Random token generated');
     this.log('Adding email token to DB...');
     await this.update(user.userId, { emailToken: emailToken });
     this.log('Added email token to DB');
 
-    const link: string = `https://server/auth/change/${emailToken}`;
     // to be updated
-    const message = {
-      from: 'sender@server.com',
-      to: `${emailObject.email}`,
-      subject: '[OnUNI] Change Password',
-      text: 'Click on the link to change your password',
-      html: `<a href=${link}>Confirm email here</a>`,
-    };
+    //const link: string = `https://server/auth/change/${emailToken}`;
+    // const message = {
+    //   from: 'sender@server.com',
+    //   to: `${emailObject.email}`,
+    //   subject: '[OnUNI] Change Password',
+    //   text: 'Click on the link to change your password',
+    //   html: `<a href=${link}>Confirm email here</a>`,
+    // };
     this.log('Sending email to user...');
     try {
-      const info = await this.transporter.sendEmail(message);
-      if (!info) {
-        this.error('Mail not sent', emailObject.email);
-        throw new MailNotSentException();
-      }
+      // const info = await this.transporter.sendEmail(message);
+      // if (!info) {
+      //   this.error('Mail not sent', emailObject.email);
+      //   throw new MailNotSentException();
+      // }
       this.log('Email sent');
       this.log(`Forgot password query for ${emailObject.email} completed`);
     } catch (error) {
@@ -220,8 +233,8 @@ export class AuthService extends BaseService<User> {
    * To generate a random token for the change password request
    * @returns The generated token
    */
-  getEmailToken(): bigint {
-    const myArray = new BigUint64Array(1);
+  getEmailToken(): number {
+    const myArray = new Uint32Array(1);
     crypto.getRandomValues(myArray);
     return myArray[0];
   }
@@ -263,7 +276,9 @@ export class AuthService extends BaseService<User> {
     this.log(`Verify token query: ${tokenObject.emailToken}`);
     this.log('Finding user...');
     const user: User = await this.findOne({
-      emailToken: tokenObject.emailToken,
+      where: {
+        emailToken: tokenObject.emailToken,
+      },
     });
     if (!user) {
       this.error('User not found', tokenObject.emailToken.toString());
@@ -284,26 +299,34 @@ export class AuthService extends BaseService<User> {
    */
   async refresh(refreshDetails: RefreshDetailsDto): Promise<AuthTokenDto> {
     const { userId, refreshToken } = refreshDetails;
-    this.log(`Refresh tokens query for ${userId} `);
+    this.log(`Refresh tokens query for user ${userId} `);
     this.log(`Finding user ${userId}...`);
-    const user = await this.findOne({ userId: userId });
+    const user = await this.findOne({ where: { userId: userId } });
     if (!user) {
       this.error('User not found', userId.toString());
       throw new UserNotFoundException();
     }
     this.log(`User ${userId} found`);
 
-    this.log(`Comparing token ${refreshToken} with hash...`);
+    if (!user.refreshToken) {
+      this.error(
+        `User ${user.userId} has already logged out`,
+        user.userId.toString(),
+      );
+      throw new UnauthorisedUserException();
+    }
+
+    this.log(`Comparing token with hash...`);
     const result: boolean = await bcrypt.compare(
       refreshToken,
       user.refreshToken,
     );
 
     if (!result) {
-      this.error(`Invalid token ${refreshToken}`, userId.toString());
+      this.error(`Invalid token`, userId.toString());
       throw new UnauthorisedUserException();
     }
-    this.log(`Token ${refreshToken} is valid`);
+    this.log(`Token is valid`);
 
     this.log('Generating new tokens...');
     const newAccessToken: string = await this.generateAccessToken(user);
@@ -311,8 +334,8 @@ export class AuthService extends BaseService<User> {
 
     this.log('Hashing and storing new refresh token...');
     await this.hashAndStore(user.userId, newRefreshToken);
-    this.log('Hashed and stored new efresh token');
-    this.log(`Refresh tokens for ${userId} query completed`);
+    this.log('Hashed and stored new refresh token');
+    this.log(`Refresh tokens for user ${userId} query completed`);
 
     return {
       accessToken: newAccessToken,
@@ -344,7 +367,7 @@ export class AuthService extends BaseService<User> {
   async logOut(userId: number): Promise<UpdateResult> {
     this.log(`Log out query: User ${userId}`);
     this.log(`Finding user ${userId}...`);
-    const user: User = await this.findOne({ userId: userId });
+    const user: User = await this.findOne({ where: { userId: userId } });
     if (!user) {
       this.error(`User ${userId} not found`, userId.toString());
       throw new UserNotFoundException();

@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
       this.loggerService.error(`No token provided`, '');
       throw new UnauthorisedUserException();
     }
-    this.loggerService.log(`Token provided: ${token}`);
+    this.loggerService.log(`Token provided`);
     this.loggerService.log(`Verifying token...`);
     try {
       const payload: PayloadDto = await this.jwtService.verifyAsync(token);
@@ -42,17 +42,20 @@ export class AuthGuard implements CanActivate {
       this.loggerService.log(
         `Token verified, user details and token added to request`,
       );
-      this.loggerService.log(`User ${payload.userId} authenticated`);
+      this.loggerService.log(`User ${payload.userId.toString()} authenticated`);
       return true;
     } catch (error) {
       if (error instanceof TokenExpiredError) {
         this.loggerService.error(
-          `Error verifying token ${token}`,
+          `Error verifying token ${error.toString()}`,
           error.message,
         );
         throw new ExpiredTokenException();
       }
-      this.loggerService.error(`Error verifying token ${token}`, error.message);
+      this.loggerService.error(
+        `Error verifying token ${error.toString()}`,
+        error.message,
+      );
       throw new UnauthorisedUserException();
     }
   }

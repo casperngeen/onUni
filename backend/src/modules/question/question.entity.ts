@@ -20,5 +20,5 @@ export class Question {
   test: Test;
 
   @OneToMany(() => Option, (option) => option.question)
-  options?: Option[];
+  options: Option[] = [];
 }

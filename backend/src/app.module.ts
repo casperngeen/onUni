@@ -4,11 +4,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './modules/user/user.entity';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
+import { Course } from './modules/course/course.entity';
+import { Question } from './modules/question/question.entity';
+import { QuestionAttempt } from './modules/attempt/question.attempt.entity';
+import { Option } from './modules/question/option.entity';
+import { Test } from './modules/test/test.entity';
+import { Attempt } from './modules/attempt/attempt.entity';
+import { LoggerModule } from './modules/logger/logger.module';
+import { TestModule } from './modules/test/test.module';
+import { CourseModule } from './modules/course/course.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    // to be updated: to connect with DB
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -16,10 +24,21 @@ import { ConfigModule } from '@nestjs/config';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: 'onuni',
-      entities: [User],
+      entities: [
+        Attempt,
+        QuestionAttempt,
+        Course,
+        Question,
+        Option,
+        Test,
+        User,
+      ],
       synchronize: true,
     }),
     AuthModule,
+    CourseModule,
+    LoggerModule,
+    TestModule,
     UserModule,
   ],
 })

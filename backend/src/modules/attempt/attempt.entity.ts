@@ -43,11 +43,11 @@ export class Attempt {
     () => QuestionAttempt,
     (questionAttempt) => questionAttempt.attempt,
   )
-  questionAttempts?: QuestionAttempt[];
+  questionAttempts: QuestionAttempt[] = [];
 
   @ManyToOne(() => Test, (test) => test.attempts)
   test: Test;
 
   @ManyToOne(() => User, (user) => user.attempts)
-  users?: User[];
+  users: User[] = [];
 }

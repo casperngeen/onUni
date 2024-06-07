@@ -14,7 +14,7 @@ export enum Roles {
   TEACHER = 'teacher',
 }
 
-@Entity()
+@Entity('onuni_user')
 export class User {
   @PrimaryGeneratedColumn()
   userId: number;
@@ -25,8 +25,8 @@ export class User {
   @Column('text')
   passwordHash: string;
 
-  @Column({ nullable: true })
-  emailToken?: bigint;
+  @Column({ type: 'int', nullable: true })
+  emailToken: number;
 
   @Column('text', { nullable: true })
   refreshToken?: string;
@@ -42,10 +42,10 @@ export class User {
   role: Roles;
 
   @ManyToMany(() => Course, (course) => course.users)
-  courses?: Course[];
+  courses: Course[] = [];
 
   @OneToMany(() => Attempt, (attempt) => attempt.users)
-  attempts?: Attempt[];
+  attempts: Attempt[] = [];
 }
 
 export class UserIdDto {
@@ -81,7 +81,7 @@ export class SignUpDto extends LoginDto {
 export class EmailTokenDto {
   @IsNotEmpty()
   @IsInt()
-  emailToken: bigint;
+  emailToken: number;
 }
 
 export class AuthTokenDto {

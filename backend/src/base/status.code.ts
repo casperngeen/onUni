@@ -9,6 +9,7 @@ export const OK = 0;
 export enum GeneralException {
   UNSPECIFIED = 10,
   INVALID_INPUT = 11,
+  DATABASE_ERROR = 12,
 }
 
 /**
@@ -28,6 +29,7 @@ export enum AuthException {
   MAIL_NOT_SENT = 32,
   PASSWORD_INCORRECT = 33,
   HASH_FAILED = 34,
+  TOKEN_GENERATION_FAILED = 35,
 }
 
 /**

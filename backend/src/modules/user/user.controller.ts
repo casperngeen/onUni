@@ -38,7 +38,7 @@ export class UserController {
     response.status(200).json(ResponseHandler.success(teachers));
   }
 
-  @Post()
+  @Post('teacher')
   async createNewTeacher(
     @Body('email') email: string,
     @Res() response: Response,
@@ -47,7 +47,7 @@ export class UserController {
     response.status(201).json(ResponseHandler.success());
   }
 
-  @Post()
+  @Post('student')
   async createNewStudent(
     @Body('email') email: string,
     @Res() response: Response,
