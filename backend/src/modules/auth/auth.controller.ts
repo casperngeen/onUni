@@ -47,7 +47,7 @@ export class AuthController {
   }
 
   @Public()
-  @Put('change/:token')
+  @Put('changePassword/:token')
   async changePassword(
     @Param('token') token: bigint,
     @Body() password: PasswordDto,
@@ -59,8 +59,12 @@ export class AuthController {
 
   @Post('refresh')
   async refresh(@Req() request: Request, @Res() response: Response) {
-    const refreshToken: string = '';
-    const tokens: AuthTokenDto = await this.authService.refresh(refreshToken);
+    const userId = request['user'].userId;
+    const refreshToken = request['token'];
+    const tokens: AuthTokenDto = await this.authService.refresh({
+      userId: userId,
+      refreshToken: refreshToken,
+    });
     response.status(200).json(ResponseHandler.success(tokens));
   }
 

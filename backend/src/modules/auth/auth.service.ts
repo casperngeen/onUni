@@ -7,7 +7,7 @@ import {
   EmailTokenDto,
   LoginDto,
   PasswordDto,
-  PayloadDto,
+  RefreshDetailsDto,
   SignUpDto,
   User,
   UserIdDto,
@@ -15,13 +15,12 @@ import {
 import { Repository, UpdateResult } from 'typeorm';
 import bcrypt from 'bcrypt';
 import {
-  ExpiredTokenException,
   HashFailedExcepion,
   MailNotSentException,
   PasswordIncorrectException,
 } from '../auth/auth.exception';
 import nodemailer from 'nodemailer';
-import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import {
   DuplicateUserException,
   UserNotFoundException,
@@ -283,29 +282,16 @@ export class AuthService extends BaseService<User> {
    * @param refreshToken The refresh token provided by client
    * @returns The new pair of tokens
    */
-  async refresh(refreshToken: string): Promise<AuthTokenDto> {
-    this.log(`Refresh tokens query for token: ${refreshToken}`);
-    let payload: PayloadDto;
-    this.log('Verifying token...');
-    try {
-      payload = this.jwtService.verify(refreshToken);
-      this.log(`Token ${refreshToken} verified`);
-    } catch (error) {
-      if (error instanceof TokenExpiredError) {
-        this.error(`Token ${refreshToken} has expired`, error.toString());
-        throw new ExpiredTokenException();
-      }
-      this.error(`Error verifying token ${refreshToken}`, error);
-      throw new UnauthorisedUserException();
-    }
-
-    this.log('Finding user with payload...');
-    const user = await this.findOne({ userId: payload.userId });
+  async refresh(refreshDetails: RefreshDetailsDto): Promise<AuthTokenDto> {
+    const { userId, refreshToken } = refreshDetails;
+    this.log(`Refresh tokens query for ${userId} `);
+    this.log(`Finding user ${userId}...`);
+    const user = await this.findOne({ userId: userId });
     if (!user) {
-      this.error('User not found', payload.userId.toString());
+      this.error('User not found', userId.toString());
       throw new UserNotFoundException();
     }
-    this.log(`User ${user.userId} found`);
+    this.log(`User ${userId} found`);
 
     this.log(`Comparing token ${refreshToken} with hash...`);
     const result: boolean = await bcrypt.compare(
@@ -314,7 +300,7 @@ export class AuthService extends BaseService<User> {
     );
 
     if (!result) {
-      this.error(`Invalid token ${refreshToken}`, payload.userId.toString());
+      this.error(`Invalid token ${refreshToken}`, userId.toString());
       throw new UnauthorisedUserException();
     }
     this.log(`Token ${refreshToken} is valid`);
@@ -325,8 +311,8 @@ export class AuthService extends BaseService<User> {
 
     this.log('Hashing and storing new refresh token...');
     await this.hashAndStore(user.userId, newRefreshToken);
-    this.log('Hashing and storing refresh token completed');
-    this.log(`Refresh tokens for ${refreshToken} query completed`);
+    this.log('Hashed and stored new efresh token');
+    this.log(`Refresh tokens for ${userId} query completed`);
 
     return {
       accessToken: newAccessToken,
