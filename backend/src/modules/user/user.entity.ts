@@ -102,6 +102,12 @@ export class PayloadDto {
   role: Roles;
 }
 
-export interface UserById {
-  [id: number]: EmailDto;
+export class RefreshDetailsDto {
+  @IsNotEmpty()
+  @IsInt()
+  userId: number;
+
+  @IsNotEmpty()
+  @IsString()
+  refreshToken: string;
 }
