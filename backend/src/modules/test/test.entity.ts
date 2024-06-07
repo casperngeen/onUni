@@ -62,10 +62,10 @@ export class Test {
   course: Course;
 
   @OneToMany(() => Question, (question) => question.test)
-  questions?: Question[];
+  questions: Question[] = [];
 
   @OneToMany(() => Attempt, (attempt) => attempt.test)
-  attempts?: Attempt[];
+  attempts: Attempt[] = [];
 }
 
 export class TestIdDto {
