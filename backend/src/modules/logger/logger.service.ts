@@ -1,6 +1,8 @@
 import { Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
 import { Logger, createLogger } from 'winston';
 import { winstonConfig } from './winston.config';
+import path from 'path';
+import StackTrace from 'stacktrace-js';
 
 @Injectable()
 export class LoggerService implements NestLoggerService {
@@ -9,21 +11,29 @@ export class LoggerService implements NestLoggerService {
     this.logger = createLogger(winstonConfig);
   }
 
-  log(message: string, context: string) {
-    this.logger.info(message, { context });
+  private getContext(): string {
+    const trace = StackTrace.getSync();
+    if (!trace[0]) {
+      return '';
+    }
+    return path.basename(trace[0].fileName);
   }
 
-  error(message: string, trace: string, context: string) {
-    this.logger.error(message, { context, trace });
+  log(message: string) {
+    this.logger.info(message, { context: this.getContext() });
+  }
+
+  error(message: string, trace: string) {
+    this.logger.error(message, { context: this.getContext(), trace });
   }
 
   // to warn other developers
-  warn(message: string, context: string) {
-    this.logger.warn(message, { context });
+  warn(message: string) {
+    this.logger.warn(message, { context: this.getContext() });
   }
 
   // for debugging in development env
-  debug(message: string, context: string) {
-    this.logger.debug(message, { context });
+  debug(message: string) {
+    this.logger.debug(message, { context: this.getContext() });
   }
 }
