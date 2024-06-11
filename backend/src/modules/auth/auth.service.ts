@@ -201,6 +201,8 @@ export class AuthService extends BaseService<User> {
       passwordHash: hash,
       role: signUpDetails.role,
       email: signUpDetails.email,
+      courses: [],
+      attempts: [],
     });
     this.log('User successfully inserted', this.context);
     this.log(`Sign up for ${signUpDetails.email} completed`, this.context);

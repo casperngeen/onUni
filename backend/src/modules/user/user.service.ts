@@ -111,6 +111,8 @@ export class UserService extends BaseService<User> {
       passwordHash: hash,
       role: role,
       email: email,
+      courses: [],
+      attempts: [],
     });
     this.log('User successfully inserted', this.context);
     this.log(

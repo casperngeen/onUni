@@ -29,10 +29,10 @@ export class Course {
   @OneToMany(() => Test, (test) => test.course, {
     cascade: true,
   })
-  tests?: Test[];
+  tests: Test[];
 
   @ManyToMany(() => User, (user) => user.courses)
-  users?: User[];
+  users: User[];
 }
 
 export class CourseIdDto {
@@ -66,5 +66,31 @@ export class UserCourseDto {
 
   @IsInt()
   @IsNotEmpty()
+  courseId: number;
+}
+
+export class UpdateCourseDto {
+  courseId: number;
+
+  @IsNotEmpty()
+  @IsString()
+  title: string;
+
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
+  @IsNotEmpty()
+  @IsISO8601({ strict: true })
+  startDate: Date;
+
+  @IsNotEmpty()
+  @IsISO8601({ strict: true })
+  endDate: Date;
+}
+
+export class CourseInfoDto extends NewCourseDto {
+  @IsNotEmpty()
+  @IsInt()
   courseId: number;
 }

@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import BaseService from 'src/base/base.service';
-import { Test, TestById, TestIdDto } from './test.entity';
+import { NewTestDto, Test, TestIdDto, UpdateTestDto } from './test.entity';
 import { Repository } from 'typeorm';
 import { Course, CourseIdDto } from '../course/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoggerService } from '../logger/logger.service';
+import * as StackTrace from 'stacktrace-js';
+import * as path from 'path';
+import { CourseNotFoundException } from '../course/course.exception';
+import { TestNotFoundException } from './test.exception';
 
 @Injectable()
 export class TestService extends BaseService<Test> {
@@ -16,21 +20,31 @@ export class TestService extends BaseService<Test> {
     loggerService: LoggerService,
   ) {
     super(testRepository, loggerService);
+    this.context = StackTrace.getSync().map((frame) =>
+      path.basename(frame.fileName),
+    )[0];
   }
 
-  async viewAllTests(courseIdObject: CourseIdDto): Promise<TestById> {
-    this.log(`Query all tests for course ${courseIdObject.courseId}`);
-    this.log(`Querying DB...`);
+  async viewAllTests(courseIdObject: CourseIdDto): Promise<Partial<Test>[]> {
+    this.log(
+      `Query all tests for course ${courseIdObject.courseId}`,
+      this.context,
+    );
+    this.log(`Querying DB...`, this.context);
     const course: Course = await this.courseRepository.find({
       relations: ['tests'],
       where: courseIdObject,
     })[0];
     const tests: Test[] = course.tests;
-    this.log(`Found all tests for course: ${courseIdObject.courseId}`);
-    this.log(`Formatting tests...`);
-    const testsObject: TestById = tests.reduce((acc, test) => {
+    this.log(
+      `Found all tests for course: ${courseIdObject.courseId}`,
+      this.context,
+    );
+    this.log(`Formatting tests...`, this.context);
+    const testsObject: Partial<Test>[] = tests.map((test) => {
       // is it ok to have some fields with null?
-      acc[test.testId] = {
+      return {
+        testId: test.testId,
         title: test.title,
         description: test.description,
         testType: test.testType,
@@ -40,27 +54,33 @@ export class TestService extends BaseService<Test> {
         maxAttempt: test.maxAttempt,
         timeLimit: test.timeLimit,
       };
-      return acc;
-    }, {});
-    this.log(`Tests for course: ${courseIdObject.courseId} formatted`);
-    this.log(`Query all tests for course ${courseIdObject.courseId} completed`);
+    });
+    this.log(
+      `Tests for course: ${courseIdObject.courseId} formatted`,
+      this.context,
+    );
+    this.log(
+      `Query all tests for course ${courseIdObject.courseId} completed`,
+      this.context,
+    );
     return testsObject;
   }
 
-  async viewTestInfo(testIdObject: TestIdDto): Promise<TestById> {
-    this.log(`Query for test ${testIdObject.testId}`);
-    this.log(`Querying DB...`);
+  async viewTestInfo(testIdObject: TestIdDto): Promise<Partial<Test>> {
+    this.log(`Query for test ${testIdObject.testId}`, this.context);
+    this.log(`Querying DB...`, this.context);
     const test: Test = await this.findOne({ where: testIdObject });
     if (!test) {
       this.error(
         `Test ${testIdObject.testId} could not be found`,
-        testIdObject.testId.toString(),
+        this.context,
+        this.getTrace(),
       );
     }
-    this.log(`Test ${testIdObject.testId} found`);
-    this.log(`Formatting test information...`);
-    const testInfo: TestById = {};
-    testInfo[test.testId] = {
+    this.log(`Test ${testIdObject.testId} found`, this.context);
+    this.log(`Formatting test information...`, this.context);
+    const testInfo: Partial<Test> = {
+      testId: test.testId,
       title: test.title,
       description: test.description,
       testType: test.testType,
@@ -70,7 +90,73 @@ export class TestService extends BaseService<Test> {
       maxAttempt: test.maxAttempt,
       timeLimit: test.timeLimit,
     };
-    this.log(`Test information formatted`);
+    this.log(`Test information formatted`, this.context);
     return testInfo;
+  }
+
+  async createNewTest(newTestDetails: NewTestDto): Promise<void> {
+    const { courseId, ...testInfo } = newTestDetails;
+    this.log(`Query to create new test`, this.context);
+    this.log(`Checking DB for course...`, this.context);
+    const course: Course = await this.courseRepository.findOne({
+      where: { courseId: courseId },
+    });
+    if (!course) {
+      this.error(`Course ${courseId} not found`, this.context, this.getTrace());
+      throw new CourseNotFoundException();
+    }
+    this.log(`Course ${courseId} found`, this.context);
+    this.log(`Creating new test under course ${courseId}`, this.context);
+    const newTest = {
+      ...testInfo,
+      course: course,
+      questions: [],
+      attempts: [],
+    };
+    await this.insert(newTest);
+    this.log(`Added new test to DB`, this.context);
+    this.log(`Query to create new test completed`, this.context);
+  }
+
+  async updateTestInfo(updateTestDetails: UpdateTestDto): Promise<void> {
+    const { testId, ...testInfo } = updateTestDetails;
+    this.log(
+      `Query to update test information for test ${testId}`,
+      this.context,
+    );
+    this.log(`Checking DB for test...`, this.context);
+    const test: Test = await this.findOne({
+      where: { testId: testId },
+    });
+    if (!test) {
+      this.error(`Test ${testId} not found`, this.context, this.getTrace());
+      throw new TestNotFoundException();
+    }
+    this.log(`Test ${testId} found`, this.context);
+    this.log(`Updating test information of test ${testId}`, this.context);
+    await this.update(testId, testInfo);
+    this.log(`Updated test ${testId} in DB`, this.context);
+    this.log(
+      `Query to update test information for test ${testId} completed`,
+      this.context,
+    );
+  }
+
+  async deleteTest(testIdObject: TestIdDto): Promise<void> {
+    const { testId } = testIdObject;
+    this.log(`Query to delete test ${testId}`, this.context);
+    this.log(`Checking DB for test...`, this.context);
+    const test: Test = await this.findOne({
+      where: { testId: testId },
+    });
+    if (!test) {
+      this.error(`Test ${testId} not found`, this.context, this.getTrace());
+      throw new TestNotFoundException();
+    }
+    this.log(`Test ${testId} found`, this.context);
+    this.log(`Deleting test ${testId} from DB...`, this.context);
+    await this.delete(testId);
+    this.log(`Test ${testId} deleted from DB`, this.context);
+    this.log(`Query to delete test ${testId}`, this.context);
   }
 }

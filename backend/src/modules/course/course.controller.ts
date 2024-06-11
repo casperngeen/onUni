@@ -6,26 +6,30 @@ import {
   Param,
   Post,
   Put,
+  Req,
   Res,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
-import { Course, NewCourseDto, UserCourseDto } from './course.entity';
+import {
+  CourseInfoDto,
+  NewCourseDto,
+  UpdateCourseDto,
+  UserCourseDto,
+} from './course.entity';
 import { ResponseHandler } from 'src/base/base.response';
 import { Response } from 'express';
-import { PayloadDto } from '../user/user.entity';
 
 @Controller('course')
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
   @Get()
-  async viewAllCourses(
-    @Body('user') payload: PayloadDto,
-    @Res() response: Response,
-  ) {
-    const courses: Course[] = await this.courseService.viewAllCoursesForUser({
-      userId: payload.userId,
-    });
+  async viewAllCourses(@Req() request: Request, @Res() response: Response) {
+    const { userId } = request['user'];
+    const courses: CourseInfoDto[] =
+      await this.courseService.viewAllCoursesForUser({
+        userId: userId,
+      });
     response.status(200).json(ResponseHandler.success(courses));
   }
 
@@ -34,7 +38,7 @@ export class CourseController {
     @Param('id') id: number,
     @Res() response: Response,
   ) {
-    const course: Course = await this.courseService.viewCourseInfo(
+    const course: CourseInfoDto = await this.courseService.viewCourseInfo(
       {
         courseId: id,
       },
@@ -50,6 +54,20 @@ export class CourseController {
   ) {
     await this.courseService.createNewCourse(courseDetails);
     response.status(201).json(ResponseHandler.success());
+  }
+
+  @Put('/:courseId')
+  async updateCourseInfo(
+    @Param('courseId') courseId: number,
+    @Body('courseDetails') courseDetails: NewCourseDto,
+    @Res() response: Response,
+  ) {
+    const updateCourseObject: UpdateCourseDto = {
+      courseId: courseId,
+      ...courseDetails,
+    };
+    await this.courseService.updateCourseInfo(updateCourseObject);
+    response.status(200).json(ResponseHandler.success());
   }
 
   @Put('/:courseId/user/:userId')

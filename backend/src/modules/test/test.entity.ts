@@ -61,11 +61,15 @@ export class Test {
   @ManyToOne(() => Course, (course) => course.tests)
   course: Course;
 
-  @OneToMany(() => Question, (question) => question.test)
-  questions: Question[] = [];
+  @OneToMany(() => Question, (question) => question.test, {
+    cascade: true,
+  })
+  questions: Question[];
 
-  @OneToMany(() => Attempt, (attempt) => attempt.test)
-  attempts: Attempt[] = [];
+  @OneToMany(() => Attempt, (attempt) => attempt.test, {
+    cascade: true,
+  })
+  attempts: Attempt[];
 }
 
 export class TestIdDto {
@@ -106,6 +110,14 @@ export class TestInfoDto {
   testType: TestTypes;
 }
 
-export interface TestById {
-  [id: number]: TestInfoDto;
+export class NewTestDto extends TestInfoDto {
+  @IsInt()
+  @IsNotEmpty()
+  courseId: number;
+}
+
+export class UpdateTestDto extends TestInfoDto {
+  @IsInt()
+  @IsNotEmpty()
+  testId: number;
 }

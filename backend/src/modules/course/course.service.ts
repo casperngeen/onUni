@@ -3,7 +3,9 @@ import BaseService from 'src/base/base.service';
 import {
   Course,
   CourseIdDto,
+  CourseInfoDto,
   NewCourseDto,
+  UpdateCourseDto,
   UserCourseDto,
 } from './course.entity';
 import { Repository } from 'typeorm';
@@ -35,7 +37,9 @@ export class CourseService extends BaseService<Course> {
     )[0];
   }
 
-  async viewAllCoursesForUser(userIdObject: UserIdDto): Promise<Course[]> {
+  async viewAllCoursesForUser(
+    userIdObject: UserIdDto,
+  ): Promise<CourseInfoDto[]> {
     this.log(`Query all courses for user ${userIdObject.userId}`, this.context);
     this.log(`Querying DB...`, this.context);
     const courses: Course[] = await this.courseRepository
@@ -50,7 +54,7 @@ export class CourseService extends BaseService<Course> {
       `Formatting course information for user ${userIdObject.userId}...`,
       this.context,
     );
-    const courseInfo = courses.map((course) => {
+    const courseInfo: CourseInfoDto[] = courses.map((course) => {
       return {
         courseId: course.courseId,
         title: course.title,
@@ -73,7 +77,7 @@ export class CourseService extends BaseService<Course> {
   async viewCourseInfo(
     courseIdObject: CourseIdDto,
     viewUsers: boolean,
-  ): Promise<Course> {
+  ): Promise<CourseInfoDto> {
     this.log(
       `Course info query for course ${courseIdObject.courseId}`,
       this.context,
@@ -88,7 +92,7 @@ export class CourseService extends BaseService<Course> {
       );
       throw new CourseNotFoundException();
     }
-    const courseInfo: Course = {
+    const courseInfo: CourseInfoDto = {
       courseId: course.courseId,
       title: course.title,
       description: course.description,
@@ -110,7 +114,7 @@ export class CourseService extends BaseService<Course> {
     const { title } = newCourseDetails;
     this.log(`Query to create new course titled ${title}`, this.context);
     this.log(`Inserting into DB...`, this.context);
-    await this.insert(newCourseDetails);
+    await this.insert({ ...newCourseDetails, users: [], tests: [] });
     this.log(`Course ${title} inserted into DB`, this.context);
     this.log(
       `Query to create new course titled ${title} completed`,
@@ -143,9 +147,6 @@ export class CourseService extends BaseService<Course> {
     this.log(`Course ${courseId} found`, this.context);
     this.log(`Adding user ${userId} to course ${courseId}...`, this.context);
     this.log(`Current course details: ${JSON.stringify(course)}`, this.context);
-    if (!course.users) {
-      course.users = [];
-    }
 
     for (let i = 0; i < course.users.length; i++) {
       if (course.users[i].userId === userId) {
@@ -188,7 +189,7 @@ export class CourseService extends BaseService<Course> {
     }
     this.log(`Course ${courseId} found`, this.context);
 
-    if (!course.users) {
+    if (course.users.length === 0) {
       this.error(
         `Course ${courseId} has no users`,
         this.context,
@@ -227,5 +228,23 @@ export class CourseService extends BaseService<Course> {
     await this.delete(courseId);
     this.log(`Course ${courseId} deleted from DB`, this.context);
     this.log(`Query to delete course ${courseId} completed`, this.context);
+  }
+
+  async updateCourseInfo(updateCourseObject: UpdateCourseDto) {
+    const { courseId } = updateCourseObject;
+    this.log(`Query to update course ${courseId}`, this.context);
+    this.log(`Checking DB for course...`, this.context);
+    const course: Course = await this.findOne({
+      where: { courseId: courseId },
+    });
+    if (!course) {
+      this.error(`Course ${courseId} not found`, this.context, this.getTrace());
+      throw new CourseNotFoundException();
+    }
+    this.log(`Course ${courseId} found`, this.context);
+    this.log(`Updating course ${courseId}...`, this.context);
+    await this.update(courseId, updateCourseObject);
+    this.log(`Course ${courseId} updated in DB`, this.context);
+    this.log(`Query to update course ${courseId} completed`, this.context);
   }
 }

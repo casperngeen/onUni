@@ -46,12 +46,12 @@ export class User {
     cascade: true,
   })
   @JoinTable()
-  courses?: Course[];
+  courses: Course[];
 
   @OneToMany(() => Attempt, (attempt) => attempt.user, {
     cascade: true,
   })
-  attempts?: Attempt[];
+  attempts: Attempt[];
 }
 
 export class UserIdDto {
