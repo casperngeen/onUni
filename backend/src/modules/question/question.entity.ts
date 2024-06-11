@@ -19,6 +19,8 @@ export class Question {
   @ManyToOne(() => Test, (test) => test.questions)
   test: Test;
 
-  @OneToMany(() => Option, (option) => option.question)
-  options: Option[] = [];
+  @OneToMany(() => Option, (option) => option.question, {
+    cascade: true,
+  })
+  options?: Option[];
 }

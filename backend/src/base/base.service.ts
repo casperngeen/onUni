@@ -10,22 +10,28 @@ import {
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { DatabaseException } from './base.exception';
+import * as StackTrace from 'stacktrace-js';
+import * as path from 'path';
 
 @Injectable()
 export default class BaseService<T> {
   private readonly loggerService: LoggerService;
+  protected context: string;
   constructor(
     private readonly repository: Repository<T>,
     loggerService: LoggerService,
   ) {
     this.loggerService = loggerService;
+    this.context = StackTrace.getSync().map((frame) =>
+      path.basename(frame.fileName),
+    )[0];
   }
 
   async findAll(): Promise<T[]> {
     try {
       return await this.repository.find();
     } catch (error) {
-      this.error('Error finding all', error);
+      this.error('Error finding all', this.context, this.getTrace());
       throw new DatabaseException();
     }
   }
@@ -34,7 +40,11 @@ export default class BaseService<T> {
     try {
       return await this.repository.find(t);
     } catch (error) {
-      this.error(`Error finding match by ${JSON.stringify(t)}`, error);
+      this.error(
+        `Error finding match by ${JSON.stringify(t)}`,
+        this.context,
+        this.getTrace(),
+      );
       throw new DatabaseException();
     }
   }
@@ -43,16 +53,37 @@ export default class BaseService<T> {
     try {
       return await this.repository.findOne(t);
     } catch (error) {
-      this.error(`Error finding item matching ${JSON.stringify(t)}`, error);
+      this.error(
+        `Error finding item matching ${JSON.stringify(t)}`,
+        this.context,
+        this.getTrace(),
+      );
       throw new DatabaseException();
     }
   }
 
-  async upsert(t: DeepPartial<T>): Promise<T> {
+  async save(t: DeepPartial<T>): Promise<T> {
     try {
       return await this.repository.save(t);
     } catch (error) {
-      this.error(`Error upserting item ${JSON.stringify(t)}`, error);
+      this.error(
+        `Error saving item ${JSON.stringify(t)}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new DatabaseException();
+    }
+  }
+
+  async insert(t: QueryDeepPartialEntity<T>) {
+    try {
+      return await this.repository.insert(t);
+    } catch (error) {
+      this.error(
+        `Error inserting item ${JSON.stringify(t)}`,
+        this.context,
+        this.getTrace(),
+      );
       throw new DatabaseException();
     }
   }
@@ -66,7 +97,8 @@ export default class BaseService<T> {
     } catch (error) {
       this.error(
         `Error updating item ${JSON.stringify(t)} with id ${id}`,
-        error,
+        this.context,
+        this.getTrace(),
       );
       throw new DatabaseException();
     }
@@ -76,24 +108,33 @@ export default class BaseService<T> {
     try {
       return await this.repository.delete(id);
     } catch (error) {
-      this.error(`Error deleting item with id ${id}`, error);
+      this.error(
+        `Error deleting item with id ${id}`,
+        this.context,
+        this.getTrace(),
+      );
       throw new DatabaseException();
     }
   }
 
-  log(message: string) {
-    this.loggerService.log(message);
+  protected getTrace(): string {
+    const trace = StackTrace.getSync();
+    return trace.map((frame) => frame.toString()).join('\n');
   }
 
-  error(message: string, trace: string) {
-    this.loggerService.error(message, trace);
+  log(message: string, context: string) {
+    this.loggerService.log(message, context);
   }
 
-  warn(message: string) {
-    this.loggerService.warn(message);
+  error(message: string, context: string, trace: string) {
+    this.loggerService.error(message, context, trace);
   }
 
-  debug(message: string) {
-    this.loggerService.debug(message);
+  warn(message: string, context: string) {
+    this.loggerService.warn(message, context);
+  }
+
+  debug(message: string, context: string) {
+    this.loggerService.debug(message, context);
   }
 }

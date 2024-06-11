@@ -21,9 +21,10 @@ export class UserController {
     @Param('courseId') id: number,
     @Res() response: Response,
   ) {
-    const students: User[] = await this.userService.findStudentsInCourse({
-      courseId: id,
-    });
+    const students: Partial<User>[] =
+      await this.userService.findStudentsInCourse({
+        courseId: id,
+      });
     response.status(200).json(ResponseHandler.success(students));
   }
 
@@ -32,13 +33,14 @@ export class UserController {
     @Param('courseId') id: number,
     @Res() response: Response,
   ) {
-    const teachers: User[] = await this.userService.findTeachersInCourse({
-      courseId: id,
-    });
+    const teachers: Partial<User>[] =
+      await this.userService.findTeachersInCourse({
+        courseId: id,
+      });
     response.status(200).json(ResponseHandler.success(teachers));
   }
 
-  @Post('teacher')
+  @Post('teachers')
   async createNewTeacher(
     @Body('email') email: string,
     @Res() response: Response,

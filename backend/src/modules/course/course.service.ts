@@ -9,9 +9,15 @@ import {
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserIdDto } from '../user/user.entity';
-import { CourseNotFoundException } from './course.exception';
+import {
+  CourseNotFoundException,
+  NoUserInCourseException,
+  UserAlreadyInCourseException,
+} from './course.exception';
 import { UserNotFoundException } from '../user/user.exception';
 import { LoggerService } from '../logger/logger.service';
+import * as StackTrace from 'stacktrace-js';
+import * as path from 'path';
 
 @Injectable()
 export class CourseService extends BaseService<Course> {
@@ -24,11 +30,14 @@ export class CourseService extends BaseService<Course> {
     loggerService: LoggerService,
   ) {
     super(courseRepository, loggerService);
+    this.context = StackTrace.getSync().map((frame) =>
+      path.basename(frame.fileName),
+    )[0];
   }
 
   async viewAllCoursesForUser(userIdObject: UserIdDto): Promise<Course[]> {
-    this.log(`Query all courses for user ${userIdObject.userId}`);
-    this.log(`Querying DB...`);
+    this.log(`Query all courses for user ${userIdObject.userId}`, this.context);
+    this.log(`Querying DB...`, this.context);
     const courses: Course[] = await this.courseRepository
       .createQueryBuilder('course')
       .innerJoin('course.users', 'user', 'user.userId = :userId', {
@@ -36,11 +45,12 @@ export class CourseService extends BaseService<Course> {
       })
       .getMany();
 
-    this.log(`All courses found for user ${userIdObject.userId}`);
+    this.log(`All courses found for user ${userIdObject.userId}`, this.context);
     this.log(
       `Formatting course information for user ${userIdObject.userId}...`,
+      this.context,
     );
-    courses.map((course) => {
+    const courseInfo = courses.map((course) => {
       return {
         courseId: course.courseId,
         title: course.title,
@@ -49,22 +59,32 @@ export class CourseService extends BaseService<Course> {
         endDate: course.endDate,
       };
     });
-    this.log(`Course information for user ${userIdObject.userId} formatted`);
-    this.log(`Query all courses for user ${userIdObject.userId} completed`);
-    return courses;
+    this.log(
+      `Course information for user ${userIdObject.userId} formatted`,
+      this.context,
+    );
+    this.log(
+      `Query all courses for user ${userIdObject.userId} completed`,
+      this.context,
+    );
+    return courseInfo;
   }
 
   async viewCourseInfo(
     courseIdObject: CourseIdDto,
     viewUsers: boolean,
   ): Promise<Course> {
-    this.log(`Course info query for course ${courseIdObject.courseId}`);
-    this.log(`Querying DB...`);
+    this.log(
+      `Course info query for course ${courseIdObject.courseId}`,
+      this.context,
+    );
+    this.log(`Querying DB...`, this.context);
     const course: Course = await this.findOne({ where: courseIdObject });
     if (!course) {
       this.error(
         `Course ${courseIdObject.courseId} not found`,
-        courseIdObject.courseId.toString(),
+        this.context,
+        this.getTrace(),
       );
       throw new CourseNotFoundException();
     }
@@ -78,87 +98,134 @@ export class CourseService extends BaseService<Course> {
     if (viewUsers) {
       courseInfo['users'] = course.users;
     }
-    this.log(`Course ${courseIdObject.courseId} found`);
+    this.log(`Course ${courseIdObject.courseId} found`, this.context);
     this.log(
       `Course info query for course ${courseIdObject.courseId} completed`,
+      this.context,
     );
     return courseInfo;
   }
 
   async createNewCourse(newCourseDetails: NewCourseDto) {
     const { title } = newCourseDetails;
-    this.log(`Query to create new course titled ${title}`);
-    this.log(`Inserting into DB...`);
-    await this.upsert(newCourseDetails);
-    this.log(`Course ${title} inserted into DB`);
-    this.log(`Query to create new course titled ${title} completed`);
+    this.log(`Query to create new course titled ${title}`, this.context);
+    this.log(`Inserting into DB...`, this.context);
+    await this.insert(newCourseDetails);
+    this.log(`Course ${title} inserted into DB`, this.context);
+    this.log(
+      `Query to create new course titled ${title} completed`,
+      this.context,
+    );
   }
 
   async addUserToCourse(userCourse: UserCourseDto): Promise<void> {
     const { userId, courseId } = userCourse;
-    this.log(`Query to add user ${userId} to course ${courseId}`);
-    this.log(`Checking DB for user...`);
+    this.log(`Query to add user ${userId} to course ${courseId}`, this.context);
+    this.log(`Checking DB for user...`, this.context);
     const user: User = await this.userRepository.findOne({
       where: { userId: userId },
+      relations: ['courses'],
     });
     if (!user) {
-      this.error(`User ${userId} not found`, userId.toString());
+      this.error(`User ${userId} not found`, userId.toString(), this.context);
       throw new UserNotFoundException();
     }
-    this.log(`User ${userId} found`);
-    this.log(`Checking DB for course...`);
+    this.log(`User ${userId} found`, this.context);
+    this.log(`Checking DB for course...`, this.context);
     const course: Course = await this.findOne({
       where: { courseId: courseId },
+      relations: ['users'],
     });
     if (!course) {
-      this.error(`Course ${courseId} not found`, courseId.toString());
+      this.error(`Course ${courseId} not found`, this.context, this.getTrace());
       throw new CourseNotFoundException();
     }
-    this.log(`Course ${courseId} found`);
-    this.log(`Adding user ${userId} to course ${courseId}...`);
+    this.log(`Course ${courseId} found`, this.context);
+    this.log(`Adding user ${userId} to course ${courseId}...`, this.context);
+    this.log(`Current course details: ${JSON.stringify(course)}`, this.context);
+    if (!course.users) {
+      course.users = [];
+    }
+
+    for (let i = 0; i < course.users.length; i++) {
+      if (course.users[i].userId === userId) {
+        this.error(
+          `User ${userId} is already in course ${courseId}`,
+          this.context,
+          this.getTrace(),
+        );
+        throw new UserAlreadyInCourseException();
+      }
+    }
+
     course.users.push(user);
-    this.log(`Updated user list: ${course.users.toString()}`);
-    await this.upsert(course);
-    this.log(`User ${userId} added to course ${courseId}`);
-    this.log(`Query to add user ${userId} to course ${courseId} completed`);
+    this.log(
+      `Updated user list: ${JSON.stringify(course.users)}`,
+      this.context,
+    );
+    await this.save(course);
+    this.log(`User ${userId} added to course ${courseId}`, this.context);
+    this.log(
+      `Query to add user ${userId} to course ${courseId} completed`,
+      this.context,
+    );
   }
 
   async removeUserFromCourse(userCourse: UserCourseDto): Promise<void> {
     const { userId, courseId } = userCourse;
-    this.log(`Query to remove user ${userId} from course ${courseId}`);
-    this.log(`Checking DB for course...`);
+    this.log(
+      `Query to remove user ${userId} from course ${courseId}`,
+      this.context,
+    );
+    this.log(`Checking DB for course...`, this.context);
     const course: Course = await this.findOne({
       where: { courseId: courseId },
+      relations: ['users'],
     });
     if (!course) {
-      this.error(`Course ${courseId} not found`, courseId.toString());
+      this.error(`Course ${courseId} not found`, this.context, this.getTrace());
       throw new CourseNotFoundException();
     }
-    this.log(`Course ${courseId} found`);
-    this.log(`Removing user ${userId} from course ${courseId}...`);
+    this.log(`Course ${courseId} found`, this.context);
+
+    if (!course.users) {
+      this.error(
+        `Course ${courseId} has no users`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new NoUserInCourseException();
+    }
+
+    this.log(
+      `Removing user ${userId} from course ${courseId}...`,
+      this.context,
+    );
     course.users = course.users.filter((user) => user.userId != userId);
-    await this.update(courseId, course);
-    this.log(`User ${userId} removed from course ${courseId}`);
+    await this.save(course);
+    this.log(`User ${userId} removed from course ${courseId}`, this.context);
     this.log(
       `Query to remove user ${userId} from course ${courseId} completed`,
+      this.context,
     );
   }
 
   async deleteCourse(courseIdObject: CourseIdDto): Promise<void> {
     const { courseId } = courseIdObject;
-    this.log(`Query to delete course ${courseId}`);
-    this.log(`Checking DB for course...`);
+    this.log(`Query to delete course ${courseId}`, this.context);
+    this.log(`Checking DB for course...`, this.context);
     const course: Course = await this.findOne({
       where: { courseId: courseId },
     });
     if (!course) {
-      this.error(`Course ${courseId} not found`, courseId.toString());
+      this.error(`Course ${courseId} not found`, this.context, this.getTrace());
       throw new CourseNotFoundException();
     }
-    this.log(`Course ${courseId} found`);
-    this.log(`Deleting course ${courseId} from DB...`);
+    this.log(`Course ${courseId} found`, this.context);
+    this.log(`Deleting course ${courseId} from DB...`, this.context);
+    // delete the course
     await this.delete(courseId);
-    this.log(`Course ${courseId} deleted from DB`);
-    this.log(`Query to delete course ${courseId} completed`);
+    this.log(`Course ${courseId} deleted from DB`, this.context);
+    this.log(`Query to delete course ${courseId} completed`, this.context);
   }
 }

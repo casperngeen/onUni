@@ -42,12 +42,15 @@ export class Attempt {
   @OneToMany(
     () => QuestionAttempt,
     (questionAttempt) => questionAttempt.attempt,
+    {
+      cascade: true,
+    },
   )
-  questionAttempts: QuestionAttempt[] = [];
+  questionAttempts?: QuestionAttempt[];
 
   @ManyToOne(() => Test, (test) => test.attempts)
   test: Test;
 
   @ManyToOne(() => User, (user) => user.attempts)
-  users: User[] = [];
+  user: User;
 }

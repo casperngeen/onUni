@@ -26,11 +26,13 @@ export class Course {
   @Column({ type: 'date' })
   endDate: Date;
 
-  @OneToMany(() => Test, (test) => test.course)
-  tests: Test[] = [];
+  @OneToMany(() => Test, (test) => test.course, {
+    cascade: true,
+  })
+  tests?: Test[];
 
   @ManyToMany(() => User, (user) => user.courses)
-  users: User[] = [];
+  users?: User[];
 }
 
 export class CourseIdDto {

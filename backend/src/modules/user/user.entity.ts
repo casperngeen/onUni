@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   OneToMany,
+  JoinTable,
 } from 'typeorm';
 import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
@@ -41,11 +42,16 @@ export class User {
   })
   role: Roles;
 
-  @ManyToMany(() => Course, (course) => course.users)
-  courses: Course[] = [];
+  @ManyToMany(() => Course, (course) => course.users, {
+    cascade: true,
+  })
+  @JoinTable()
+  courses?: Course[];
 
-  @OneToMany(() => Attempt, (attempt) => attempt.users)
-  attempts: Attempt[] = [];
+  @OneToMany(() => Attempt, (attempt) => attempt.user, {
+    cascade: true,
+  })
+  attempts?: Attempt[];
 }
 
 export class UserIdDto {
