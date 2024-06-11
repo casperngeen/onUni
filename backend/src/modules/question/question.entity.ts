@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { IsArray, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 @Entity()
 export class Question {
@@ -22,5 +23,42 @@ export class Question {
   @OneToMany(() => Option, (option) => option.question, {
     cascade: true,
   })
-  options?: Option[];
+  options: Option[];
+}
+
+export class NewQuestionDto {
+  @IsNotEmpty()
+  @IsInt()
+  testId: number;
+
+  @IsNotEmpty()
+  @IsString()
+  questionText: string;
+}
+
+export class QuestionIdDto {
+  @IsNotEmpty()
+  @IsInt()
+  questionId: number;
+}
+
+export class QuestionInfoDto {
+  @IsNotEmpty()
+  @IsInt()
+  questionId: number;
+
+  @IsNotEmpty()
+  @IsString()
+  questionText: string;
+
+  @IsNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  options: string[];
+}
+
+export class UpdateQuestionDto extends QuestionIdDto {
+  @IsNotEmpty()
+  @IsString()
+  questionText: string;
 }
