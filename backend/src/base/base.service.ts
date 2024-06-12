@@ -5,6 +5,7 @@ import {
   DeleteResult,
   FindManyOptions,
   FindOneOptions,
+  InsertResult,
   Repository,
   UpdateResult,
 } from 'typeorm';
@@ -75,7 +76,7 @@ export default class BaseService<T> {
     }
   }
 
-  async insert(t: QueryDeepPartialEntity<T>) {
+  async insert(t: QueryDeepPartialEntity<T>): Promise<InsertResult> {
     try {
       return await this.repository.insert(t);
     } catch (error) {

@@ -4,7 +4,7 @@
 export const OK = 0;
 
 /**
- * General exceptions have prefix 1XX
+ * General exceptions have prefix 1X
  */
 export enum GeneralException {
   UNSPECIFIED = 10,
@@ -13,7 +13,7 @@ export enum GeneralException {
 }
 
 /**
- * User exceptions have prefix 2XX
+ * User exceptions have prefix 2X
  */
 export enum UserException {
   DUPLICATE_USER = 21,
@@ -22,7 +22,7 @@ export enum UserException {
 }
 
 /**
- * Auth exceptions have prefix 3XX
+ * Auth exceptions have prefix 3X
  */
 export enum AuthException {
   EXPIRED_TOKEN = 31,
@@ -33,10 +33,48 @@ export enum AuthException {
 }
 
 /**
- * Course exceptions have prefix 4XX
+ * Course exceptions have prefix 4X
  */
 export enum CourseException {
   COURSE_NOT_FOUND = 41,
   ALREADY_IN_COURSE = 42,
   NO_USER_IN_COURSE = 43,
+}
+
+/**
+ * Test exceptions have prefix 5X
+ */
+export enum TestException {
+  TEST_NOT_FOUND = 51,
+}
+
+/**
+ * Question exceptions have prefix 6X
+ */
+export enum QuestionException {
+  QUESTION_NOT_FOUND = 61,
+}
+
+/**
+ * Option exceptions have prefix 7X
+ */
+export enum OptionException {
+  OPTION_NOT_FOUND = 71,
+}
+
+/**
+ * Attempt exceptions have prefix 8X
+ */
+export enum AttemptException {
+  ATTEMPT_NOT_FOUND = 81,
+  TEST_NOT_ATTEMPTED = 82,
+  LIMIT_REACHED = 83,
+}
+
+/**
+ * Attempt exceptions have prefix 9X
+ */
+export enum QuestionAttemptException {
+  QUESTION_ATTEMPT_NOT_FOUND = 91,
+  OPTION_NOT_IN_QUESTION = 92,
 }
