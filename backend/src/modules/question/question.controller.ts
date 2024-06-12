@@ -12,7 +12,7 @@ import { Response } from 'express';
 import { QuestionService } from './question.service';
 import { NewQuestionDto, QuestionInfoDto } from './question.entity';
 import { ResponseHandler } from 'src/base/base.response';
-import { NewOptionDto } from './option.entity';
+import { NewOptionDto, OptionInfoDto, UpdateOptionDto } from './option.entity';
 
 @Controller('question')
 export class QuestionController {
@@ -35,17 +35,18 @@ export class QuestionController {
   @Post('/:questionId')
   async createNewOption(
     @Param('questionId') questionId: number,
-    @Body('optionText') optionText: string,
+    @Body('optionInfo') optionInfo: OptionInfoDto,
     @Res() response: Response,
   ) {
     const newOptionDetails: NewOptionDto = {
       questionId: questionId,
-      optionText: optionText,
+      ...optionInfo,
     };
     await this.questionService.createNewOption(newOptionDetails);
     response.status(201).json(ResponseHandler.success());
   }
 
+  // get question with all related options
   @Get('/:questionId')
   async getQuestion(
     @Param('questionId') questionId: number,
@@ -88,12 +89,12 @@ export class QuestionController {
   @Put('option/:optionId')
   async updateOption(
     @Param('optionId') optionId: number,
-    @Body('optionText') optionText: string,
+    @Body('optionInfo') optionInfo: OptionInfoDto,
     @Res() response: Response,
   ) {
-    const updateOptionDetails = {
+    const updateOptionDetails: UpdateOptionDto = {
       optionId: optionId,
-      optionText: optionText,
+      ...optionInfo,
     };
     await this.questionService.updateOption(updateOptionDetails);
     response.status(200).json(ResponseHandler.success());

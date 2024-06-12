@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsString } from 'class-validator';
+import { IsNotEmpty, IsInt, IsString, IsBoolean } from 'class-validator';
 import { Question } from '../question/question.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
@@ -17,14 +17,14 @@ export class Option {
   question: Question;
 }
 
-export class NewOptionDto {
-  @IsNotEmpty()
-  @IsInt()
-  questionId: number;
-
+export class OptionInfoDto {
   @IsNotEmpty()
   @IsString()
   optionText: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  isCorrect: boolean;
 }
 
 export class OptionIdDto {
@@ -33,8 +33,24 @@ export class OptionIdDto {
   optionId: number;
 }
 
-export class UpdateOptionDto extends OptionIdDto {
+export class UpdateOptionDto extends OptionInfoDto {
+  @IsNotEmpty()
+  @IsInt()
+  optionId: number;
+}
+
+export class NewOptionDto extends OptionInfoDto {
+  @IsNotEmpty()
+  @IsInt()
+  questionId: number;
+}
+
+export class OptionResponseDto {
   @IsNotEmpty()
   @IsString()
   optionText: string;
+
+  @IsNotEmpty()
+  @IsInt()
+  optionId: number;
 }

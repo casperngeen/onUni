@@ -1,4 +1,4 @@
-import { Option } from './option.entity';
+import { Option, OptionResponseDto } from './option.entity';
 import { Test } from '../test/test.entity';
 import {
   Entity,
@@ -7,7 +7,14 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { IsArray, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 @Entity()
 export class Question {
@@ -51,10 +58,10 @@ export class QuestionInfoDto {
   @IsString()
   questionText: string;
 
-  @IsNotEmpty()
   @IsArray()
-  @IsString({ each: true })
-  options: string[];
+  @ValidateNested({ each: true })
+  @Type(() => OptionResponseDto)
+  options: OptionResponseDto[];
 }
 
 export class UpdateQuestionDto extends QuestionIdDto {

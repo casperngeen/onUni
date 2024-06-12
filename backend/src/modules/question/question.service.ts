@@ -12,6 +12,7 @@ import {
   NewOptionDto,
   Option,
   OptionIdDto,
+  OptionResponseDto,
   UpdateOptionDto,
 } from './option.entity';
 import BaseService from 'src/base/base.service';
@@ -89,9 +90,12 @@ export class QuestionService extends BaseService<Question> {
     this.log(`Query to get question ${questionId}`, this.context);
     const question: Question = await this.ifQuestionInRepo(questionId);
     this.log(`Formatting question...`, this.context);
-    const optionArr: string[] = question.options.map(
-      (option) => option.optionText,
-    );
+    const optionArr: OptionResponseDto[] = question.options.map((option) => {
+      return {
+        optionId: option.optionId,
+        optionText: option.optionText,
+      };
+    });
     const questionInfo: QuestionInfoDto = {
       questionId: question.questionId,
       questionText: question.questionText,
@@ -106,9 +110,12 @@ export class QuestionService extends BaseService<Question> {
     const test: Test = await this.ifTestInRepo(testId);
     this.log(`Formatting questions ...`, this.context);
     const allQuestions: QuestionInfoDto[] = test.questions.map((question) => {
-      const optionArr: string[] = question.options.map(
-        (option) => option.optionText,
-      );
+      const optionArr: OptionResponseDto[] = question.options.map((option) => {
+        return {
+          optionId: option.optionId,
+          optionText: option.optionText,
+        };
+      });
       return {
         questionId: question.questionId,
         questionText: question.questionText,
