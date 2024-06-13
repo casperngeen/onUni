@@ -13,6 +13,8 @@ import { Attempt } from './modules/attempt/attempt.entity';
 import { LoggerModule } from './modules/logger/logger.module';
 import { TestModule } from './modules/test/test.module';
 import { CourseModule } from './modules/course/course.module';
+import { AttemptModule } from './modules/attempt/attempt.module';
+import { QuestionModule } from './modules/question/question.module';
 
 @Module({
   imports: [
@@ -40,6 +42,8 @@ import { CourseModule } from './modules/course/course.module';
     LoggerModule,
     TestModule,
     UserModule,
+    AttemptModule,
+    QuestionModule,
   ],
 })
 export class AppModule {}

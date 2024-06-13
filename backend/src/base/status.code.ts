@@ -30,6 +30,7 @@ export enum AuthException {
   PASSWORD_INCORRECT = 33,
   HASH_FAILED = 34,
   TOKEN_GENERATION_FAILED = 35,
+  NO_AUTHORIZATION_TOKEN = 36,
 }
 
 /**
@@ -46,6 +47,8 @@ export enum CourseException {
  */
 export enum TestException {
   TEST_NOT_FOUND = 51,
+  NO_TESTS_IN_COURSE = 52,
+  MAX_QUESTIONS = 53,
 }
 
 /**

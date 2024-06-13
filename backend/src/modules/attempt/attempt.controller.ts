@@ -66,6 +66,7 @@ export class AttemptController {
   @Put('/:attemptId')
   async submitAttempt(
     @Param('attemptId') attemptId: number,
+    // only include questions that have a selected answer (exclude all unselected options)
     @Body('attempt') details: SubmitAttemptInfoDto,
     @Res() response: Response,
   ) {

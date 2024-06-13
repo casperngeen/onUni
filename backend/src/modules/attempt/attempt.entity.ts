@@ -19,6 +19,7 @@ import {
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -74,6 +75,7 @@ export class NewAttemptDto {
   @IsISO8601({ strict: true })
   start: Date;
 
+  @IsOptional()
   @IsISO8601({ strict: true })
   end?: Date;
 
@@ -132,12 +134,15 @@ export class AttemptInfoDto {
   @IsISO8601({ strict: true })
   start: Date;
 
+  @IsOptional()
   @IsISO8601({ strict: true })
   end?: Date;
 
+  @IsOptional()
   @IsISO8601({ strict: true })
   submitted?: Date;
 
+  @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   score?: number;
 
