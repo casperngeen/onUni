@@ -27,9 +27,11 @@ export class AttemptController {
   @Post()
   async createNewAttempt(
     @Body('attempt') details: NewAttemptDto,
+    @Req() request: Request,
     @Res() response: Response,
   ) {
-    await this.attemptService.createNewAttempt(details);
+    const { userId } = request['user'];
+    await this.attemptService.createNewAttempt({ ...details, userId: userId });
     response.status(201).json(ResponseHandler.success());
   }
 
@@ -67,10 +69,13 @@ export class AttemptController {
   async submitAttempt(
     @Param('attemptId') attemptId: number,
     // only include questions that have a selected answer (exclude all unselected options)
+    @Req() request: Request,
     @Body('attempt') details: SubmitAttemptInfoDto,
     @Res() response: Response,
   ) {
+    const { userId } = request['user'];
     const submitAttempt: SubmitAttemptDto = {
+      userId: userId,
       attemptId: attemptId,
       ...details,
     };

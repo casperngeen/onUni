@@ -65,17 +65,15 @@ export class Test {
   })
   testType: TestTypes;
 
-  @ManyToOne(() => Course, (course) => course.tests)
+  @ManyToOne(() => Course, (course) => course.tests, {
+    onDelete: 'CASCADE',
+  })
   course: Course;
 
-  @OneToMany(() => Question, (question) => question.test, {
-    cascade: true,
-  })
+  @OneToMany(() => Question, (question) => question.test)
   questions: Question[];
 
-  @OneToMany(() => Attempt, (attempt) => attempt.test, {
-    cascade: true,
-  })
+  @OneToMany(() => Attempt, (attempt) => attempt.test)
   attempts: Attempt[];
 }
 

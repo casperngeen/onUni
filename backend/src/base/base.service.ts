@@ -114,6 +114,7 @@ export default class BaseService<T> {
         this.context,
         this.getTrace(),
       );
+      console.log(error);
       throw new DatabaseException();
     }
   }

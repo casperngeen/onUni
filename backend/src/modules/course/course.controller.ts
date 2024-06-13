@@ -33,14 +33,17 @@ export class CourseController {
     response.status(200).json(ResponseHandler.success(courses));
   }
 
-  @Get('/:id')
+  @Get('/:courseId')
   async viewCourseInformation(
-    @Param('id') id: number,
+    @Param('courseId') courseId: number,
+    @Req() request: Request,
     @Res() response: Response,
   ) {
+    const { userId } = request['user'];
     const course: CourseInfoDto = await this.courseService.viewCourseInfo(
       {
-        courseId: id,
+        courseId: courseId,
+        userId: userId,
       },
       true,
     );

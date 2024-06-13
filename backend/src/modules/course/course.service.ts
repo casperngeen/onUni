@@ -7,6 +7,7 @@ import {
   NewCourseDto,
   UpdateCourseDto,
   UserCourseDto,
+  ViewCourseDto,
 } from './course.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,6 +16,7 @@ import {
   CourseNotFoundException,
   NoUserInCourseException,
   UserAlreadyInCourseException,
+  UserNotInCourseException,
 } from './course.exception';
 import { UserNotFoundException } from '../user/user.exception';
 import { LoggerService } from '../logger/logger.service';
@@ -75,23 +77,48 @@ export class CourseService extends BaseService<Course> {
   }
 
   public async viewCourseInfo(
-    courseIdObject: CourseIdDto,
+    viewCourseObject: ViewCourseDto,
     viewUsers: boolean,
   ): Promise<CourseInfoDto> {
+    const { courseId, userId } = viewCourseObject;
+    this.log(`Course info query for course ${courseId}`, this.context);
+    this.log(`Querying DB...`, this.context);
+    const course: Course = await this.findOne({
+      relations: ['users'],
+      where: { courseId: courseId },
+    });
+    if (!course) {
+      this.error(`Course ${courseId} not found`, this.context, this.getTrace());
+      throw new CourseNotFoundException();
+    }
+    this.log(`Course ${courseId} found`, this.context);
     this.log(
-      `Course info query for course ${courseIdObject.courseId}`,
+      `Checking if user ${userId} is allowed to view course ${courseId}`,
       this.context,
     );
-    this.log(`Querying DB...`, this.context);
-    const course: Course = await this.findOne({ where: courseIdObject });
-    if (!course) {
+    let userInCourse: boolean = false;
+    for (const user of course.users) {
+      if (user.userId === userId) {
+        userInCourse = true;
+        break;
+      }
+    }
+    if (!userInCourse) {
       this.error(
-        `Course ${courseIdObject.courseId} not found`,
+        `User ${userId} is not part of course ${course.courseId}`,
         this.context,
         this.getTrace(),
       );
-      throw new CourseNotFoundException();
+      throw new UserNotInCourseException();
     }
+    this.log(
+      `User ${userId} is allowed to view course ${courseId}`,
+      this.context,
+    );
+    this.log(
+      `Formatting course information for course ${courseId}...`,
+      this.context,
+    );
     const courseInfo: CourseInfoDto = {
       courseId: course.courseId,
       title: course.title,
@@ -102,9 +129,12 @@ export class CourseService extends BaseService<Course> {
     if (viewUsers) {
       courseInfo['users'] = course.users;
     }
-    this.log(`Course ${courseIdObject.courseId} found`, this.context);
     this.log(
-      `Course info query for course ${courseIdObject.courseId} completed`,
+      `Course information for course ${courseId} formatted`,
+      this.context,
+    );
+    this.log(
+      `Course info query for course ${courseId} completed`,
       this.context,
     );
     return courseInfo;

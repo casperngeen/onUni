@@ -63,10 +63,14 @@ export class Attempt {
   )
   questionAttempts: QuestionAttempt[];
 
-  @ManyToOne(() => Test, (test) => test.attempts)
+  @ManyToOne(() => Test, (test) => test.attempts, {
+    onDelete: 'CASCADE',
+  })
   test: Test;
 
-  @ManyToOne(() => User, (user) => user.attempts)
+  @ManyToOne(() => User, (user) => user.attempts, {
+    onDelete: 'CASCADE',
+  })
   user: User;
 }
 
@@ -82,7 +86,9 @@ export class NewAttemptDto {
   @IsNotEmpty()
   @IsInt()
   testId: number;
+}
 
+export class NewAttemptWithUserDto extends NewAttemptDto {
   @IsNotEmpty()
   @IsInt()
   userId: number;
@@ -109,6 +115,10 @@ export class SubmitAttemptDto extends SubmitAttemptInfoDto {
   @IsNotEmpty()
   @IsInt()
   attemptId: number;
+
+  @IsNotEmpty()
+  @IsInt()
+  userId: number;
 }
 
 export class UserTestDto {

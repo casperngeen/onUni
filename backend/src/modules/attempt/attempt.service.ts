@@ -4,7 +4,7 @@ import {
   Attempt,
   AttemptIdDto,
   AttemptInfoDto,
-  NewAttemptDto,
+  NewAttemptWithUserDto,
   Status,
   SubmitAttemptDto,
   UserTestDto,
@@ -30,9 +30,13 @@ import {
   ReachedAttemptLimitException,
   TestNotAttemptedException,
 } from './attempt.exception';
-import { UserNotFoundException } from '../user/user.exception';
+import {
+  UnauthorisedUserException,
+  UserNotFoundException,
+} from '../user/user.exception';
 import { TestNotFoundException } from '../test/test.exception';
 import { Option } from '../question/option.entity';
+import { UserNotInCourseException } from '../course/course.exception';
 
 @Injectable()
 export class AttemptService extends BaseService<Attempt> {
@@ -61,7 +65,7 @@ export class AttemptService extends BaseService<Attempt> {
   }
 
   public async createNewAttempt(
-    newAttemptDetails: NewAttemptDto,
+    newAttemptDetails: NewAttemptWithUserDto,
   ): Promise<void> {
     const { start, end, testId, userId } = newAttemptDetails;
     this.log(
@@ -70,7 +74,7 @@ export class AttemptService extends BaseService<Attempt> {
     );
     this.log(`Checking for test ${testId} in DB...`, this.context);
     const test: Test = await this.testRepository.findOne({
-      relations: ['questions'],
+      relations: ['questions', 'course', 'course.users'],
       where: { testId: testId },
     });
     if (!test) {
@@ -96,16 +100,36 @@ export class AttemptService extends BaseService<Attempt> {
     }
     this.log(`User ${userId} found`, this.context);
     this.log(
+      `Checking if user ${userId} is allowed to take test ${testId}`,
+      this.context,
+    );
+    let userInCourse: boolean = false;
+    for (const user of test.course.users) {
+      if (user.userId === userId) {
+        userInCourse = true;
+        break;
+      }
+    }
+    if (!userInCourse) {
+      this.error(
+        `User ${userId} is not part of course ${test.course.courseId}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new UserNotInCourseException();
+    }
+    this.log(`User ${userId} is allowed to take test ${testId}`, this.context);
+    this.log(
       `Checking if user ${userId} has reached attempt limit for test ${testId}`,
       this.context,
     );
     if (test.maxAttempt > 0) {
       const prevAttempts: Attempt[] = await this.attemptRepository
         .createQueryBuilder('attempt')
-        .innerJoin('attempt.users', 'user', 'user.userId = :userId', {
+        .innerJoin('attempt.user', 'user', 'user.userId = :userId', {
           userId: userId,
         })
-        .innerJoin('attempt.tests', 'test', 'test.testId = :testId', {
+        .innerJoin('attempt.test', 'test', 'test.testId = :testId', {
           testId: testId,
         })
         .getMany();
@@ -280,12 +304,26 @@ export class AttemptService extends BaseService<Attempt> {
   }
 
   public async submitAttempt(submitAttemptDetails: SubmitAttemptDto) {
-    const { attemptId, submitted, questionAttempts } = submitAttemptDetails;
-    this.log(`Query to update attempt ${attemptId}`, this.context);
+    const { userId, attemptId, submitted, questionAttempts } =
+      submitAttemptDetails;
+    this.log(`Query to submit attempt ${attemptId}`, this.context);
     const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
+    this.log(
+      `Checking if attempt ${attemptId} belongs to user ${userId}`,
+      this.context,
+    );
+    if (attempt.user.userId !== userId) {
+      this.error(
+        `Attempt ${attemptId} does not belong to user ${userId}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new UnauthorisedUserException();
+    }
+    this.log(`Attempt ${attemptId} belongs to user ${userId}`, this.context);
     this.log(`Updating attempt ${attemptId}...`, this.context);
     let status: Status = Status.SUBMIT;
-    if (submitted > attempt.end) {
+    if (attempt.end && submitted > attempt.end) {
       status = Status.AUTOSUBMIT;
     }
     this.log(
@@ -353,6 +391,7 @@ export class AttemptService extends BaseService<Attempt> {
     );
     const questionAttempt: QuestionAttempt =
       await this.questionAttemptRepository.findOne({
+        relations: ['question', 'question.options'],
         where: { questionAttemptId: questionAttemptId },
       });
     if (!questionAttempt) {
@@ -386,7 +425,7 @@ export class AttemptService extends BaseService<Attempt> {
     );
 
     this.log(
-      `Updating answer status and selected option of question attempt ${questionAttempt.question.questionId}`,
+      `Updating answer status and selected option of question attempt ${questionAttempt.question.questionId}...`,
       this.context,
     );
     const option: Option = selectedOption[0];
@@ -420,7 +459,7 @@ export class AttemptService extends BaseService<Attempt> {
   private async checkIfAttemptInRepo(id: number): Promise<Attempt> {
     this.log(`Checking for attempt ${id} in DB...`, this.context);
     const attempt: Attempt = await this.findOne({
-      relations: ['questionAttempts'],
+      relations: ['questionAttempts', 'user', 'test'],
       where: { attemptId: id },
     });
     if (!attempt) {

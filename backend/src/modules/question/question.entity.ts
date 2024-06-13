@@ -24,12 +24,12 @@ export class Question {
   @Column('text')
   questionText: string;
 
-  @ManyToOne(() => Test, (test) => test.questions)
+  @ManyToOne(() => Test, (test) => test.questions, {
+    onDelete: 'CASCADE',
+  })
   test: Test;
 
-  @OneToMany(() => Option, (option) => option.question, {
-    cascade: true,
-  })
+  @OneToMany(() => Option, (option) => option.question)
   options: Option[];
 }
 

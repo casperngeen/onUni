@@ -22,3 +22,13 @@ export class NoUserInCourseException extends BaseException {
     super(`Course has no users`, 200, CourseException.NO_USER_IN_COURSE);
   }
 }
+
+export class UserNotInCourseException extends BaseException {
+  constructor() {
+    super(
+      `User is not a part of this course`,
+      400,
+      CourseException.USER_NOT_IN_COURSE,
+    );
+  }
+}

@@ -14,7 +14,7 @@ export class QuestionAttempt {
   @PrimaryGeneratedColumn()
   questionAttemptId: number;
 
-  @Column()
+  @Column({ nullable: true })
   selectedOptionId?: number;
 
   @Column({
@@ -27,7 +27,9 @@ export class QuestionAttempt {
   @ManyToOne(() => Question)
   question: Question;
 
-  @ManyToOne(() => Attempt, (attempt) => attempt.questionAttempts)
+  @ManyToOne(() => Attempt, (attempt) => attempt.questionAttempts, {
+    onDelete: 'CASCADE',
+  })
   attempt: Attempt;
 }
 

@@ -43,14 +43,12 @@ export class User {
   role: Roles;
 
   @ManyToMany(() => Course, (course) => course.users, {
-    cascade: true,
+    onDelete: 'CASCADE',
   })
   @JoinTable()
   courses: Course[];
 
-  @OneToMany(() => Attempt, (attempt) => attempt.user, {
-    cascade: true,
-  })
+  @OneToMany(() => Attempt, (attempt) => attempt.user)
   attempts: Attempt[];
 }
 

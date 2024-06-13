@@ -26,12 +26,12 @@ export class Course {
   @Column({ type: 'date' })
   endDate: Date;
 
-  @OneToMany(() => Test, (test) => test.course, {
-    cascade: true,
-  })
+  @OneToMany(() => Test, (test) => test.course)
   tests: Test[];
 
-  @ManyToMany(() => User, (user) => user.courses)
+  @ManyToMany(() => User, (user) => user.courses, {
+    onDelete: 'CASCADE',
+  })
   users: User[];
 }
 
@@ -39,6 +39,12 @@ export class CourseIdDto {
   @IsInt()
   @IsNotEmpty()
   courseId: number;
+}
+
+export class ViewCourseDto extends CourseIdDto {
+  @IsInt()
+  @IsNotEmpty()
+  userId: number;
 }
 
 export class NewCourseDto {
