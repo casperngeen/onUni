@@ -34,3 +34,13 @@ export class TokenGenerationFailedException extends BaseException {
     );
   }
 }
+
+export class AuthorizationTokenNotProvidedException extends BaseException {
+  constructor() {
+    super(
+      'Authorization token was not provided',
+      400,
+      AuthException.NO_AUTHORIZATION_TOKEN,
+    );
+  }
+}

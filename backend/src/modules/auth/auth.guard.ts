@@ -4,7 +4,10 @@ import { Request } from 'express';
 import { UnauthorisedUserException } from '../user/user.exception';
 import { PayloadDto } from '../user/user.entity';
 import { Reflector } from '@nestjs/core';
-import { ExpiredTokenException } from './auth.exception';
+import {
+  AuthorizationTokenNotProvidedException,
+  ExpiredTokenException,
+} from './auth.exception';
 import { LoggerService } from '../logger/logger.service';
 import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
@@ -22,6 +25,11 @@ export class AuthGuard implements CanActivate {
     )[0];
   }
 
+  protected getTrace(): string {
+    const trace = StackTrace.getSync();
+    return trace.map((frame) => frame.toString()).join('\n');
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     this.loggerService.log(`Authenticating user details...`, this.context);
     const isPublic = this.reflector.get<boolean>(
@@ -35,6 +43,14 @@ export class AuthGuard implements CanActivate {
     }
 
     const request: Request = context.switchToHttp().getRequest();
+    if (!request.headers['authorization']) {
+      this.loggerService.error(
+        'Authorization token not provided',
+        this.context,
+        this.getTrace(),
+      );
+      throw new AuthorizationTokenNotProvidedException();
+    }
     // access or refresh token
     const token: string = request.headers['authorization'].split(' ')[1];
     if (!token) {
