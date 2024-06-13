@@ -10,7 +10,7 @@ import {
 import { UserService } from './user.service';
 import { Response } from 'express';
 import { ResponseHandler } from 'src/base/base.response';
-import { User } from './user.entity';
+import { NewUserDto, User, UserIdDto } from './user.entity';
 
 @Controller('user')
 export class UserController {
@@ -42,20 +42,22 @@ export class UserController {
 
   @Post('teachers')
   async createNewTeacher(
-    @Body('email') email: string,
+    @Body('userDetails') userDetails: NewUserDto,
     @Res() response: Response,
   ) {
-    await this.userService.createNewTeacher({ email: email });
-    response.status(201).json(ResponseHandler.success());
+    const userId: UserIdDto =
+      await this.userService.createNewTeacher(userDetails);
+    response.status(201).json(ResponseHandler.success(userId));
   }
 
   @Post('student')
   async createNewStudent(
-    @Body('email') email: string,
+    @Body('userDetails') userDetails: NewUserDto,
     @Res() response: Response,
   ) {
-    await this.userService.createNewStudent({ email: email });
-    response.status(201).json(ResponseHandler.success());
+    const userId: UserIdDto =
+      await this.userService.createNewStudent(userDetails);
+    response.status(201).json(ResponseHandler.success(userId));
   }
 
   //   @Put('/:userId')

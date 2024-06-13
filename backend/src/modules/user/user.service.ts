@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import BaseService from 'src/base/base.service';
-import { EmailDto, Roles, User, UserIdDto } from './user.entity';
+import { NewUserDto, Roles, User, UserIdDto } from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseIdDto } from '../course/course.entity';
@@ -53,6 +53,7 @@ export class UserService extends BaseService<User> {
       return {
         userId: user.userId,
         email: user.email,
+        profilePic: user.profilePic,
       };
     });
     this.log(
@@ -90,7 +91,11 @@ export class UserService extends BaseService<User> {
    * @param email String representing email
    * @param role Role of user (Student/Teacher)
    */
-  private async createNewUser(email: string, role: Roles): Promise<void> {
+  private async createNewUser(
+    email: string,
+    profilePic: string,
+    role: Roles,
+  ): Promise<UserIdDto> {
     this.log(`Query to create new ${role} with email ${email}`, this.context);
     this.log('Checking for duplicates...', this.context);
     const user: User = await this.findOne({ where: { email: email } });
@@ -110,10 +115,11 @@ export class UserService extends BaseService<User> {
     }
 
     this.log(`Inserting user with email ${email} into DB...`, this.context);
-    await this.insert({
+    const newUser: User = await this.save({
       passwordHash: hash,
       role: role,
       email: email,
+      profilePic: profilePic,
       courses: [],
       attempts: [],
     });
@@ -122,22 +128,31 @@ export class UserService extends BaseService<User> {
       `Query to create new ${role} with email ${email} completed`,
       this.context,
     );
+    return { userId: newUser.userId };
   }
 
   /**
    * Create new student with default password based on email
    * @param emailObject Object containing email
    */
-  public async createNewStudent(emailObject: EmailDto): Promise<void> {
-    return await this.createNewUser(emailObject.email, Roles.STUDENT);
+  public async createNewStudent(userDetails: NewUserDto): Promise<UserIdDto> {
+    return await this.createNewUser(
+      userDetails.email,
+      userDetails.profilePic,
+      Roles.STUDENT,
+    );
   }
 
   /**
    * Create new teacher with default password based on email
    * @param emailObject Object containing email
    */
-  public async createNewTeacher(emailObject: EmailDto): Promise<void> {
-    return await this.createNewUser(emailObject.email, Roles.TEACHER);
+  public async createNewTeacher(userDetails: NewUserDto): Promise<UserIdDto> {
+    return await this.createNewUser(
+      userDetails.email,
+      userDetails.profilePic,
+      Roles.TEACHER,
+    );
   }
 
   async updateUserDetails() {}

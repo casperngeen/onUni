@@ -31,10 +31,10 @@ export class User {
 
   @Column('text', { nullable: true })
   refreshToken?: string;
-  /*
-  @Column({ type: 'longblob' })
-  profile: string;
-  */
+
+  @Column('text')
+  profilePic: string;
+
   @Column({
     type: 'enum',
     enum: Roles,
@@ -76,10 +76,24 @@ export class LoginDto extends PasswordDto {
   email: string;
 }
 
+export class NewUserDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  profilePic: string;
+}
+
 export class SignUpDto extends LoginDto {
   @IsNotEmpty()
   @IsEnum(Roles)
   role: Roles;
+
+  @IsNotEmpty()
+  @IsString()
+  profilePic: string;
 }
 
 export class EmailTokenDto {
@@ -96,6 +110,12 @@ export class AuthTokenDto {
   @IsNotEmpty()
   @IsString()
   refreshToken: string;
+}
+
+export class LoginResponseDto extends AuthTokenDto {
+  @IsNotEmpty()
+  @IsString()
+  profilePic: string;
 }
 
 export class PayloadDto {

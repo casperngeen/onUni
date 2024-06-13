@@ -6,6 +6,7 @@ import {
   EmailDto,
   EmailTokenDto,
   LoginDto,
+  LoginResponseDto,
   PasswordDto,
   PayloadDto,
   RefreshDetailsDto,
@@ -65,17 +66,18 @@ export class AuthService extends BaseService<User> {
    * @param loginDetails Object containing email and password
    * @returns The pair of authentication tokens generated
    */
-  public async login(loginDetails: LoginDto): Promise<AuthTokenDto> {
-    this.log(`Log in query: ${loginDetails.email}`, this.context);
+  public async login(loginDetails: LoginDto): Promise<LoginResponseDto> {
+    const { email, password } = loginDetails;
+    this.log(`Log in query: ${email}`, this.context);
     // make it unique to user
-    this.log(`Querying DB for email ${loginDetails.email}...,`, this.context);
+    this.log(`Querying DB for email ${email}...,`, this.context);
     const user: User = await this.findOne({
-      where: { email: loginDetails.email },
+      where: { email: email },
     });
     if (!user) {
       this.log(`${user}`, this.context);
       this.error(
-        `User with email ${loginDetails.email} not found`,
+        `User with email ${email} not found`,
         this.context,
         this.getTrace(),
       );
@@ -83,10 +85,7 @@ export class AuthService extends BaseService<User> {
     }
     this.log(`User ${user.userId} found`, this.context);
     this.log('Checking if passwords match...', this.context);
-    const result: boolean = await bcrypt.compare(
-      loginDetails.password,
-      user.passwordHash,
-    );
+    const result: boolean = await bcrypt.compare(password, user.passwordHash);
     if (!result) {
       this.error('Password incorrect', this.context, this.getTrace());
       throw new PasswordIncorrectException();
@@ -100,7 +99,11 @@ export class AuthService extends BaseService<User> {
       await this.hashAndStore(user.userId, refreshToken);
       this.log('Hashing and storing refresh token completed', this.context);
       this.log(`Login for ${loginDetails.email} completed`, this.context);
-      return { accessToken: accessToken, refreshToken: refreshToken };
+      return {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        profilePic: user.profilePic,
+      };
     }
   }
 
@@ -164,11 +167,12 @@ export class AuthService extends BaseService<User> {
    * @param signUpDetails Object containing role, password, email
    */
   public async signUp(signUpDetails: SignUpDto): Promise<void> {
+    const { email, password, profilePic, role } = signUpDetails;
     this.log(`Sign up query: ${signUpDetails.email}`, this.context);
     this.log('Checking for duplicates...', this.context);
     const user: User = await this.findOne({
       where: {
-        email: signUpDetails.email,
+        email: email,
       },
     });
     if (user) {
@@ -177,7 +181,7 @@ export class AuthService extends BaseService<User> {
     }
     this.log('No duplicate user found', this.context);
     this.log('Checking password format...', this.context);
-    if (!this.isValidPassword(signUpDetails.password)) {
+    if (!this.isValidPassword(password)) {
       this.error(
         'Password does not meet requirements',
         this.context,
@@ -189,23 +193,24 @@ export class AuthService extends BaseService<User> {
     this.log('Hashing password...', this.context);
     let hash: string;
     try {
-      hash = await bcrypt.hash(signUpDetails.password, 10);
+      hash = await bcrypt.hash(password, 10);
       this.log('Password hashed', this.context);
     } catch (error) {
       this.error(`Hashing failed ${error}`, this.context, this.getTrace());
       throw new HashFailedExcepion();
     }
 
-    this.log(`Inserting user ${signUpDetails.email} into DB...`, this.context);
+    this.log(`Inserting user ${email} into DB...`, this.context);
     await this.insert({
       passwordHash: hash,
-      role: signUpDetails.role,
-      email: signUpDetails.email,
+      role: role,
+      email: email,
+      profilePic: profilePic,
       courses: [],
       attempts: [],
     });
     this.log('User successfully inserted', this.context);
-    this.log(`Sign up for ${signUpDetails.email} completed`, this.context);
+    this.log(`Sign up for ${email} completed`, this.context);
   }
 
   /**
