@@ -11,7 +11,13 @@ import {
 import { ResponseHandler } from 'src/base/base.response';
 import { Response } from 'express';
 import { TestService } from './test.service';
-import { NewTestDto, Test, TestInfoDto, UpdateTestDto } from './test.entity';
+import {
+  NewTestDto,
+  Test,
+  TestIdDto,
+  TestInfoDto,
+  UpdateTestDto,
+} from './test.entity';
 
 @Controller('test')
 export class TestController {
@@ -49,8 +55,9 @@ export class TestController {
       courseId: courseId,
       ...testDetails,
     };
-    await this.testService.createNewTest(newTestDetails);
-    response.status(200).json(ResponseHandler.success());
+    const testId: TestIdDto =
+      await this.testService.createNewTest(newTestDetails);
+    response.status(200).json(ResponseHandler.success(testId));
   }
 
   @Put('/:testId')

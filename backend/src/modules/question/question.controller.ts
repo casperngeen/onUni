@@ -10,9 +10,18 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { QuestionService } from './question.service';
-import { NewQuestionDto, QuestionInfoDto } from './question.entity';
+import {
+  NewQuestionDto,
+  QuestionIdDto,
+  QuestionInfoDto,
+} from './question.entity';
 import { ResponseHandler } from 'src/base/base.response';
-import { NewOptionDto, OptionInfoDto, UpdateOptionDto } from './option.entity';
+import {
+  NewOptionDto,
+  OptionIdDto,
+  OptionInfoDto,
+  UpdateOptionDto,
+} from './option.entity';
 
 @Controller('question')
 export class QuestionController {
@@ -28,8 +37,9 @@ export class QuestionController {
       testId: testId,
       questionText: questionText,
     };
-    await this.questionService.createNewQuestion(newQuestionDetails);
-    response.status(201).json(ResponseHandler.success());
+    const questionId: QuestionIdDto =
+      await this.questionService.createNewQuestion(newQuestionDetails);
+    response.status(201).json(ResponseHandler.success(questionId));
   }
 
   @Post('/:questionId')
@@ -42,8 +52,9 @@ export class QuestionController {
       questionId: questionId,
       optionInfos: optionInfos,
     };
-    await this.questionService.createNewOptions(newOptionDetails);
-    response.status(201).json(ResponseHandler.success());
+    const optionIds: OptionIdDto[] =
+      await this.questionService.createNewOptions(newOptionDetails);
+    response.status(201).json(ResponseHandler.success(optionIds));
   }
 
   // get question with all related options

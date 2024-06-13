@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import {
+  CourseIdDto,
   CourseInfoDto,
   NewCourseDto,
   UpdateCourseDto,
@@ -55,8 +56,9 @@ export class CourseController {
     @Body('courseDetails') courseDetails: NewCourseDto,
     @Res() response: Response,
   ) {
-    await this.courseService.createNewCourse(courseDetails);
-    response.status(201).json(ResponseHandler.success());
+    const courseId: CourseIdDto =
+      await this.courseService.createNewCourse(courseDetails);
+    response.status(201).json(ResponseHandler.success(courseId));
   }
 
   @Put('/:courseId')

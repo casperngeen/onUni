@@ -52,7 +52,7 @@ export class QuestionService extends BaseService<Question> {
 
   public async createNewQuestion(
     newQuestionDetails: NewQuestionDto,
-  ): Promise<void> {
+  ): Promise<QuestionIdDto> {
     const { testId, questionText } = newQuestionDetails;
     this.log(`Query to create new question for test ${testId}`, this.context);
     const test: Test = await this.ifTestInRepo(testId);
@@ -75,15 +75,18 @@ export class QuestionService extends BaseService<Question> {
       test: test,
       options: [],
     };
-    await this.insert(newQuestion);
+    const question: Question = await this.save(newQuestion);
     this.log(`Question created and inserted into DB`, this.context);
     this.log(
       `Query to create new question for test ${testId} completed`,
       this.context,
     );
+    return { questionId: question.questionId };
   }
 
-  public async createNewOptions(newOptionDetails: NewOptionDto): Promise<void> {
+  public async createNewOptions(
+    newOptionDetails: NewOptionDto,
+  ): Promise<OptionIdDto[]> {
     const { questionId, optionInfos } = newOptionDetails;
     this.log(
       `Query to create new options for question ${questionId}`,
@@ -91,14 +94,21 @@ export class QuestionService extends BaseService<Question> {
     );
     const question: Question = await this.ifQuestionInRepo(questionId);
     this.log(`Question ${JSON.stringify(question)} found`, this.context);
+    const options: OptionIdDto[] = [];
     for (const optionInfo of optionInfos) {
       const { isCorrect, optionText } = optionInfo;
-      await this.createOneOption(isCorrect, optionText, question);
+      const optionId: OptionIdDto = await this.createOneOption(
+        isCorrect,
+        optionText,
+        question,
+      );
+      options.push(optionId);
     }
     this.log(
       `Query to create new options for question ${question.questionId} completed`,
       this.context,
     );
+    return options;
   }
 
   private async createOneOption(
@@ -112,13 +122,16 @@ export class QuestionService extends BaseService<Question> {
       isCorrect: isCorrect,
       question: question,
     };
+    let id: number;
     try {
-      await this.optionRepository.insert(newOption);
+      const option: Option = await this.optionRepository.save(newOption);
+      id = option.optionId;
     } catch (error) {
       this.error(`${error.toString()}`, this.context, this.getTrace());
       throw new DatabaseException();
     }
     this.log(`Option created and inserted into DB`, this.context);
+    return { optionId: id };
   }
 
   public async getQuestion(

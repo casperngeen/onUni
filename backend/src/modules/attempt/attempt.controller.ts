@@ -13,6 +13,7 @@ import { AttemptService } from './attempt.service';
 import { Response } from 'express';
 import { ResponseHandler } from 'src/base/base.response';
 import {
+  AttemptIdDto,
   AttemptInfoDto,
   NewAttemptDto,
   SubmitAttemptDto,
@@ -31,8 +32,11 @@ export class AttemptController {
     @Res() response: Response,
   ) {
     const { userId } = request['user'];
-    await this.attemptService.createNewAttempt({ ...details, userId: userId });
-    response.status(201).json(ResponseHandler.success());
+    const attemptId: AttemptIdDto = await this.attemptService.createNewAttempt({
+      ...details,
+      userId: userId,
+    });
+    response.status(201).json(ResponseHandler.success(attemptId));
   }
 
   // get all attempts for one user for one test (and all related question attempts)

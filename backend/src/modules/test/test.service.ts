@@ -104,7 +104,7 @@ export class TestService extends BaseService<Test> {
     return testInfo;
   }
 
-  public async createNewTest(newTestDetails: NewTestDto): Promise<void> {
+  public async createNewTest(newTestDetails: NewTestDto): Promise<TestIdDto> {
     const { courseId, ...testInfo } = newTestDetails;
     this.log(`Query to create new test`, this.context);
     this.log(`Checking DB for course...`, this.context);
@@ -123,9 +123,10 @@ export class TestService extends BaseService<Test> {
       questions: [],
       attempts: [],
     };
-    await this.insert(newTest);
+    const test: Test = await this.save(newTest);
     this.log(`Added new test to DB`, this.context);
     this.log(`Query to create new test completed`, this.context);
+    return { testId: test.testId };
   }
 
   public async updateTestInfo(updateTestDetails: UpdateTestDto): Promise<void> {

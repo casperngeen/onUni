@@ -140,16 +140,23 @@ export class CourseService extends BaseService<Course> {
     return courseInfo;
   }
 
-  public async createNewCourse(newCourseDetails: NewCourseDto) {
+  public async createNewCourse(
+    newCourseDetails: NewCourseDto,
+  ): Promise<CourseIdDto> {
     const { title } = newCourseDetails;
     this.log(`Query to create new course titled ${title}`, this.context);
     this.log(`Inserting into DB...`, this.context);
-    await this.insert({ ...newCourseDetails, users: [], tests: [] });
+    const course: Course = await this.save({
+      ...newCourseDetails,
+      users: [],
+      tests: [],
+    });
     this.log(`Course ${title} inserted into DB`, this.context);
     this.log(
       `Query to create new course titled ${title} completed`,
       this.context,
     );
+    return { courseId: course.courseId };
   }
 
   public async addUserToCourse(userCourse: UserCourseDto): Promise<void> {

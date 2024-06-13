@@ -66,7 +66,7 @@ export class AttemptService extends BaseService<Attempt> {
 
   public async createNewAttempt(
     newAttemptDetails: NewAttemptWithUserDto,
-  ): Promise<void> {
+  ): Promise<AttemptIdDto> {
     const { start, end, testId, userId } = newAttemptDetails;
     this.log(
       `Query to create new attempt for user ${userId} for test ${testId}`,
@@ -179,6 +179,7 @@ export class AttemptService extends BaseService<Attempt> {
       `Query to create new attempt for user ${userId} for test ${testId} completed`,
       this.context,
     );
+    return { attemptId: attempt.attemptId };
   }
 
   public async getAllAttempts(
