@@ -18,9 +18,9 @@ import { NewOptionDto, OptionInfoDto, UpdateOptionDto } from './option.entity';
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
-  @Post('test/:testid')
+  @Post('test/:testId')
   async createNewQuestion(
-    @Param('testid') testId: number,
+    @Param('testId') testId: number,
     @Body('questionText') questionText: string,
     @Res() response: Response,
   ) {
@@ -33,16 +33,16 @@ export class QuestionController {
   }
 
   @Post('/:questionId')
-  async createNewOption(
+  async createNewOptions(
     @Param('questionId') questionId: number,
-    @Body('optionInfo') optionInfo: OptionInfoDto,
+    @Body('optionInfo') optionInfos: OptionInfoDto[],
     @Res() response: Response,
   ) {
     const newOptionDetails: NewOptionDto = {
       questionId: questionId,
-      ...optionInfo,
+      optionInfos: optionInfos,
     };
-    await this.questionService.createNewOption(newOptionDetails);
+    await this.questionService.createNewOptions(newOptionDetails);
     response.status(201).json(ResponseHandler.success());
   }
 

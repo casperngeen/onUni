@@ -8,7 +8,14 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Attempt } from '../attempt/attempt.entity';
-import { IsDate, IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 enum ScoringFormats {
   AVERAGE = 'average',
@@ -88,18 +95,19 @@ export class TestInfoDto {
   description: string;
 
   @IsDate()
-  @IsNotEmpty()
+  @IsOptional()
   deadline?: Date;
 
   @IsEnum(ScoringFormats)
+  @IsOptional()
   scoringFormat?: ScoringFormats;
 
   @IsInt()
-  @IsNotEmpty()
+  @IsOptional()
   maxAttempt?: number;
 
   @IsInt()
-  @IsNotEmpty()
+  @IsOptional()
   timeLimit?: number; // time in minutes
 
   @IsInt()
@@ -107,6 +115,7 @@ export class TestInfoDto {
   maxScore: number; // should be an integer
 
   @IsEnum(TestTypes)
+  @IsNotEmpty()
   testType: TestTypes;
 }
 

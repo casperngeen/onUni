@@ -1,6 +1,14 @@
-import { IsNotEmpty, IsInt, IsString, IsBoolean } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsInt,
+  IsString,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { Question } from '../question/question.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Type } from 'class-transformer';
 
 @Entity()
 export class Option {
@@ -39,10 +47,15 @@ export class UpdateOptionDto extends OptionInfoDto {
   optionId: number;
 }
 
-export class NewOptionDto extends OptionInfoDto {
+export class NewOptionDto {
   @IsNotEmpty()
   @IsInt()
   questionId: number;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => OptionInfoDto)
+  optionInfos: OptionInfoDto[];
 }
 
 export class OptionResponseDto {

@@ -68,7 +68,7 @@ export class PasswordDto {
 
 export class EmailDto {
   @IsNotEmpty()
-  @IsString()
+  @IsEmail()
   email: string;
 }
 
@@ -102,9 +102,11 @@ export class AuthTokenDto {
 
 export class PayloadDto {
   @IsInt()
+  @IsNotEmpty()
   userId: number;
 
   @IsEnum(Roles)
+  @IsNotEmpty()
   role: Roles;
 }
 

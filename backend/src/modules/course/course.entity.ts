@@ -70,6 +70,8 @@ export class UserCourseDto {
 }
 
 export class UpdateCourseDto {
+  @IsInt()
+  @IsNotEmpty()
   courseId: number;
 
   @IsNotEmpty()

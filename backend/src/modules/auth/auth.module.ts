@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -9,7 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
     UserModule,
-    JwtModule.register({ global: true, secret: 'process.env.JWT_SECRET' }),
+    JwtModule.register({ global: true, secret: process.env.JWT_SECRET }),
   ],
   controllers: [AuthController],
   providers: [
@@ -19,5 +20,6 @@ import { APP_GUARD } from '@nestjs/core';
       useClass: AuthGuard,
     },
   ],
+  exports: [AuthService],
 })
 export class AuthModule {}

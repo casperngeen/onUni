@@ -17,7 +17,7 @@ import { NewTestDto, Test, TestInfoDto, UpdateTestDto } from './test.entity';
 export class TestController {
   constructor(private readonly testService: TestService) {}
 
-  @Get('course/:courseId')
+  @Get('/:courseId/all')
   async viewAllTests(
     @Param('courseId') courseId: number,
     @Res() response: Response,
@@ -39,7 +39,7 @@ export class TestController {
     response.status(200).json(ResponseHandler.success(test));
   }
 
-  @Post('course/:courseId')
+  @Post('/:courseId')
   async createNewTest(
     @Param('courseId') courseId: number,
     @Body('testDetails') testDetails: TestInfoDto,
