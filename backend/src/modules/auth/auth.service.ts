@@ -65,7 +65,7 @@ export class AuthService extends BaseService<User> {
    * @param loginDetails Object containing email and password
    * @returns The pair of authentication tokens generated
    */
-  async login(loginDetails: LoginDto): Promise<AuthTokenDto> {
+  public async login(loginDetails: LoginDto): Promise<AuthTokenDto> {
     this.log(`Log in query: ${loginDetails.email}`, this.context);
     // make it unique to user
     this.log(`Querying DB for email ${loginDetails.email}...,`, this.context);
@@ -109,7 +109,7 @@ export class AuthService extends BaseService<User> {
    * @param user User based on the user entity
    * @returns Promise resolving to the access token
    */
-  async generateAccessToken(user: User): Promise<string> {
+  private async generateAccessToken(user: User): Promise<string> {
     const payload: PayloadDto = {
       userId: user.userId,
       role: user.role,
@@ -137,7 +137,7 @@ export class AuthService extends BaseService<User> {
    * @param user User based on the user entity
    * @returns Promise resolving to the refresh token
    */
-  async generateRefreshToken(user: User): Promise<string> {
+  private async generateRefreshToken(user: User): Promise<string> {
     const payload: PayloadDto = {
       userId: user.userId,
       role: user.role,
@@ -163,7 +163,7 @@ export class AuthService extends BaseService<User> {
    * Request to sign up
    * @param signUpDetails Object containing role, password, email
    */
-  async signUp(signUpDetails: SignUpDto): Promise<void> {
+  public async signUp(signUpDetails: SignUpDto): Promise<void> {
     this.log(`Sign up query: ${signUpDetails.email}`, this.context);
     this.log('Checking for duplicates...', this.context);
     const user: User = await this.findOne({
@@ -212,7 +212,7 @@ export class AuthService extends BaseService<User> {
    * Request to handle forget password
    * @param emailObject Object containing email
    */
-  async forgetPassword(emailObject: EmailDto): Promise<void> {
+  public async forgetPassword(emailObject: EmailDto): Promise<void> {
     this.log(`Forget password query: ${emailObject.email}`, this.context);
     this.log('Finding user based on email...', this.context);
     const user: User = await this.findOne({ where: emailObject });
@@ -258,7 +258,7 @@ export class AuthService extends BaseService<User> {
    * To generate a random token for the change password request
    * @returns The generated token
    */
-  getEmailToken(): number {
+  private getEmailToken(): number {
     const myArray = new Uint32Array(1);
     crypto.getRandomValues(myArray);
     return myArray[0];
@@ -270,7 +270,7 @@ export class AuthService extends BaseService<User> {
    * @param passwordDetails The new password
    * @returns UpdateResult promise
    */
-  async changePassword(
+  public async changePassword(
     tokenObject: EmailTokenDto,
     passwordDetails: PasswordDto,
   ): Promise<void> {
@@ -300,7 +300,7 @@ export class AuthService extends BaseService<User> {
    * @param tokenObject Email token
    * @returns Promise resolving to userId
    */
-  async verifyToken(tokenObject: EmailTokenDto): Promise<UserIdDto> {
+  private async verifyToken(tokenObject: EmailTokenDto): Promise<UserIdDto> {
     this.log(`Verify token query: ${tokenObject.emailToken}`, this.context);
     this.log('Finding user...', this.context);
     const user: User = await this.findOne({
@@ -328,7 +328,9 @@ export class AuthService extends BaseService<User> {
    * @param refreshToken The refresh token provided by client
    * @returns The new pair of tokens
    */
-  async refresh(refreshDetails: RefreshDetailsDto): Promise<AuthTokenDto> {
+  public async refresh(
+    refreshDetails: RefreshDetailsDto,
+  ): Promise<AuthTokenDto> {
     const { userId, refreshToken } = refreshDetails;
     this.log(`Refresh tokens query for user ${userId} `, this.context);
     this.log(`Finding user ${userId}...`, this.context);
@@ -381,7 +383,7 @@ export class AuthService extends BaseService<User> {
    * @param item The refresh token
    * @returns Promise resolving to UpdateResult
    */
-  async hashAndStore(userId: number, item: string): Promise<void> {
+  private async hashAndStore(userId: number, item: string): Promise<void> {
     // to reduce the length of the item to be hashed
     const sha256 = crypto.createHash('sha256');
     const digest = sha256.update(item).digest('hex');
@@ -406,7 +408,7 @@ export class AuthService extends BaseService<User> {
    * @param userId Id of the user requesting log out
    * @returns Promise resolving to UpdateResult
    */
-  async logOut(userId: number): Promise<UpdateResult> {
+  public async logOut(userId: number): Promise<UpdateResult> {
     this.log(`Log out query: User ${userId}`, this.context);
     this.log(`Finding user ${userId}...`, this.context);
     const user: User = await this.findOne({ where: { userId: userId } });
@@ -422,7 +424,7 @@ export class AuthService extends BaseService<User> {
     return result;
   }
 
-  isValidPassword(password: string): boolean {
+  private isValidPassword(password: string): boolean {
     // one lower case, one upper case, one number, one special character, minimum 8 characters
     const passwordRegex = RegExp(
       '^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,}$',

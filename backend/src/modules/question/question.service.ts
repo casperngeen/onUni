@@ -19,12 +19,16 @@ import BaseService from 'src/base/base.service';
 import { LoggerService } from '../logger/logger.service';
 import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
-import { TestNotFoundException } from '../test/test.exception';
+import {
+  TestHasMaxQuestionsException,
+  TestNotFoundException,
+} from '../test/test.exception';
 import {
   OptionNotFoundException,
   QuestionNotFoundException,
 } from './question.exception';
 import { Injectable } from '@nestjs/common';
+import { DatabaseException } from 'src/base/base.exception';
 
 @Injectable()
 export class QuestionService extends BaseService<Question> {
@@ -35,7 +39,7 @@ export class QuestionService extends BaseService<Question> {
     @InjectRepository(Question)
     private readonly questionRepository: Repository<Question>,
 
-    @InjectRepository(Question)
+    @InjectRepository(Option)
     private readonly optionRepository: Repository<Option>,
 
     loggerService: LoggerService,
@@ -46,10 +50,25 @@ export class QuestionService extends BaseService<Question> {
     )[0];
   }
 
-  async createNewQuestion(newQuestionDetails: NewQuestionDto): Promise<void> {
+  public async createNewQuestion(
+    newQuestionDetails: NewQuestionDto,
+  ): Promise<void> {
     const { testId, questionText } = newQuestionDetails;
     this.log(`Query to create new question for test ${testId}`, this.context);
     const test: Test = await this.ifTestInRepo(testId);
+    this.log(
+      `Checking max number of questions in test ${testId}`,
+      this.context,
+    );
+    if (test.questions.length >= test.maxScore) {
+      this.error(
+        `Test ${testId} already has the maximum number of questions`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new TestHasMaxQuestionsException();
+    }
+    this.log(`New question can be created under test ${testId}`, this.context);
     this.log(`Creating question...`, this.context);
     const newQuestion = {
       questionText: questionText,
@@ -64,28 +83,47 @@ export class QuestionService extends BaseService<Question> {
     );
   }
 
-  async createNewOption(newOptionDetails: NewOptionDto): Promise<void> {
-    const { questionId, optionText } = newOptionDetails;
+  public async createNewOptions(newOptionDetails: NewOptionDto): Promise<void> {
+    const { questionId, optionInfos } = newOptionDetails;
     this.log(
-      `Query to create new option for question ${questionId}`,
+      `Query to create new options for question ${questionId}`,
       this.context,
     );
     const question: Question = await this.ifQuestionInRepo(questionId);
-    this.log(`Question ${questionId} found`, this.context);
-    this.log(`Creating option...`, this.context);
-    const newOption = {
-      optionText: optionText,
-      question: question,
-    };
-    await this.optionRepository.insert(newOption);
-    this.log(`Option created and inserted into DB`, this.context);
+    this.log(`Question ${JSON.stringify(question)} found`, this.context);
+    for (const optionInfo of optionInfos) {
+      const { isCorrect, optionText } = optionInfo;
+      await this.createOneOption(isCorrect, optionText, question);
+    }
     this.log(
-      `Query to create new option for question ${questionId} completed`,
+      `Query to create new options for question ${question.questionId} completed`,
       this.context,
     );
   }
 
-  async getQuestion(questionIdObject: QuestionIdDto): Promise<QuestionInfoDto> {
+  private async createOneOption(
+    isCorrect: boolean,
+    optionText: string,
+    question: Question,
+  ) {
+    this.log(`Creating option...`, this.context);
+    const newOption = {
+      optionText: optionText,
+      isCorrect: isCorrect,
+      question: question,
+    };
+    try {
+      await this.optionRepository.insert(newOption);
+    } catch (error) {
+      this.error(`${error.toString()}`, this.context, this.getTrace());
+      throw new DatabaseException();
+    }
+    this.log(`Option created and inserted into DB`, this.context);
+  }
+
+  public async getQuestion(
+    questionIdObject: QuestionIdDto,
+  ): Promise<QuestionInfoDto> {
     const { questionId } = questionIdObject;
     this.log(`Query to get question ${questionId}`, this.context);
     const question: Question = await this.ifQuestionInRepo(questionId);
@@ -101,10 +139,14 @@ export class QuestionService extends BaseService<Question> {
       questionText: question.questionText,
       options: optionArr,
     };
+    this.log(`Question ${questionId} formatted`, this.context);
+    this.log(`Query to get question ${questionId} completed`, this.context);
     return questionInfo;
   }
 
-  async getAllQuestions(testIdObject: TestIdDto): Promise<QuestionInfoDto[]> {
+  public async getAllQuestions(
+    testIdObject: TestIdDto,
+  ): Promise<QuestionInfoDto[]> {
     const { testId } = testIdObject;
     this.log(`Query to get all questions for test ${testId}`, this.context);
     const test: Test = await this.ifTestInRepo(testId);
@@ -122,11 +164,15 @@ export class QuestionService extends BaseService<Question> {
         options: optionArr,
       };
     });
-
+    this.log(`All questions for test ${testId} formatted`, this.context);
+    this.log(
+      `Query to get all questions for test ${testId} completed`,
+      this.context,
+    );
     return allQuestions;
   }
 
-  async updateQuestion(
+  public async updateQuestion(
     updateQuestionDetails: UpdateQuestionDto,
   ): Promise<void> {
     const { questionId, questionText } = updateQuestionDetails;
@@ -138,17 +184,22 @@ export class QuestionService extends BaseService<Question> {
     this.log(`Query to update question ${questionId} completed`, this.context);
   }
 
-  async updateOption(updateOptionDetails: UpdateOptionDto) {
+  public async updateOption(updateOptionDetails: UpdateOptionDto) {
     const { optionId, optionText } = updateOptionDetails;
     this.log(`Query to update option ${optionId}`, this.context);
     await this.ifOptionInRepo(optionId);
     this.log(`Updating option in DB...`, this.context);
-    await this.optionRepository.update(optionId, { optionText: optionText });
+    try {
+      await this.optionRepository.update(optionId, { optionText: optionText });
+    } catch (error) {
+      this.error(`${error.toString()}`, this.context, this.getTrace());
+      throw new DatabaseException();
+    }
     this.log(`Option ${optionId} has been updated`, this.context);
     this.log(`Query to update option ${optionId} completed`, this.context);
   }
 
-  async deleteQuestion(questionIdObject: QuestionIdDto) {
+  public async deleteQuestion(questionIdObject: QuestionIdDto) {
     const { questionId } = questionIdObject;
     this.log(`Query to update question ${questionId}`, this.context);
     await this.ifQuestionInRepo(questionId);
@@ -158,19 +209,25 @@ export class QuestionService extends BaseService<Question> {
     this.log(`Query to update question ${questionId} completed`, this.context);
   }
 
-  async deleteOption(optionIdObject: OptionIdDto) {
+  public async deleteOption(optionIdObject: OptionIdDto) {
     const { optionId } = optionIdObject;
     this.log(`Query to delete option ${optionId}`, this.context);
     await this.ifOptionInRepo(optionId);
     this.log(`Deleting option in DB...`, this.context);
-    await this.optionRepository.delete(optionId);
+    try {
+      await this.optionRepository.delete(optionId);
+    } catch (error) {
+      this.error(`${error.toString()}`, this.context, this.getTrace());
+      throw new DatabaseException();
+    }
     this.log(`Option ${optionId} has been deleted from DB`, this.context);
     this.log(`Query to delete option ${optionId} completed`, this.context);
   }
 
-  async ifQuestionInRepo(id: number): Promise<Question> {
+  private async ifQuestionInRepo(id: number): Promise<Question> {
     this.log(`Checking DB for question ${id}...`, this.context);
     const question: Question = await this.findOne({
+      relations: ['options'],
       where: { questionId: id },
     });
     if (!question) {
@@ -181,11 +238,17 @@ export class QuestionService extends BaseService<Question> {
     return question;
   }
 
-  async ifOptionInRepo(id: number): Promise<Option> {
+  private async ifOptionInRepo(id: number): Promise<Option> {
     this.log(`Checking DB for option ${id}...`, this.context);
-    const option: Option = await this.optionRepository.findOne({
-      where: { optionId: id },
-    });
+    let option: Option;
+    try {
+      option = await this.optionRepository.findOne({
+        where: { optionId: id },
+      });
+    } catch (error) {
+      this.error(`${error.toString()}`, this.context, this.getTrace());
+      throw new DatabaseException();
+    }
     if (!option) {
       this.error(`Option ${id} not found`, this.context, this.getTrace());
       throw new OptionNotFoundException();
@@ -194,11 +257,18 @@ export class QuestionService extends BaseService<Question> {
     return option;
   }
 
-  async ifTestInRepo(id: number): Promise<Test> {
+  private async ifTestInRepo(id: number): Promise<Test> {
     this.log(`Checking DB for test ${id}...`, this.context);
-    const test: Test = await this.testRepository.findOne({
-      where: { testId: id },
-    });
+    let test: Test;
+    try {
+      test = await this.testRepository.findOne({
+        relations: ['questions', 'questions.options'],
+        where: { testId: id },
+      });
+    } catch (error) {
+      this.error(`${error.toString()}`, this.context, this.getTrace());
+      throw new DatabaseException();
+    }
     if (!test) {
       this.error(`Test ${id} not found`, this.context, this.getTrace());
       throw new TestNotFoundException();

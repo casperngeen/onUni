@@ -60,7 +60,9 @@ export class AttemptService extends BaseService<Attempt> {
     )[0];
   }
 
-  async createNewAttempt(newAttemptDetails: NewAttemptDto): Promise<void> {
+  public async createNewAttempt(
+    newAttemptDetails: NewAttemptDto,
+  ): Promise<void> {
     const { start, end, testId, userId } = newAttemptDetails;
     this.log(
       `Query to create new attempt for user ${userId} for test ${testId}`,
@@ -68,6 +70,7 @@ export class AttemptService extends BaseService<Attempt> {
     );
     this.log(`Checking for test ${testId} in DB...`, this.context);
     const test: Test = await this.testRepository.findOne({
+      relations: ['questions'],
       where: { testId: testId },
     });
     if (!test) {
@@ -102,7 +105,7 @@ export class AttemptService extends BaseService<Attempt> {
         .innerJoin('attempt.users', 'user', 'user.userId = :userId', {
           userId: userId,
         })
-        .innerJoin('attempt.tests', 'test', 'test.testId =: testId', {
+        .innerJoin('attempt.tests', 'test', 'test.testId = :testId', {
           testId: testId,
         })
         .getMany();
@@ -154,7 +157,7 @@ export class AttemptService extends BaseService<Attempt> {
     );
   }
 
-  async getAllAttempts(
+  public async getAllAttempts(
     userTestDetails: UserTestDto,
   ): Promise<AttemptInfoDto[]> {
     const { userId, testId } = userTestDetails;
@@ -164,6 +167,7 @@ export class AttemptService extends BaseService<Attempt> {
     );
     this.log(`Checking for user ${userId} in DB...`, this.context);
     const user: User = await this.userRepository.findOne({
+      relations: ['attempts', 'attempts.questionAttempts', 'attempts.test'],
       where: { userId: userId },
     });
     if (!user) {
@@ -240,7 +244,9 @@ export class AttemptService extends BaseService<Attempt> {
     return attemptsInfo;
   }
 
-  async getAttempt(attemptIdObject: AttemptIdDto): Promise<AttemptInfoDto> {
+  public async getAttempt(
+    attemptIdObject: AttemptIdDto,
+  ): Promise<AttemptInfoDto> {
     const { attemptId } = attemptIdObject;
     this.log(`Query to get attempt ${attemptId}`, this.context);
     const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
@@ -273,7 +279,7 @@ export class AttemptService extends BaseService<Attempt> {
     return attemptInfo;
   }
 
-  async submitAttempt(submitAttemptDetails: SubmitAttemptDto) {
+  public async submitAttempt(submitAttemptDetails: SubmitAttemptDto) {
     const { attemptId, submitted, questionAttempts } = submitAttemptDetails;
     this.log(`Query to update attempt ${attemptId}`, this.context);
     const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
@@ -297,7 +303,19 @@ export class AttemptService extends BaseService<Attempt> {
       this.context,
     );
     this.log(`Calculating score of attempt ${attemptId}...`, this.context);
-    const score: number = attempt.questionAttempts
+    const submittedQuestionAttempts: QuestionAttempt[] =
+      await this.questionAttemptRepository
+        .createQueryBuilder('qAttempt')
+        .innerJoin(
+          'qAttempt.attempt',
+          'attempt',
+          'attempt.attemptId = :attemptId',
+          {
+            attemptId: attemptId,
+          },
+        )
+        .getMany();
+    const score: number = submittedQuestionAttempts
       .map((qAttempt) =>
         qAttempt.answerStatus === AnswerStatus.CORRECT ? 1 : 0,
       )
@@ -320,7 +338,7 @@ export class AttemptService extends BaseService<Attempt> {
     this.log(`Query to update attempt ${attemptId} completed`, this.context);
   }
 
-  async submitQuestionAttempt(
+  private async submitQuestionAttempt(
     submitQuestionAttemptDetails: SubmitQuestionAttemptDto,
   ) {
     const { questionAttemptId, selectedOptionId } =
@@ -390,7 +408,7 @@ export class AttemptService extends BaseService<Attempt> {
     this.log(`Question attempt ${questionAttemptId} submitted`, this.context);
   }
 
-  async deleteAttempt(attemptIdObject: AttemptIdDto) {
+  public async deleteAttempt(attemptIdObject: AttemptIdDto) {
     const { attemptId } = attemptIdObject;
     this.log(`Query to delete attempt ${attemptId}`, this.context);
     await this.checkIfAttemptInRepo(attemptId);
@@ -399,9 +417,12 @@ export class AttemptService extends BaseService<Attempt> {
     this.log(`Query to delete attempt ${attemptId} completed`, this.context);
   }
 
-  async checkIfAttemptInRepo(id: number): Promise<Attempt> {
+  private async checkIfAttemptInRepo(id: number): Promise<Attempt> {
     this.log(`Checking for attempt ${id} in DB...`, this.context);
-    const attempt: Attempt = await this.findOne({ where: { attemptId: id } });
+    const attempt: Attempt = await this.findOne({
+      relations: ['questionAttempts'],
+      where: { attemptId: id },
+    });
     if (!attempt) {
       this.error(`Attempt ${id} not found`, this.context, this.getTrace());
       throw new AttemptNotFoundException();

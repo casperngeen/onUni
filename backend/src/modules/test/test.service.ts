@@ -25,16 +25,27 @@ export class TestService extends BaseService<Test> {
     )[0];
   }
 
-  async viewAllTests(courseIdObject: CourseIdDto): Promise<Partial<Test>[]> {
+  public async viewAllTests(
+    courseIdObject: CourseIdDto,
+  ): Promise<Partial<Test>[]> {
+    const { courseId } = courseIdObject;
     this.log(
       `Query all tests for course ${courseIdObject.courseId}`,
       this.context,
     );
     this.log(`Querying DB...`, this.context);
-    const course: Course = await this.courseRepository.find({
+    const course: Course = await this.courseRepository.findOne({
       relations: ['tests'],
       where: courseIdObject,
-    })[0];
+    });
+    if (!course) {
+      this.error(
+        `Course ${courseId} cannot be found`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new CourseNotFoundException();
+    }
     const tests: Test[] = course.tests;
     this.log(
       `Found all tests for course: ${courseIdObject.courseId}`,
@@ -42,7 +53,6 @@ export class TestService extends BaseService<Test> {
     );
     this.log(`Formatting tests...`, this.context);
     const testsObject: Partial<Test>[] = tests.map((test) => {
-      // is it ok to have some fields with null?
       return {
         testId: test.testId,
         title: test.title,
@@ -66,7 +76,7 @@ export class TestService extends BaseService<Test> {
     return testsObject;
   }
 
-  async viewTestInfo(testIdObject: TestIdDto): Promise<Partial<Test>> {
+  public async viewTestInfo(testIdObject: TestIdDto): Promise<Partial<Test>> {
     this.log(`Query for test ${testIdObject.testId}`, this.context);
     this.log(`Querying DB...`, this.context);
     const test: Test = await this.findOne({ where: testIdObject });
@@ -94,7 +104,7 @@ export class TestService extends BaseService<Test> {
     return testInfo;
   }
 
-  async createNewTest(newTestDetails: NewTestDto): Promise<void> {
+  public async createNewTest(newTestDetails: NewTestDto): Promise<void> {
     const { courseId, ...testInfo } = newTestDetails;
     this.log(`Query to create new test`, this.context);
     this.log(`Checking DB for course...`, this.context);
@@ -118,7 +128,7 @@ export class TestService extends BaseService<Test> {
     this.log(`Query to create new test completed`, this.context);
   }
 
-  async updateTestInfo(updateTestDetails: UpdateTestDto): Promise<void> {
+  public async updateTestInfo(updateTestDetails: UpdateTestDto): Promise<void> {
     const { testId, ...testInfo } = updateTestDetails;
     this.log(
       `Query to update test information for test ${testId}`,
@@ -142,7 +152,7 @@ export class TestService extends BaseService<Test> {
     );
   }
 
-  async deleteTest(testIdObject: TestIdDto): Promise<void> {
+  public async deleteTest(testIdObject: TestIdDto): Promise<void> {
     const { testId } = testIdObject;
     this.log(`Query to delete test ${testId}`, this.context);
     this.log(`Checking DB for test...`, this.context);

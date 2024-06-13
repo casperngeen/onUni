@@ -37,7 +37,7 @@ export class CourseService extends BaseService<Course> {
     )[0];
   }
 
-  async viewAllCoursesForUser(
+  public async viewAllCoursesForUser(
     userIdObject: UserIdDto,
   ): Promise<CourseInfoDto[]> {
     this.log(`Query all courses for user ${userIdObject.userId}`, this.context);
@@ -74,7 +74,7 @@ export class CourseService extends BaseService<Course> {
     return courseInfo;
   }
 
-  async viewCourseInfo(
+  public async viewCourseInfo(
     courseIdObject: CourseIdDto,
     viewUsers: boolean,
   ): Promise<CourseInfoDto> {
@@ -110,7 +110,7 @@ export class CourseService extends BaseService<Course> {
     return courseInfo;
   }
 
-  async createNewCourse(newCourseDetails: NewCourseDto) {
+  public async createNewCourse(newCourseDetails: NewCourseDto) {
     const { title } = newCourseDetails;
     this.log(`Query to create new course titled ${title}`, this.context);
     this.log(`Inserting into DB...`, this.context);
@@ -122,7 +122,7 @@ export class CourseService extends BaseService<Course> {
     );
   }
 
-  async addUserToCourse(userCourse: UserCourseDto): Promise<void> {
+  public async addUserToCourse(userCourse: UserCourseDto): Promise<void> {
     const { userId, courseId } = userCourse;
     this.log(`Query to add user ${userId} to course ${courseId}`, this.context);
     this.log(`Checking DB for user...`, this.context);
@@ -172,7 +172,7 @@ export class CourseService extends BaseService<Course> {
     );
   }
 
-  async removeUserFromCourse(userCourse: UserCourseDto): Promise<void> {
+  public async removeUserFromCourse(userCourse: UserCourseDto): Promise<void> {
     const { userId, courseId } = userCourse;
     this.log(
       `Query to remove user ${userId} from course ${courseId}`,
@@ -211,7 +211,7 @@ export class CourseService extends BaseService<Course> {
     );
   }
 
-  async deleteCourse(courseIdObject: CourseIdDto): Promise<void> {
+  public async deleteCourse(courseIdObject: CourseIdDto): Promise<void> {
     const { courseId } = courseIdObject;
     this.log(`Query to delete course ${courseId}`, this.context);
     this.log(`Checking DB for course...`, this.context);
@@ -230,7 +230,7 @@ export class CourseService extends BaseService<Course> {
     this.log(`Query to delete course ${courseId} completed`, this.context);
   }
 
-  async updateCourseInfo(updateCourseObject: UpdateCourseDto) {
+  public async updateCourseInfo(updateCourseObject: UpdateCourseDto) {
     const { courseId } = updateCourseObject;
     this.log(`Query to update course ${courseId}`, this.context);
     this.log(`Checking DB for course...`, this.context);

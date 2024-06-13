@@ -36,7 +36,10 @@ export class UserService extends BaseService<User> {
    * @param role Role of User (Student/Teacher)
    * @returns Array of Users of the specified role for the specified course
    */
-  async findUsersInCourse(id: number, role: Roles): Promise<Partial<User>[]> {
+  private async findUsersInCourse(
+    id: number,
+    role: Roles,
+  ): Promise<Partial<User>[]> {
     this.log(`Query all ${role}s for user ${id}`, this.context);
     this.log(`Querying DB...`, this.context);
     const users: User[] = await this.userRepository
@@ -65,7 +68,7 @@ export class UserService extends BaseService<User> {
    * @param courseIdObject Object containing a specific course id
    * @returns Array of students in a specified course
    */
-  async findStudentsInCourse(
+  public async findStudentsInCourse(
     courseIdObject: CourseIdDto,
   ): Promise<Partial<User>[]> {
     return await this.findUsersInCourse(courseIdObject.courseId, Roles.STUDENT);
@@ -76,7 +79,7 @@ export class UserService extends BaseService<User> {
    * @param courseIdObject Object containing a specific course id
    * @returns Array of teachers in a specified course
    */
-  async findTeachersInCourse(
+  public async findTeachersInCourse(
     courseIdObject: CourseIdDto,
   ): Promise<Partial<User>[]> {
     return await this.findUsersInCourse(courseIdObject.courseId, Roles.TEACHER);
@@ -87,7 +90,7 @@ export class UserService extends BaseService<User> {
    * @param email String representing email
    * @param role Role of user (Student/Teacher)
    */
-  async createNewUser(email: string, role: Roles): Promise<void> {
+  private async createNewUser(email: string, role: Roles): Promise<void> {
     this.log(`Query to create new ${role} with email ${email}`, this.context);
     this.log('Checking for duplicates...', this.context);
     const user: User = await this.findOne({ where: { email: email } });
@@ -125,7 +128,7 @@ export class UserService extends BaseService<User> {
    * Create new student with default password based on email
    * @param emailObject Object containing email
    */
-  async createNewStudent(emailObject: EmailDto): Promise<void> {
+  public async createNewStudent(emailObject: EmailDto): Promise<void> {
     return await this.createNewUser(emailObject.email, Roles.STUDENT);
   }
 
@@ -133,7 +136,7 @@ export class UserService extends BaseService<User> {
    * Create new teacher with default password based on email
    * @param emailObject Object containing email
    */
-  async createNewTeacher(emailObject: EmailDto): Promise<void> {
+  public async createNewTeacher(emailObject: EmailDto): Promise<void> {
     return await this.createNewUser(emailObject.email, Roles.TEACHER);
   }
 
@@ -143,7 +146,7 @@ export class UserService extends BaseService<User> {
    * Remove user from database based on user id
    * @param userIdObject Object containing user id
    */
-  async removeUser(userIdObject: UserIdDto): Promise<void> {
+  public async removeUser(userIdObject: UserIdDto): Promise<void> {
     const userId = userIdObject.userId;
     this.log(`Query to remove user ${userId}`, this.context);
     this.log(`Checking if user ${userId} exists...`, this.context);
