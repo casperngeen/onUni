@@ -19,6 +19,7 @@ import {
   SubmitAttemptDto,
   SubmitAttemptInfoDto,
 } from './attempt.entity';
+import { SelectOptionDto } from './question.attempt.entity';
 
 @Controller('attempt')
 export class AttemptController {
@@ -40,9 +41,9 @@ export class AttemptController {
   }
 
   // get all attempts for one user for one test (and all related question attempts)
-  @Get('all/:testId')
+  @Get()
   async getAllAttemptsOfUserForTest(
-    @Param('testId') testId: number,
+    @Body('testId') testId: number,
     @Req() request: Request,
     @Res() response: Response,
   ) {
@@ -84,6 +85,20 @@ export class AttemptController {
       ...details,
     };
     await this.attemptService.submitAttempt(submitAttempt);
+    response.status(200).json(ResponseHandler.success());
+  }
+
+  @Put('/:attemptId')
+  async saveQuestionAttempt(
+    @Body() selectOptionDetails: SelectOptionDto,
+    @Param('attemptId') attemptId: number,
+    @Res() response: Response,
+  ) {
+    await this.attemptService.saveQuestionAttempt({
+      attemptId: attemptId,
+      fromUser: true,
+      ...selectOptionDetails,
+    });
     response.status(200).json(ResponseHandler.success());
   }
 

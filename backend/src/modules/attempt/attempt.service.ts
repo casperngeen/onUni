@@ -4,6 +4,7 @@ import {
   Attempt,
   AttemptIdDto,
   AttemptInfoDto,
+  AttemptResponseDto,
   NewAttemptWithUserDto,
   Status,
   SubmitAttemptDto,
@@ -14,7 +15,7 @@ import {
   AnswerStatus,
   QuestionAttempt,
   QuestionAttemptResponseDto,
-  SubmitQuestionAttemptDto,
+  UpdateQuestionAttemptDto,
 } from './question.attempt.entity';
 import { Test } from '../test/test.entity';
 import { User } from '../user/user.entity';
@@ -24,9 +25,11 @@ import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
 import { Question } from '../question/question.entity';
 import {
+  AttemptAlreadySubmittedException,
   AttemptNotFoundException,
+  AttemptTimeLimitExceededException,
+  CalculatingScoreOfAttemptException,
   OptionNotInQuestionException,
-  QuestionAttemptNotFoundException,
   ReachedAttemptLimitException,
   TestNotAttemptedException,
 } from './attempt.exception';
@@ -36,6 +39,8 @@ import {
 } from '../user/user.exception';
 import { TestNotFoundException } from '../test/test.exception';
 import { Option } from '../question/option.entity';
+import { DatabaseException } from 'src/base/base.exception';
+import { QuestionNotFoundException } from '../question/question.exception';
 import { UserNotInCourseException } from '../course/course.exception';
 
 @Injectable()
@@ -64,17 +69,16 @@ export class AttemptService extends BaseService<Attempt> {
     )[0];
   }
 
-  public async createNewAttempt(
-    newAttemptDetails: NewAttemptWithUserDto,
-  ): Promise<AttemptIdDto> {
-    const { start, end, testId, userId } = newAttemptDetails;
+  // for anyone that takes the course
+  public async createNewAttempt(newAttemptDetails: NewAttemptWithUserDto) {
+    const { testId, userId } = newAttemptDetails;
     this.log(
       `Query to create new attempt for user ${userId} for test ${testId}`,
       this.context,
     );
     this.log(`Checking for test ${testId} in DB...`, this.context);
     const test: Test = await this.testRepository.findOne({
-      relations: ['questions', 'course', 'course.users'],
+      relations: ['questions', 'questions.options', 'course', 'course.users'],
       where: { testId: testId },
     });
     if (!test) {
@@ -86,54 +90,24 @@ export class AttemptService extends BaseService<Attempt> {
       throw new TestNotFoundException();
     }
     this.log(`Test ${testId} found`, this.context);
-    this.log(`Checking for user ${userId} in DB...`, this.context);
-    const user: User = await this.userRepository.findOne({
-      where: { userId: userId },
-    });
-    if (!user) {
-      this.error(
-        `User ${userId} cannot be found`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new UserNotFoundException();
-    }
-    this.log(`User ${userId} found`, this.context);
-    this.log(
-      `Checking if user ${userId} is allowed to take test ${testId}`,
-      this.context,
-    );
-    let userInCourse: boolean = false;
-    for (const user of test.course.users) {
-      if (user.userId === userId) {
-        userInCourse = true;
-        break;
-      }
-    }
-    if (!userInCourse) {
-      this.error(
-        `User ${userId} is not part of course ${test.course.courseId}`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new UserNotInCourseException();
-    }
-    this.log(`User ${userId} is allowed to take test ${testId}`, this.context);
+    const user: User = await this.getUserFromRepo(userId);
+    await this.isUserAllowedToTakeTest(user, test);
     this.log(
       `Checking if user ${userId} has reached attempt limit for test ${testId}`,
       this.context,
     );
-    if (test.maxAttempt > 0) {
-      const prevAttempts: Attempt[] = await this.attemptRepository
+    if (test.maxAttempt) {
+      // check this again
+      const numOfAttempts: number = await this.attemptRepository
         .createQueryBuilder('attempt')
-        .innerJoin('attempt.user', 'user', 'user.userId = :userId', {
+        .where('userId = :userId', {
           userId: userId,
         })
-        .innerJoin('attempt.test', 'test', 'test.testId = :testId', {
+        .where('testId = :testId', {
           testId: testId,
         })
-        .getMany();
-      if (prevAttempts.length >= test.maxAttempt) {
+        .getCount();
+      if (numOfAttempts >= test.maxAttempt) {
         this.error(
           `User ${userId} has already reached attempt limit for test ${testId}`,
           this.context,
@@ -150,6 +124,11 @@ export class AttemptService extends BaseService<Attempt> {
       `Creating and inserting new attempt for test ${testId} for user ${userId} into DB`,
       this.context,
     );
+    const start = new Date();
+    let end = null;
+    if (test.timeLimit) {
+      end = new Date(start.getTime() + test.timeLimit * 60 * 1000);
+    }
     const attempt: Attempt = await this.save({
       start: start,
       end: end,
@@ -162,26 +141,22 @@ export class AttemptService extends BaseService<Attempt> {
       this.context,
     );
     this.log(
-      `Creating and inserting new question attempts for all questions in test ${testId}`,
+      `Formatting questions and options for test ${testId}...`,
       this.context,
     );
-    for (const question of test.questions) {
-      await this.questionAttemptRepository.insert({
-        question: question,
-        attempt: attempt,
-      });
-    }
+    const response = this.formatAttemptResponse(test, attempt.attemptId);
     this.log(
-      `Created and inserted new question attempts for all questions in test ${testId}`,
+      `Questions and options for test ${testId} have been formatted`,
       this.context,
     );
     this.log(
       `Query to create new attempt for user ${userId} for test ${testId} completed`,
       this.context,
     );
-    return { attemptId: attempt.attemptId };
+    return response;
   }
 
+  // for teachers + the student who is associated with the attempt
   public async getAllAttempts(
     userTestDetails: UserTestDto,
   ): Promise<AttemptInfoDto[]> {
@@ -190,45 +165,8 @@ export class AttemptService extends BaseService<Attempt> {
       `Query to get all attempts of test ${testId} for user ${userId}`,
       this.context,
     );
-    this.log(`Checking for user ${userId} in DB...`, this.context);
-    const user: User = await this.userRepository.findOne({
-      relations: ['attempts', 'attempts.questionAttempts', 'attempts.test'],
-      where: { userId: userId },
-    });
-    if (!user) {
-      this.error(
-        `User  ${userId} cannot be found`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new UserNotFoundException();
-    }
-    this.log(`User ${userId} found`, this.context);
+    const user: User = await this.getUserFromRepo(userId);
 
-    // // check if test is part of user.courses.tests
-    // this.log(
-    //   `Checking if test ${testId} is associated with user ${userId}`,
-    //   this.context,
-    // );
-    // const tests: Test[] = user.courses.flatMap((course) => course.tests);
-    // let found: boolean = false;
-    // for (const test of tests) {
-    //   if (test.testId === testId) {
-    //     found = true;
-    //     break;
-    //   }
-    // }
-    // if (!found) {
-    //   this.error(
-    //     `Test ${testId} is not associated with user ${userId}`,
-    //     this.context,
-    //     this.getTrace(),
-    //   );
-    //   throw new TestNotAssociatedWithUserException();
-    // }
-    // this.log(`Test ${testId} is associated with user ${userId}`, this.context);
-
-    // filter user.attempts to retrieve all attempts for this test
     this.log(`Filtering for attempts of test ${testId}...`, this.context);
     const attempts: Attempt[] = user.attempts.filter(
       (attempt) => attempt.test.testId === testId,
@@ -244,23 +182,9 @@ export class AttemptService extends BaseService<Attempt> {
     }
     this.log(`Attempts of test ${testId} obtained`, this.context);
     this.log(`Formatting attempts of test ${testId}...`, this.context);
-    const attemptsInfo: AttemptInfoDto[] = attempts.map((attempt) => {
-      return {
-        attemptId: attempt.attemptId,
-        status: attempt.status,
-        start: attempt.start,
-        end: attempt.end,
-        submitted: attempt.submitted,
-        score: attempt.score,
-        questionAttempts: attempt.questionAttempts.map((qAttempt) => {
-          return {
-            questionId: qAttempt.question.questionId,
-            selectedOptionId: qAttempt.selectedOptionId,
-            answerStatus: qAttempt.answerStatus,
-          };
-        }),
-      };
-    });
+    const attemptsInfo: AttemptInfoDto[] = attempts.map((attempt) =>
+      this.formatAttemptInfo(attempt),
+    );
     this.log(`Attempts of test ${testId} formatted`, this.context);
     this.log(
       `Query to get all attempts of test ${testId} for user ${userId} completed`,
@@ -269,96 +193,71 @@ export class AttemptService extends BaseService<Attempt> {
     return attemptsInfo;
   }
 
+  // same as above
   public async getAttempt(
     attemptIdObject: AttemptIdDto,
   ): Promise<AttemptInfoDto> {
     const { attemptId } = attemptIdObject;
     this.log(`Query to get attempt ${attemptId}`, this.context);
     const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
-    this.log(
-      `Formatting question attempts for attempt ${attemptId}...`,
-      this.context,
-    );
-    const questionAttemptResponse: QuestionAttemptResponseDto[] =
-      attempt.questionAttempts.map((qAttempt) => {
-        return {
-          questionId: qAttempt.question.questionId,
-          selectedOptionId: qAttempt.selectedOptionId,
-          answerStatus: qAttempt.answerStatus,
-        };
-      });
-    this.log(
-      `Formatting attempt info for attempt ${attemptId}...`,
-      this.context,
-    );
-    const attemptInfo: AttemptInfoDto = {
-      attemptId: attempt.attemptId,
-      status: attempt.status,
-      start: attempt.start,
-      end: attempt.end,
-      submitted: attempt.submitted,
-      score: attempt.score,
-      questionAttempts: questionAttemptResponse,
-    };
+    const attemptInfo: AttemptInfoDto = this.formatAttemptInfo(attempt);
     this.log(`Query to get attempt ${attemptId} completed`, this.context);
     return attemptInfo;
   }
 
   public async submitAttempt(submitAttemptDetails: SubmitAttemptDto) {
-    const { userId, attemptId, submitted, questionAttempts } =
-      submitAttemptDetails;
+    const { userId, attemptId, questionAttempts } = submitAttemptDetails;
     this.log(`Query to submit attempt ${attemptId}`, this.context);
     const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
-    this.log(
-      `Checking if attempt ${attemptId} belongs to user ${userId}`,
-      this.context,
-    );
-    if (attempt.user.userId !== userId) {
+    if (attempt.status === Status.SUBMIT) {
       this.error(
-        `Attempt ${attemptId} does not belong to user ${userId}`,
+        `User ${userId} has already submitted attempt ${attemptId}`,
         this.context,
         this.getTrace(),
       );
-      throw new UnauthorisedUserException();
+      throw new AttemptAlreadySubmittedException();
     }
-    this.log(`Attempt ${attemptId} belongs to user ${userId}`, this.context);
-    this.log(`Updating attempt ${attemptId}...`, this.context);
+    if (attempt.status === Status.CALCULATING) {
+      this.error(
+        `Currently calculating score of attempt ${attemptId}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new CalculatingScoreOfAttemptException();
+    }
+    await this.isUserAllowedToSubmit(attempt, userId);
+    this.log(
+      `Updating status of attempt ${attemptId} to CALCULATING...`,
+      this.context,
+    );
+    this.update(attemptId, { status: Status.CALCULATING });
+    this.log(
+      `Status of attempt ${attemptId} updated to CALCULATING...`,
+      this.context,
+    );
+    this.log(`Submitting attempt ${attemptId}...`, this.context);
     let status: Status = Status.SUBMIT;
-    if (attempt.end && submitted > attempt.end) {
+    const submitTime = new Date();
+    if (attempt.end && submitTime > attempt.end) {
       status = Status.AUTOSUBMIT;
     }
     this.log(
       `Submitting question attempts of attempt ${attemptId}...`,
       this.context,
     );
+    let score: number = 0;
     for (const qAttempt of questionAttempts) {
-      await this.submitQuestionAttempt({
-        questionAttemptId: qAttempt.questionAttemptId,
+      score += await this.saveQuestionAttempt({
+        questionId: qAttempt.questionId,
         selectedOptionId: qAttempt.selectedOptionId,
+        attemptId: attemptId,
+        fromUser: false,
       });
     }
     this.log(
       `All question attempts of attempt ${attemptId} submitted`,
       this.context,
     );
-    this.log(`Calculating score of attempt ${attemptId}...`, this.context);
-    const submittedQuestionAttempts: QuestionAttempt[] =
-      await this.questionAttemptRepository
-        .createQueryBuilder('qAttempt')
-        .innerJoin(
-          'qAttempt.attempt',
-          'attempt',
-          'attempt.attemptId = :attemptId',
-          {
-            attemptId: attemptId,
-          },
-        )
-        .getMany();
-    const score: number = submittedQuestionAttempts
-      .map((qAttempt) =>
-        qAttempt.answerStatus === AnswerStatus.CORRECT ? 1 : 0,
-      )
-      .reduce((acc, curr) => acc + curr, 0);
     this.log(
       `Max score of test ${attempt.test.testId} is ${attempt.test.maxScore}`,
       this.context,
@@ -369,7 +268,7 @@ export class AttemptService extends BaseService<Attempt> {
     );
     this.log(`Updating attempt ${attemptId} in DB...`, this.context);
     await this.update(attemptId, {
-      submitted: submitted,
+      submitted: submitTime,
       status: status,
       score: score,
     });
@@ -377,75 +276,51 @@ export class AttemptService extends BaseService<Attempt> {
     this.log(`Query to update attempt ${attemptId} completed`, this.context);
   }
 
-  private async submitQuestionAttempt(
-    submitQuestionAttemptDetails: SubmitQuestionAttemptDto,
+  public async saveQuestionAttempt(
+    selectOptionDetails: UpdateQuestionAttemptDto,
   ) {
-    const { questionAttemptId, selectedOptionId } =
-      submitQuestionAttemptDetails;
+    const { attemptId, selectedOptionId, questionId, fromUser } =
+      selectOptionDetails;
     this.log(
-      `Submitting question attempt ${questionAttemptId}...`,
+      `Query to save question attempt of question ${questionId} for attempt ${attemptId} completed`,
       this.context,
     );
-    this.log(
-      `Checking for question attempt ${questionAttemptId} in DB...`,
-      this.context,
-    );
-    const questionAttempt: QuestionAttempt =
-      await this.questionAttemptRepository.findOne({
-        relations: ['question', 'question.options'],
-        where: { questionAttemptId: questionAttemptId },
-      });
-    if (!questionAttempt) {
+    const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
+    if (fromUser && attempt.end && new Date() > attempt.end) {
       this.error(
-        `Question attempt ${questionAttemptId} not found`,
+        `User cannot update answer as time limit for attempt ${attemptId} has exceeded`,
         this.context,
         this.getTrace(),
       );
-      throw new QuestionAttemptNotFoundException();
+      throw new AttemptTimeLimitExceededException();
     }
-    this.log(`Question attempt ${questionAttemptId} found`, this.context);
-
+    const question: Question = await this.getQuestionFromRepo(questionId);
+    const option: Option = await this.ifOptionBelongsToQuestion(
+      question,
+      selectedOptionId,
+    )[0];
     this.log(
-      `Checking if option ${selectedOptionId} belongs to question ${questionAttempt.question.questionId}...`,
+      `Saving question ${questionId} of attempt ${attemptId} to DB...`,
       this.context,
     );
-    const selectedOption: Option[] = questionAttempt.question.options.filter(
-      (option) => option.optionId === selectedOptionId,
-    );
-    if (selectedOption.length === 0) {
-      this.error(
-        `Option ${selectedOptionId} does not belong to question ${questionAttempt.question.questionId}`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new OptionNotInQuestionException();
-    }
+    const questionAttemptDetails = {
+      answerStatus: option.isCorrect
+        ? AnswerStatus.CORRECT
+        : AnswerStatus.INCORRECT,
+      selectedOptionId: selectedOptionId,
+      question: question,
+      attempt: attempt,
+    };
+    await this.questionAttemptRepository.save(questionAttemptDetails);
     this.log(
-      `Option ${selectedOptionId} belongs to question ${questionAttempt.question.questionId}`,
+      `Saved question ${questionId} of attempt ${attemptId} to DB`,
       this.context,
     );
-
     this.log(
-      `Updating answer status and selected option of question attempt ${questionAttempt.question.questionId}...`,
+      `Query to save question attempt of question ${questionId} for attempt ${attemptId} completed`,
       this.context,
     );
-    const option: Option = selectedOption[0];
-    if (option.isCorrect) {
-      await this.questionAttemptRepository.update(questionAttemptId, {
-        answerStatus: AnswerStatus.CORRECT,
-        selectedOptionId: selectedOptionId,
-      });
-    } else {
-      await this.questionAttemptRepository.update(questionAttemptId, {
-        answerStatus: AnswerStatus.INCORRECT,
-        selectedOptionId: selectedOptionId,
-      });
-    }
-    this.log(
-      `Answer status and selected option of question attempt ${questionAttempt.question.questionId} updated`,
-      this.context,
-    );
-    this.log(`Question attempt ${questionAttemptId} submitted`, this.context);
+    return option.isCorrect ? 1 : 0;
   }
 
   public async deleteAttempt(attemptIdObject: AttemptIdDto) {
@@ -469,5 +344,170 @@ export class AttemptService extends BaseService<Attempt> {
     }
     this.log(`Attempt ${id} found`, this.context);
     return attempt;
+  }
+
+  private async getQuestionFromRepo(questionId: number) {
+    this.log(`Retrieving question ${questionId} from DB...`, this.context);
+    let question: Question;
+    try {
+      question = await this.questionRepository.findOne({
+        relations: ['options'],
+        where: { questionId: questionId },
+      });
+    } catch (error) {
+      this.error(`${error}`, this.context, this.getTrace());
+      throw new DatabaseException();
+    }
+    if (!question) {
+      this.error(
+        `Question ${questionId} cannot be found`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new QuestionNotFoundException();
+    }
+    this.log(`Found question ${questionId}`, this.context);
+    return question;
+  }
+
+  private async ifOptionBelongsToQuestion(
+    question: Question,
+    optionId: number,
+  ) {
+    this.log(
+      `Checking if option ${optionId} belongs to question ${question.questionId}...`,
+      this.context,
+    );
+    this.log(`Checking for option ${optionId}...`, this.context);
+    const selectedOption: Option[] = question.options.filter(
+      (option) => option.optionId === optionId,
+    );
+    if (selectedOption.length === 0) {
+      this.error(
+        `Option ${optionId} does not belong to question ${question.questionId}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new OptionNotInQuestionException();
+    }
+    this.log(
+      `Option ${optionId} belongs to question ${question.questionId}`,
+      this.context,
+    );
+    return selectedOption;
+  }
+
+  private async getUserFromRepo(userId: number) {
+    this.log(`Checking for user ${userId} in DB...`, this.context);
+    const user: User = await this.userRepository.findOne({
+      relations: ['attempts', 'attempts.test', 'attempts.questionAttempts'],
+      where: { userId: userId },
+    });
+    if (!user) {
+      this.error(
+        `User ${userId} cannot be found`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new UserNotFoundException();
+    }
+    this.log(`User ${userId} found`, this.context);
+    return user;
+  }
+
+  private async isUserAllowedToTakeTest(user: User, test: Test) {
+    const { userId } = user;
+    const { testId } = test;
+    this.log(
+      `Checking if user ${userId} is allowed to take test ${testId}`,
+      this.context,
+    );
+    let userInCourse: boolean = false;
+    for (const user of test.course.users) {
+      if (user.userId === userId) {
+        userInCourse = true;
+        break;
+      }
+    }
+    if (!userInCourse) {
+      this.error(
+        `User ${userId} is not part of course ${test.course.courseId}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new UserNotInCourseException();
+    }
+    this.log(`User ${userId} is allowed to take test ${testId}`, this.context);
+  }
+
+  private formatAttemptInfo(attempt: Attempt): AttemptInfoDto {
+    this.log(
+      `Formatting question attempts for attempt ${attempt.attemptId}...`,
+      this.context,
+    );
+    const questionAttemptResponse: QuestionAttemptResponseDto[] =
+      attempt.questionAttempts.map((qAttempt) => {
+        return {
+          questionId: qAttempt.question.questionId,
+          selectedOptionId: qAttempt.selectedOptionId,
+          answerStatus: qAttempt.answerStatus,
+        };
+      });
+    this.log(
+      `Formatting attempt info for attempt ${attempt.attemptId}...`,
+      this.context,
+    );
+    const attemptInfo: AttemptInfoDto = {
+      attemptId: attempt.attemptId,
+      status: attempt.status,
+      start: attempt.start,
+      end: attempt.end,
+      submitted: attempt.submitted,
+      score: attempt.score,
+      questionAttempts: questionAttemptResponse,
+    };
+    this.log(
+      `Attempt info for attempt ${attempt.attemptId} formatted`,
+      this.context,
+    );
+    return attemptInfo;
+  }
+
+  private formatAttemptResponse(
+    test: Test,
+    attemptId: number,
+  ): AttemptResponseDto {
+    return {
+      attemptId: attemptId,
+      questions: test.questions.map((question) => {
+        return {
+          questionId: question.questionId,
+          questionText: question.questionText,
+          options: question.options.map((option) => {
+            return {
+              optionId: option.optionId,
+              optionText: option.optionText,
+            };
+          }),
+        };
+      }),
+    };
+  }
+
+  private async isUserAllowedToSubmit(attempt: Attempt, userId: number) {
+    const { attemptId } = attempt;
+    this.log(
+      `Checking if attempt ${attemptId} belongs to user ${userId}`,
+      this.context,
+    );
+    if (attempt.user.userId !== userId) {
+      this.error(
+        `Attempt ${attemptId} does not belong to user ${userId}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new UnauthorisedUserException();
+    }
+    this.log(`Attempt ${attemptId} belongs to user ${userId}`, this.context);
   }
 }

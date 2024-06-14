@@ -27,18 +27,13 @@ import {
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
-  @Post('test/:testId')
+  @Post()
   async createNewQuestion(
-    @Param('testId') testId: number,
-    @Body('questionText') questionText: string,
+    @Body('questionInfo') questionInfo: NewQuestionDto,
     @Res() response: Response,
   ) {
-    const newQuestionDetails: NewQuestionDto = {
-      testId: testId,
-      questionText: questionText,
-    };
     const questionId: QuestionIdDto =
-      await this.questionService.createNewQuestion(newQuestionDetails);
+      await this.questionService.createNewQuestion(questionInfo);
     response.status(201).json(ResponseHandler.success(questionId));
   }
 
@@ -57,6 +52,18 @@ export class QuestionController {
     response.status(201).json(ResponseHandler.success(optionIds));
   }
 
+  @Get()
+  async getAllQuestions(
+    @Body('testId') testId: number,
+    @Res() response: Response,
+  ) {
+    const allQuestions: QuestionInfoDto[] =
+      await this.questionService.getAllQuestions({
+        testId: testId,
+      });
+    response.status(200).json(ResponseHandler.success(allQuestions));
+  }
+
   // get question with all related options
   @Get('/:questionId')
   async getQuestion(
@@ -67,18 +74,6 @@ export class QuestionController {
       questionId: questionId,
     });
     response.status(200).json(ResponseHandler.success(question));
-  }
-
-  @Get('test/:testId')
-  async getAllQuestions(
-    @Param('testId') testId: number,
-    @Res() response: Response,
-  ) {
-    const allQuestions: QuestionInfoDto[] =
-      await this.questionService.getAllQuestions({
-        testId: testId,
-      });
-    response.status(200).json(ResponseHandler.success(allQuestions));
   }
 
   // update question

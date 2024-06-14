@@ -32,7 +32,7 @@ export class User {
   @Column('text', { nullable: true })
   refreshToken?: string;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   profilePic: string;
 
   @Column({

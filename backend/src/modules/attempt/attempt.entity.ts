@@ -23,11 +23,13 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { QuestionInfoDto } from '../question/question.entity';
 
 export enum Status {
   SUBMIT = 'submitted',
   AUTOSUBMIT = 'auto-submitted',
   PROGRESS = 'in-progress',
+  CALCULATING = 'calculating',
 }
 
 @Entity()
@@ -160,4 +162,15 @@ export class AttemptInfoDto {
   @ValidateNested({ each: true })
   @Type(() => QuestionAttemptResponseDto)
   questionAttempts: QuestionAttemptResponseDto[];
+}
+
+export class AttemptResponseDto {
+  @IsNotEmpty()
+  @IsInt()
+  attemptId: number;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => QuestionInfoDto)
+  questions: QuestionInfoDto[];
 }

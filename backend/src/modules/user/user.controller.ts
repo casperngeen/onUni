@@ -16,7 +16,7 @@ import { NewUserDto, User, UserIdDto } from './user.entity';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('student/:courseId')
+  @Get('/:courseId/student')
   async findStudentsInCourse(
     @Param('courseId') id: number,
     @Res() response: Response,
@@ -28,7 +28,7 @@ export class UserController {
     response.status(200).json(ResponseHandler.success(students));
   }
 
-  @Get('teacher/:courseId')
+  @Get('/:courseId/student')
   async findTeachersInCourse(
     @Param('courseId') id: number,
     @Res() response: Response,
@@ -40,7 +40,7 @@ export class UserController {
     response.status(200).json(ResponseHandler.success(teachers));
   }
 
-  @Post('teachers')
+  @Post('teacher')
   async createNewTeacher(
     @Body('userDetails') userDetails: NewUserDto,
     @Res() response: Response,
@@ -60,6 +60,7 @@ export class UserController {
     response.status(201).json(ResponseHandler.success(userId));
   }
 
+  // change profile pic?
   //   @Put('/:userId')
   //   async updateUserDetails(
   //     @Param('userId') id: number,

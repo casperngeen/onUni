@@ -75,10 +75,10 @@ export class CourseController {
     response.status(200).json(ResponseHandler.success());
   }
 
-  @Put('/:courseId/user/:userId')
+  @Put('/:courseId')
   async addUsertoCourse(
     @Param('courseId') courseId: number,
-    @Param('userId') userId: number,
+    @Body('userId') userId: number,
     @Res() response: Response,
   ) {
     const userCourse: UserCourseDto = {
@@ -89,10 +89,10 @@ export class CourseController {
     response.status(200).json(ResponseHandler.success());
   }
 
-  @Delete('/:courseId/user/:userId')
+  @Delete('/:courseId')
   async removeUserfromCourse(
     @Param('courseId') courseId: number,
-    @Param('userId') userId: number,
+    @Body('userId') userId: number,
     @Res() response: Response,
   ) {
     const userCourse: UserCourseDto = {
@@ -103,7 +103,7 @@ export class CourseController {
     response.status(200).json(ResponseHandler.success());
   }
 
-  @Delete('/:id')
+  @Delete('/:courseId')
   async deleteCourse(@Param('id') courseId: number, @Res() response: Response) {
     await this.courseService.deleteCourse({ courseId: courseId });
     response.status(200).json(ResponseHandler.success());

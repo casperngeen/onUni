@@ -23,7 +23,7 @@ import {
 export class TestController {
   constructor(private readonly testService: TestService) {}
 
-  @Get('/:courseId/all')
+  @Get()
   async viewAllTests(
     @Param('courseId') courseId: number,
     @Res() response: Response,
@@ -34,9 +34,9 @@ export class TestController {
     response.status(200).json(ResponseHandler.success(tests));
   }
 
-  @Get('/:id')
+  @Get('/:testId')
   async viewTestInformation(
-    @Param('id') id: number,
+    @Param('testId') id: number,
     @Res() response: Response,
   ) {
     const test: Partial<Test> = await this.testService.viewTestInfo({
@@ -45,18 +45,12 @@ export class TestController {
     response.status(200).json(ResponseHandler.success(test));
   }
 
-  @Post('/:courseId')
+  @Post()
   async createNewTest(
-    @Param('courseId') courseId: number,
-    @Body('testDetails') testDetails: TestInfoDto,
+    @Body('testDetails') testDetails: NewTestDto,
     @Res() response: Response,
   ) {
-    const newTestDetails: NewTestDto = {
-      courseId: courseId,
-      ...testDetails,
-    };
-    const testId: TestIdDto =
-      await this.testService.createNewTest(newTestDetails);
+    const testId: TestIdDto = await this.testService.createNewTest(testDetails);
     response.status(200).json(ResponseHandler.success(testId));
   }
 

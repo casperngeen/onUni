@@ -1,10 +1,9 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Question } from '../question/question.entity.js';
 import { Attempt } from './attempt.entity.js';
-import { IsEnum, IsInt, IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsNotEmpty } from 'class-validator';
 
 export enum AnswerStatus {
-  UNATTEMPTED = 'unattempted',
   CORRECT = 'correct',
   INCORRECT = 'incorrect',
 }
@@ -14,13 +13,13 @@ export class QuestionAttempt {
   @PrimaryGeneratedColumn()
   questionAttemptId: number;
 
-  @Column({ nullable: true })
-  selectedOptionId?: number;
+  @Column()
+  selectedOptionId: number;
 
   @Column({
     type: 'enum',
     enum: AnswerStatus,
-    default: AnswerStatus.UNATTEMPTED,
+    nullable: true,
   })
   answerStatus: AnswerStatus;
 
@@ -52,7 +51,7 @@ export class NewQuestionAttemptDto extends QuestionAttemptInfoDto {
 export class SubmitQuestionAttemptDto {
   @IsInt()
   @IsNotEmpty()
-  questionAttemptId: number;
+  questionId: number;
 
   @IsInt()
   @IsNotEmpty()
@@ -69,4 +68,24 @@ export class QuestionAttemptResponseDto extends QuestionAttemptInfoDto {
   @IsNotEmpty()
   @IsEnum(AnswerStatus)
   answerStatus: AnswerStatus;
+}
+
+export class SelectOptionDto {
+  @IsInt()
+  @IsNotEmpty()
+  questionId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  selectedOptionId: number;
+}
+
+export class UpdateQuestionAttemptDto extends SelectOptionDto {
+  @IsInt()
+  @IsNotEmpty()
+  attemptId: number;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  fromUser: boolean;
 }

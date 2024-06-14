@@ -14,7 +14,7 @@ export class TestNotAttemptedException extends BaseException {
   constructor() {
     super(
       `Test has not been attempted by user`,
-      200,
+      400,
       AttemptException.TEST_NOT_ATTEMPTED,
     );
   }
@@ -24,8 +24,8 @@ export class ReachedAttemptLimitException extends BaseException {
   constructor() {
     super(
       `User has reached attempt limit for test`,
-      200,
-      AttemptException.LIMIT_REACHED,
+      400,
+      AttemptException.ATTEMPT_LIMIT_REACHED,
     );
   }
 }
@@ -44,8 +44,38 @@ export class OptionNotInQuestionException extends BaseException {
   constructor() {
     super(
       `Selected option does not belong to question`,
-      200,
+      400,
       QuestionAttemptException.OPTION_NOT_IN_QUESTION,
+    );
+  }
+}
+
+export class AttemptAlreadySubmittedException extends BaseException {
+  constructor() {
+    super(
+      `Attempt has already been submitted`,
+      400,
+      AttemptException.ALREADY_SUBMITTED,
+    );
+  }
+}
+
+export class CalculatingScoreOfAttemptException extends BaseException {
+  constructor() {
+    super(
+      `Score of attempt is being calculated`,
+      400,
+      AttemptException.CALCULATING_SCORE,
+    );
+  }
+}
+
+export class AttemptTimeLimitExceededException extends BaseException {
+  constructor() {
+    super(
+      `Time limit for attempt is up`,
+      400,
+      AttemptException.TIME_LIMIT_EXCEEDED,
     );
   }
 }

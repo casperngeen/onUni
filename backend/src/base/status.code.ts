@@ -72,7 +72,10 @@ export enum OptionException {
 export enum AttemptException {
   ATTEMPT_NOT_FOUND = 81,
   TEST_NOT_ATTEMPTED = 82,
-  LIMIT_REACHED = 83,
+  ATTEMPT_LIMIT_REACHED = 83,
+  ALREADY_SUBMITTED = 84,
+  CALCULATING_SCORE = 85,
+  TIME_LIMIT_EXCEEDED = 86,
 }
 
 /**
