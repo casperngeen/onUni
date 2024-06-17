@@ -1,5 +1,5 @@
 import { Test } from 'src/modules/test/test.entity';
-import { User } from '../user/user.entity';
+import { Roles, User } from '../user/user.entity';
 import {
   Entity,
   Column,
@@ -7,7 +7,13 @@ import {
   OneToMany,
   ManyToMany,
 } from 'typeorm';
-import { IsISO8601, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsISO8601,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
 
 @Entity()
 export class Course {
@@ -47,7 +53,7 @@ export class ViewCourseDto extends CourseIdDto {
   userId: number;
 }
 
-export class NewCourseDto {
+export class NewCourseDetailsDto {
   @IsNotEmpty()
   @IsString()
   title: string;
@@ -65,7 +71,17 @@ export class NewCourseDto {
   endDate: Date;
 }
 
-export class UserCourseDto {
+export class NewCourseDto extends NewCourseDetailsDto {
+  @IsEnum(Roles)
+  @IsNotEmpty()
+  role: Roles;
+
+  @IsInt()
+  @IsNotEmpty()
+  adminId: number;
+}
+
+export class AddUserToCourseDto {
   @IsInt()
   @IsNotEmpty()
   userId: number;
@@ -73,13 +89,23 @@ export class UserCourseDto {
   @IsInt()
   @IsNotEmpty()
   courseId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  adminId: number;
+
+  @IsEnum(Roles)
+  @IsNotEmpty()
+  role: Roles;
 }
 
-export class UpdateCourseDto {
+export class UpdateCourseDto extends NewCourseDto {
   @IsInt()
   @IsNotEmpty()
   courseId: number;
+}
 
+export class CourseInfoDto {
   @IsNotEmpty()
   @IsString()
   title: string;
@@ -95,10 +121,18 @@ export class UpdateCourseDto {
   @IsNotEmpty()
   @IsISO8601({ strict: true })
   endDate: Date;
-}
 
-export class CourseInfoDto extends NewCourseDto {
   @IsNotEmpty()
   @IsInt()
   courseId: number;
+}
+
+export class DeleteCourseDto extends CourseIdDto {
+  @IsInt()
+  @IsNotEmpty()
+  adminId: number;
+
+  @IsEnum(Roles)
+  @IsNotEmpty()
+  role: Roles;
 }

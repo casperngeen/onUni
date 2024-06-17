@@ -11,7 +11,7 @@ export class UserAlreadyInCourseException extends BaseException {
   constructor() {
     super(
       `User is already part of the course`,
-      200,
+      400,
       CourseException.ALREADY_IN_COURSE,
     );
   }
@@ -19,7 +19,7 @@ export class UserAlreadyInCourseException extends BaseException {
 
 export class NoUserInCourseException extends BaseException {
   constructor() {
-    super(`Course has no users`, 200, CourseException.NO_USER_IN_COURSE);
+    super(`Course has no users`, 400, CourseException.NO_USER_IN_COURSE);
   }
 }
 
@@ -27,8 +27,18 @@ export class UserNotInCourseException extends BaseException {
   constructor() {
     super(
       `User is not a part of this course`,
-      400,
+      403,
       CourseException.USER_NOT_IN_COURSE,
+    );
+  }
+}
+
+export class NotTeacherOfCourseException extends BaseException {
+  constructor() {
+    super(
+      `User is not a teacher of this course`,
+      403,
+      CourseException.NOT_TEACHER_OF_COURSE,
     );
   }
 }
