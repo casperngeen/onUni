@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { QuestionService } from './question.service';
@@ -22,11 +23,14 @@ import {
   OptionInfoDto,
   UpdateOptionDto,
 } from './option.entity';
+import { TeacherGuard } from '../course/teacher.guard';
+import { CourseUserGuard } from '../course/course.user.guard';
 
 @Controller('question')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
+  @UseGuards(TeacherGuard)
   @Post()
   async createNewQuestion(
     @Body('questionInfo') questionInfo: NewQuestionDto,
@@ -37,6 +41,7 @@ export class QuestionController {
     response.status(201).json(ResponseHandler.success(questionId));
   }
 
+  @UseGuards(TeacherGuard)
   @Post('/:questionId')
   async createNewOptions(
     @Param('questionId') questionId: number,
@@ -52,6 +57,7 @@ export class QuestionController {
     response.status(201).json(ResponseHandler.success(optionIds));
   }
 
+  @UseGuards(CourseUserGuard)
   @Get()
   async getAllQuestions(
     @Body('testId') testId: number,
@@ -64,7 +70,7 @@ export class QuestionController {
     response.status(200).json(ResponseHandler.success(allQuestions));
   }
 
-  // get question with all related options
+  @UseGuards(CourseUserGuard)
   @Get('/:questionId')
   async getQuestion(
     @Param('questionId') questionId: number,
@@ -76,7 +82,7 @@ export class QuestionController {
     response.status(200).json(ResponseHandler.success(question));
   }
 
-  // update question
+  @UseGuards(TeacherGuard)
   @Put('/:questionId')
   async updateQuestion(
     @Param('questionId') questionId: number,
@@ -91,7 +97,7 @@ export class QuestionController {
     response.status(200).json(ResponseHandler.success());
   }
 
-  // update option
+  @UseGuards(TeacherGuard)
   @Put('option/:optionId')
   async updateOption(
     @Param('optionId') optionId: number,
@@ -106,7 +112,7 @@ export class QuestionController {
     response.status(200).json(ResponseHandler.success());
   }
 
-  // delete question
+  @UseGuards(TeacherGuard)
   @Delete('/:questionId')
   async deleteQuestion(
     @Param('questionId') questionId: number,
@@ -116,7 +122,7 @@ export class QuestionController {
     response.status(200).json(ResponseHandler.success());
   }
 
-  // delete option
+  @UseGuards(TeacherGuard)
   @Delete('option/:optionId')
   async deleteOption(
     @Param('optionId') optionId: number,

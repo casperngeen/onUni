@@ -25,6 +25,7 @@ export class TestService extends BaseService<Test> {
     )[0];
   }
 
+  // for user in course
   public async viewAllTests(
     courseIdObject: CourseIdDto,
   ): Promise<Partial<Test>[]> {
@@ -76,6 +77,7 @@ export class TestService extends BaseService<Test> {
     return testsObject;
   }
 
+  // for user in course
   public async viewTestInfo(testIdObject: TestIdDto): Promise<Partial<Test>> {
     this.log(`Query for test ${testIdObject.testId}`, this.context);
     this.log(`Querying DB...`, this.context);
@@ -104,6 +106,7 @@ export class TestService extends BaseService<Test> {
     return testInfo;
   }
 
+  // for teacher of course
   public async createNewTest(newTestDetails: NewTestDto): Promise<TestIdDto> {
     const { courseId, ...testInfo } = newTestDetails;
     this.log(`Query to create new test`, this.context);
@@ -129,6 +132,7 @@ export class TestService extends BaseService<Test> {
     return { testId: test.testId };
   }
 
+  // for teacher of course
   public async updateTestInfo(updateTestDetails: UpdateTestDto): Promise<void> {
     const { testId, ...testInfo } = updateTestDetails;
     this.log(
@@ -153,6 +157,7 @@ export class TestService extends BaseService<Test> {
     );
   }
 
+  // for teacher of course
   public async deleteTest(testIdObject: TestIdDto): Promise<void> {
     const { testId } = testIdObject;
     this.log(`Query to delete test ${testId}`, this.context);

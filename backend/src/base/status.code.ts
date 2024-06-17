@@ -39,9 +39,9 @@ export enum AuthException {
 export enum CourseException {
   COURSE_NOT_FOUND = 41,
   ALREADY_IN_COURSE = 42,
-  NO_USER_IN_COURSE = 43,
-  USER_NOT_IN_COURSE = 44,
-  NOT_TEACHER_OF_COURSE = 45,
+  USER_NOT_IN_COURSE = 43,
+  NOT_TEACHER_OF_COURSE = 44,
+  NO_COURSE_ID = 45,
 }
 
 /**

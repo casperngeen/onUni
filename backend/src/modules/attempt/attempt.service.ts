@@ -5,7 +5,6 @@ import {
   AttemptIdDto,
   AttemptInfoDto,
   AttemptResponseDto,
-  NewAttemptWithUserDto,
   Status,
   SubmitAttemptDto,
   UserTestDto,
@@ -70,7 +69,7 @@ export class AttemptService extends BaseService<Attempt> {
   }
 
   // for anyone that takes the course
-  public async createNewAttempt(newAttemptDetails: NewAttemptWithUserDto) {
+  public async createNewAttempt(newAttemptDetails: UserTestDto) {
     const { testId, userId } = newAttemptDetails;
     this.log(
       `Query to create new attempt for user ${userId} for test ${testId}`,

@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ResponseHandler } from 'src/base/base.response';
 import { Response } from 'express';
@@ -18,11 +19,14 @@ import {
   TestInfoDto,
   UpdateTestDto,
 } from './test.entity';
+import { TeacherGuard } from '../course/teacher.guard';
+import { CourseUserGuard } from '../course/course.user.guard';
 
 @Controller('test')
 export class TestController {
   constructor(private readonly testService: TestService) {}
 
+  @UseGuards(CourseUserGuard)
   @Get()
   async viewAllTests(
     @Param('courseId') courseId: number,
@@ -34,6 +38,7 @@ export class TestController {
     response.status(200).json(ResponseHandler.success(tests));
   }
 
+  @UseGuards(CourseUserGuard)
   @Get('/:testId')
   async viewTestInformation(
     @Param('testId') id: number,
@@ -45,6 +50,7 @@ export class TestController {
     response.status(200).json(ResponseHandler.success(test));
   }
 
+  @UseGuards(TeacherGuard)
   @Post()
   async createNewTest(
     @Body('testDetails') testDetails: NewTestDto,
@@ -54,6 +60,7 @@ export class TestController {
     response.status(200).json(ResponseHandler.success(testId));
   }
 
+  @UseGuards(TeacherGuard)
   @Put('/:testId')
   async updateTestInfo(
     @Param('testId') testId: number,
@@ -68,6 +75,7 @@ export class TestController {
     response.status(200).json(ResponseHandler.success());
   }
 
+  @UseGuards(TeacherGuard)
   @Delete('/:testId')
   async deleteTest(@Param('testId') id: number, @Res() response: Response) {
     await this.testService.deleteTest({ testId: id });

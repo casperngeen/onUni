@@ -8,6 +8,7 @@ import {
   Put,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import {
@@ -15,11 +16,12 @@ import {
   CourseIdDto,
   CourseInfoDto,
   NewCourseDetailsDto,
-  NewCourseDto,
   UpdateCourseDto,
 } from './course.entity';
 import { ResponseHandler } from 'src/base/base.response';
 import { Response } from 'express';
+import { TeacherGuard } from './teacher.guard';
+import { CourseUserGuard } from './course.user.guard';
 
 @Controller('course')
 export class CourseController {
@@ -35,6 +37,7 @@ export class CourseController {
     response.status(200).json(ResponseHandler.success(courses));
   }
 
+  @UseGuards(CourseUserGuard)
   @Get('/:courseId')
   async viewCourseInformation(
     @Param('courseId') courseId: number,
@@ -67,71 +70,59 @@ export class CourseController {
     response.status(201).json(ResponseHandler.success(courseId));
   }
 
+  @UseGuards(TeacherGuard)
   @Put('/:courseId')
   async updateCourseInfo(
     @Param('courseId') courseId: number,
-    @Body('courseDetails') courseDetails: NewCourseDto,
-    @Req() request: Request,
+    @Body('courseDetails') courseDetails: NewCourseDetailsDto,
     @Res() response: Response,
   ) {
-    const { userId, role } = request['user'];
     const updateCourseObject: UpdateCourseDto = {
       courseId: courseId,
       ...courseDetails,
-      adminId: userId,
-      role: role,
     };
     await this.courseService.updateCourseInfo(updateCourseObject);
     response.status(200).json(ResponseHandler.success());
   }
 
+  @UseGuards(TeacherGuard)
   @Put('/:courseId')
   async addUsertoCourse(
     @Param('courseId') courseId: number,
     @Body('userId') userId: number,
-    @Req() request: Request,
     @Res() response: Response,
   ) {
-    const { role, userId: adminId } = request['user'];
     const userCourse: AddUserToCourseDto = {
       userId: userId,
       courseId: courseId,
-      adminId: adminId,
-      role: role,
     };
     await this.courseService.addUserToCourse(userCourse);
     response.status(200).json(ResponseHandler.success());
   }
 
+  @UseGuards(TeacherGuard)
   @Delete('/:courseId')
   async removeUserfromCourse(
     @Param('courseId') courseId: number,
     @Body('userId') userId: number,
-    @Req() request: Request,
     @Res() response: Response,
   ) {
-    const { role, userId: adminId } = request['user'];
     const userCourse: AddUserToCourseDto = {
       userId: userId,
       courseId: courseId,
-      adminId: adminId,
-      role: role,
     };
     await this.courseService.removeUserFromCourse(userCourse);
     response.status(200).json(ResponseHandler.success());
   }
 
+  @UseGuards(TeacherGuard)
   @Delete('/:courseId')
   async deleteCourse(
-    @Param('id') courseId: number,
-    @Req() request: Request,
+    @Param('courseId') courseId: number,
     @Res() response: Response,
   ) {
-    const { userId, role } = request['user'];
     await this.courseService.deleteCourse({
       courseId: courseId,
-      adminId: userId,
-      role: role,
     });
     response.status(200).json(ResponseHandler.success());
   }

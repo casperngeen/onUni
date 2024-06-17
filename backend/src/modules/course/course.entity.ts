@@ -72,12 +72,12 @@ export class NewCourseDetailsDto {
 }
 
 export class NewCourseDto extends NewCourseDetailsDto {
-  @IsEnum(Roles)
   @IsNotEmpty()
+  @IsEnum(Roles)
   role: Roles;
 
-  @IsInt()
   @IsNotEmpty()
+  @IsInt()
   adminId: number;
 }
 
@@ -89,17 +89,9 @@ export class AddUserToCourseDto {
   @IsInt()
   @IsNotEmpty()
   courseId: number;
-
-  @IsInt()
-  @IsNotEmpty()
-  adminId: number;
-
-  @IsEnum(Roles)
-  @IsNotEmpty()
-  role: Roles;
 }
 
-export class UpdateCourseDto extends NewCourseDto {
+export class UpdateCourseDto extends NewCourseDetailsDto {
   @IsInt()
   @IsNotEmpty()
   courseId: number;
@@ -125,14 +117,4 @@ export class CourseInfoDto {
   @IsNotEmpty()
   @IsInt()
   courseId: number;
-}
-
-export class DeleteCourseDto extends CourseIdDto {
-  @IsInt()
-  @IsNotEmpty()
-  adminId: number;
-
-  @IsEnum(Roles)
-  @IsNotEmpty()
-  role: Roles;
 }

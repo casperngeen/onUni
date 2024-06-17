@@ -76,26 +76,6 @@ export class Attempt {
   user: User;
 }
 
-export class NewAttemptDto {
-  @IsNotEmpty()
-  @IsISO8601({ strict: true })
-  start: Date;
-
-  @IsOptional()
-  @IsISO8601({ strict: true })
-  end?: Date;
-
-  @IsNotEmpty()
-  @IsInt()
-  testId: number;
-}
-
-export class NewAttemptWithUserDto extends NewAttemptDto {
-  @IsNotEmpty()
-  @IsInt()
-  userId: number;
-}
-
 export class AttemptIdDto {
   @IsNotEmpty()
   @IsInt()
@@ -103,10 +83,6 @@ export class AttemptIdDto {
 }
 
 export class SubmitAttemptInfoDto {
-  @IsNotEmpty()
-  @IsISO8601({ strict: true })
-  submitted: Date;
-
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SubmitQuestionAttemptDto)

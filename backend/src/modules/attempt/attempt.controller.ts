@@ -8,6 +8,7 @@ import {
   Put,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { AttemptService } from './attempt.service';
 import { Response } from 'express';
@@ -15,26 +16,27 @@ import { ResponseHandler } from 'src/base/base.response';
 import {
   AttemptIdDto,
   AttemptInfoDto,
-  NewAttemptDto,
   SubmitAttemptDto,
   SubmitAttemptInfoDto,
 } from './attempt.entity';
 import { SelectOptionDto } from './question.attempt.entity';
+import { CourseUserGuard } from '../course/course.user.guard';
+import { TeacherGuard } from '../course/teacher.guard';
 
 @Controller('attempt')
 export class AttemptController {
   constructor(private readonly attemptService: AttemptService) {}
 
-  // create new attempt (and initalise all question attempts)
+  @UseGuards(CourseUserGuard)
   @Post()
   async createNewAttempt(
-    @Body('attempt') details: NewAttemptDto,
+    @Body('testId') testId: number,
     @Req() request: Request,
     @Res() response: Response,
   ) {
     const { userId } = request['user'];
     const attemptId: AttemptIdDto = await this.attemptService.createNewAttempt({
-      ...details,
+      testId: testId,
       userId: userId,
     });
     response.status(201).json(ResponseHandler.success(attemptId));
@@ -102,7 +104,7 @@ export class AttemptController {
     response.status(200).json(ResponseHandler.success());
   }
 
-  // delete an attempt
+  @UseGuards(TeacherGuard)
   @Delete('/:attemptId')
   async deleteAttempt(
     @Param('attemptId') attemptId: number,

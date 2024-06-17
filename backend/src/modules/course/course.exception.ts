@@ -17,12 +17,6 @@ export class UserAlreadyInCourseException extends BaseException {
   }
 }
 
-export class NoUserInCourseException extends BaseException {
-  constructor() {
-    super(`Course has no users`, 400, CourseException.NO_USER_IN_COURSE);
-  }
-}
-
 export class UserNotInCourseException extends BaseException {
   constructor() {
     super(
@@ -40,5 +34,10 @@ export class NotTeacherOfCourseException extends BaseException {
       403,
       CourseException.NOT_TEACHER_OF_COURSE,
     );
+  }
+}
+export class CourseIdNotFoundException extends BaseException {
+  constructor() {
+    super(`Course ID was not provided`, 400, CourseException.NO_COURSE_ID);
   }
 }

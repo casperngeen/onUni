@@ -5,7 +5,6 @@ import {
   Course,
   CourseIdDto,
   CourseInfoDto,
-  DeleteCourseDto,
   NewCourseDto,
   UpdateCourseDto,
   ViewCourseDto,
@@ -15,7 +14,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Roles, User, UserIdDto } from '../user/user.entity';
 import {
   CourseNotFoundException,
-  NoUserInCourseException,
   NotTeacherOfCourseException,
   UserAlreadyInCourseException,
   UserNotInCourseException,
@@ -73,10 +71,9 @@ export class CourseService extends BaseService<Course> {
     viewCourseObject: ViewCourseDto,
     viewUsers: boolean,
   ) {
-    const { courseId, userId } = viewCourseObject;
+    const { courseId } = viewCourseObject;
     this.log(`Course info query for course ${courseId}`, this.context);
     const course: Course = await this.isCourseInRepo(courseId);
-    this.isUserAllowedToViewCourse(userId, course);
     this.log(
       `Formatting course information for course ${courseId}...`,
       this.context,
@@ -130,11 +127,9 @@ export class CourseService extends BaseService<Course> {
   }
 
   public async addUserToCourse(userCourse: AddUserToCourseDto) {
-    const { userId, courseId, adminId, role } = userCourse;
+    const { userId, courseId } = userCourse;
     this.log(`Query to add user ${userId} to course ${courseId}`, this.context);
     const course: Course = await this.isCourseInRepo(courseId);
-    this.isTeacherOfCourse(role, adminId, course);
-
     this.log(`Current course details: ${JSON.stringify(course)}`, this.context);
     const user: User = await this.isUserInRepo(userId);
     const userInCourse: boolean = this.isUserInCourse(userId, course);
@@ -162,22 +157,16 @@ export class CourseService extends BaseService<Course> {
   }
 
   public async removeUserFromCourse(userCourse: AddUserToCourseDto) {
-    const { userId, courseId, adminId, role } = userCourse;
+    const { userId, courseId } = userCourse;
     this.log(
       `Query to remove user ${userId} from course ${courseId}`,
       this.context,
     );
     const course: Course = await this.isCourseInRepo(courseId);
-    this.isTeacherOfCourse(role, adminId, course);
-    if (course.users.length === 0) {
-      this.error(
-        `Course ${courseId} has no users`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new NoUserInCourseException();
+    const userInCourse = this.isUserInCourse(userId, course);
+    if (!userInCourse) {
+      throw new UserNotInCourseException();
     }
-    this.isUserInCourse(userId, course);
 
     this.log(
       `Removing user ${userId} from course ${courseId}...`,
@@ -192,11 +181,9 @@ export class CourseService extends BaseService<Course> {
     );
   }
 
-  public async deleteCourse(deleteCourseDetails: DeleteCourseDto) {
-    const { courseId, role, adminId } = deleteCourseDetails;
+  public async deleteCourse(courseIdObject: CourseIdDto) {
+    const { courseId } = courseIdObject;
     this.log(`Query to delete course ${courseId}`, this.context);
-    const course: Course = await this.isCourseInRepo(courseId);
-    this.isTeacherOfCourse(role, adminId, course);
     this.log(`Deleting course ${courseId} from DB...`, this.context);
     await this.delete(courseId);
     this.log(`Course ${courseId} deleted from DB`, this.context);
@@ -205,17 +192,14 @@ export class CourseService extends BaseService<Course> {
 
   public async updateCourseInfo(updateCourseObject: UpdateCourseDto) {
     const { courseId } = updateCourseObject;
-    const { role, adminId, ...courseDetails } = updateCourseObject;
     this.log(`Query to update course ${courseId}`, this.context);
-    const course: Course = await this.isCourseInRepo(courseId);
-    this.isTeacherOfCourse(role, adminId, course);
     this.log(`Updating course ${courseId}...`, this.context);
-    await this.update(courseId, courseDetails);
+    await this.update(courseId, updateCourseObject);
     this.log(`Course ${courseId} updated in DB`, this.context);
     this.log(`Query to update course ${courseId} completed`, this.context);
   }
 
-  private isUserInCourse(userId: number, course: Course) {
+  public isUserInCourse(userId: number, course: Course) {
     this.log(
       `Checking if user ${userId} is part of course ${course.courseId}`,
       this.context,
@@ -228,10 +212,9 @@ export class CourseService extends BaseService<Course> {
       }
     }
     userInCourse
-      ? this.error(
+      ? this.log(
           `User ${userId} is not part of course ${course.courseId}`,
           this.context,
-          this.getTrace(),
         )
       : this.log(
           `User ${userId} is part of course ${course.courseId}`,
@@ -240,22 +223,7 @@ export class CourseService extends BaseService<Course> {
     return userInCourse;
   }
 
-  private isUserAllowedToViewCourse(userId: number, course: Course) {
-    this.log(
-      `Checking if user ${userId} is allowed to view course ${course.courseId}...`,
-      this.context,
-    );
-    const userInCourse: boolean = this.isUserInCourse(userId, course);
-    if (!userInCourse) {
-      throw new UserNotInCourseException();
-    }
-    this.log(
-      `User ${userId} is allowed to view course ${course.courseId}`,
-      this.context,
-    );
-  }
-
-  private isTeacherOfCourse(role: Roles, userId: number, course: Course) {
+  public isTeacherOfCourse(role: Roles, userId: number, course: Course) {
     this.log(
       `Checking if user ${userId} is a teacher of course ${course.courseId}...`,
       this.context,
@@ -274,9 +242,10 @@ export class CourseService extends BaseService<Course> {
       `User ${userId} is a teacher of course ${course.courseId}`,
       this.context,
     );
+    return result;
   }
 
-  private async isCourseInRepo(courseId: number) {
+  public async isCourseInRepo(courseId: number) {
     this.log(`Checking if course ${courseId} is in DB...`, this.context);
     const course: Course = await this.findOne({
       relations: ['users'],
