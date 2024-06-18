@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Question } from '../question/question.entity.js';
 import { Attempt } from './attempt.entity.js';
-import { IsBoolean, IsEnum, IsInt, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty } from 'class-validator';
 
 export enum AnswerStatus {
   CORRECT = 'correct',
@@ -84,8 +84,14 @@ export class UpdateQuestionAttemptDto extends SelectOptionDto {
   @IsInt()
   @IsNotEmpty()
   attemptId: number;
+}
 
+export class RedisOptionDto {
   @IsNotEmpty()
-  @IsBoolean()
-  fromUser: boolean;
+  @IsEnum(AnswerStatus)
+  answerStatus: AnswerStatus;
+
+  @IsInt()
+  @IsNotEmpty()
+  selectedOptionId: number;
 }

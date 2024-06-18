@@ -7,12 +7,14 @@ import { Attempt } from './attempt.entity';
 import { QuestionAttempt } from './question.attempt.entity';
 import { AttemptController } from './attempt.controller';
 import { AttemptService } from './attempt.service';
+import { CourseModule } from '../course/course.module';
 
 @Module({
   imports: [
     UserModule,
     TestModule,
     QuestionModule,
+    CourseModule,
     TypeOrmModule.forFeature([Attempt, QuestionAttempt]),
   ],
   controllers: [AttemptController],

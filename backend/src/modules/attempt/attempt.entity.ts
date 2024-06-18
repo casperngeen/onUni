@@ -24,13 +24,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { QuestionInfoDto } from '../question/question.entity';
-
-export enum Status {
-  SUBMIT = 'submitted',
-  AUTOSUBMIT = 'auto-submitted',
-  PROGRESS = 'in-progress',
-  CALCULATING = 'calculating',
-}
+import { Status } from './attempt.enum';
 
 @Entity()
 export class Attempt {

@@ -24,3 +24,9 @@ export class DatabaseException extends BaseException {
     super('Error in database operation', 400, GeneralException.DATABASE_ERROR);
   }
 }
+
+export class RedisException extends BaseException {
+  constructor() {
+    super('Error in redis operation', 400, GeneralException.REDIS_ERROR);
+  }
+}

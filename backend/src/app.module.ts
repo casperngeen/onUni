@@ -15,10 +15,18 @@ import { TestModule } from './modules/test/test.module';
 import { CourseModule } from './modules/course/course.module';
 import { AttemptModule } from './modules/attempt/attempt.module';
 import { QuestionModule } from './modules/question/question.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    RedisModule.forRootAsync({
+      useFactory: () => ({
+        // single means single node/server, cluster is multiple servers
+        type: 'single',
+        url: 'redis://localhost:6379',
+      }),
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

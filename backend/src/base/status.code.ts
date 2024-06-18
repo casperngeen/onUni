@@ -10,6 +10,7 @@ export enum GeneralException {
   UNSPECIFIED = 10,
   INVALID_INPUT = 11,
   DATABASE_ERROR = 12,
+  REDIS_ERROR = 13,
 }
 
 /**

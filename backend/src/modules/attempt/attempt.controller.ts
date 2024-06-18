@@ -98,7 +98,6 @@ export class AttemptController {
   ) {
     await this.attemptService.saveQuestionAttempt({
       attemptId: attemptId,
-      fromUser: true,
       ...selectOptionDetails,
     });
     response.status(200).json(ResponseHandler.success());

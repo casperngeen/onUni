@@ -5,15 +5,16 @@ import {
   AttemptIdDto,
   AttemptInfoDto,
   AttemptResponseDto,
-  Status,
   SubmitAttemptDto,
   UserTestDto,
 } from './attempt.entity';
+import { Status } from './attempt.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AnswerStatus,
   QuestionAttempt,
   QuestionAttemptResponseDto,
+  RedisOptionDto,
   UpdateQuestionAttemptDto,
 } from './question.attempt.entity';
 import { Test } from '../test/test.entity';
@@ -38,9 +39,11 @@ import {
 } from '../user/user.exception';
 import { TestNotFoundException } from '../test/test.exception';
 import { Option } from '../question/option.entity';
-import { DatabaseException } from 'src/base/base.exception';
+import { DatabaseException, RedisException } from 'src/base/base.exception';
 import { QuestionNotFoundException } from '../question/question.exception';
 import { UserNotInCourseException } from '../course/course.exception';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import { Redis } from 'ioredis';
 
 @Injectable()
 export class AttemptService extends BaseService<Attempt> {
@@ -59,6 +62,9 @@ export class AttemptService extends BaseService<Attempt> {
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
+    @InjectRedis()
+    private readonly redis: Redis,
 
     loggerService: LoggerService,
   ) {
@@ -205,7 +211,7 @@ export class AttemptService extends BaseService<Attempt> {
   }
 
   public async submitAttempt(submitAttemptDetails: SubmitAttemptDto) {
-    const { userId, attemptId, questionAttempts } = submitAttemptDetails;
+    const { userId, attemptId } = submitAttemptDetails;
     this.log(`Query to submit attempt ${attemptId}`, this.context);
     const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
     if (attempt.status === Status.SUBMIT) {
@@ -241,24 +247,45 @@ export class AttemptService extends BaseService<Attempt> {
       status = Status.AUTOSUBMIT;
     }
     this.log(
+      `Retrieving question attempts of attempt ${attemptId} from Redis`,
+      this.context,
+    );
+    const savedAttempts: Map<number, RedisOptionDto> = new Map();
+    await this.getQuestionAttemptsFromRedis(attemptId, savedAttempts);
+
+    this.log(
       `Submitting question attempts of attempt ${attemptId}...`,
       this.context,
     );
     let score: number = 0;
-    for (const qAttempt of questionAttempts) {
-      score += await this.saveQuestionAttempt({
-        questionId: qAttempt.questionId,
-        selectedOptionId: qAttempt.selectedOptionId,
-        attemptId: attemptId,
-        fromUser: false,
-      });
-    }
+    await Promise.all(
+      attempt.test.questions.map(async (question) => {
+        if (savedAttempts.has(question.questionId)) {
+          this.log(
+            `Saving answer for question ${question.questionId} for attempt ${attemptId}`,
+            this.context,
+          );
+          const result = savedAttempts.get(question.questionId);
+          await this.questionAttemptRepository.save({
+            ...result,
+            attempt: attempt,
+          });
+          if (result.answerStatus === AnswerStatus.CORRECT) {
+            score++;
+          }
+          this.log(
+            `Answer for question ${question.questionId} for attempt ${attemptId} saved`,
+            this.context,
+          );
+        }
+      }),
+    );
     this.log(
       `All question attempts of attempt ${attemptId} submitted`,
       this.context,
     );
     this.log(
-      `Max score of test ${attempt.test.testId} is ${attempt.test.maxScore}`,
+      `Max score of test ${attempt.test.testId} is ${attempt.test.questions.length}`,
       this.context,
     );
     this.log(
@@ -278,14 +305,13 @@ export class AttemptService extends BaseService<Attempt> {
   public async saveQuestionAttempt(
     selectOptionDetails: UpdateQuestionAttemptDto,
   ) {
-    const { attemptId, selectedOptionId, questionId, fromUser } =
-      selectOptionDetails;
+    const { attemptId, selectedOptionId, questionId } = selectOptionDetails;
     this.log(
-      `Query to save question attempt of question ${questionId} for attempt ${attemptId} completed`,
+      `Query to save question attempt of question ${questionId} for attempt ${attemptId}`,
       this.context,
     );
     const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
-    if (fromUser && attempt.end && new Date() > attempt.end) {
+    if (attempt.end && new Date() > attempt.end) {
       this.error(
         `User cannot update answer as time limit for attempt ${attemptId} has exceeded`,
         this.context,
@@ -299,27 +325,35 @@ export class AttemptService extends BaseService<Attempt> {
       selectedOptionId,
     )[0];
     this.log(
-      `Saving question ${questionId} of attempt ${attemptId} to DB...`,
+      `Saving question ${questionId} of attempt ${attemptId} to Redis...`,
       this.context,
     );
-    const questionAttemptDetails = {
-      answerStatus: option.isCorrect
-        ? AnswerStatus.CORRECT
-        : AnswerStatus.INCORRECT,
-      selectedOptionId: selectedOptionId,
-      question: question,
-      attempt: attempt,
-    };
-    await this.questionAttemptRepository.save(questionAttemptDetails);
-    this.log(
-      `Saved question ${questionId} of attempt ${attemptId} to DB`,
-      this.context,
-    );
+
+    const answerStatus: AnswerStatus = option.isCorrect
+      ? AnswerStatus.CORRECT
+      : AnswerStatus.INCORRECT;
+
+    try {
+      await this.redis.hset(
+        `attempt:${attemptId}:question:${questionId}`,
+        `answerStatus`,
+        answerStatus,
+        `selectedOptionId`,
+        selectedOptionId,
+      );
+      this.log(
+        `Saved question ${questionId} of attempt ${attemptId} to Redis`,
+        this.context,
+      );
+    } catch (error) {
+      this.error(`${error}`, this.context, this.getTrace());
+      throw new RedisException();
+    }
+
     this.log(
       `Query to save question attempt of question ${questionId} for attempt ${attemptId} completed`,
       this.context,
     );
-    return option.isCorrect ? 1 : 0;
   }
 
   public async deleteAttempt(attemptIdObject: AttemptIdDto) {
@@ -508,5 +542,55 @@ export class AttemptService extends BaseService<Attempt> {
       throw new UnauthorisedUserException();
     }
     this.log(`Attempt ${attemptId} belongs to user ${userId}`, this.context);
+  }
+
+  private async getQuestionAttemptsFromRedis(
+    attemptId: number,
+    result: Map<number, RedisOptionDto>,
+  ) {
+    try {
+      this.log(
+        `Retrieving question attempts of attempt ${attemptId} from Redis...`,
+        this.context,
+      );
+      const keys = await this.redis.keys(`attempt:${attemptId}:question:*`);
+      const results = await Promise.all(
+        keys.map((key) => this.redis.hgetall(key)),
+      );
+      this.log(
+        `Retrieved all question attempts of attempt ${attemptId} from Redis`,
+        this.context,
+      );
+      this.log(
+        `Formatting and hashing question attempts of attempt ${attemptId} to hashmap...`,
+        this.context,
+      );
+      keys.forEach((key, index) => {
+        const questionId = parseInt(key.split(':')[3]);
+        this.log(
+          `Formatting and hashing question attempt of question ${questionId}...`,
+          this.context,
+        );
+        const { answerStatus, selectedOptionId } = results[index];
+        const status: AnswerStatus =
+          AnswerStatus[answerStatus as keyof typeof AnswerStatus];
+        const optionId: number = parseInt(selectedOptionId);
+        result.set(questionId, {
+          answerStatus: status,
+          selectedOptionId: optionId,
+        });
+        this.log(
+          `Formatted and hashed question attempt of question ${questionId}`,
+          this.context,
+        );
+      });
+      this.log(
+        `Question attempts of attempt ${attemptId} have been formatted and hashed to hashmap`,
+        this.context,
+      );
+    } catch (error) {
+      this.error(`${error}`, this.context, this.getTrace());
+      throw new RedisException();
+    }
   }
 }
