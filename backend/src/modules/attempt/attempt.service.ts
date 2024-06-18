@@ -33,10 +33,7 @@ import {
   ReachedAttemptLimitException,
   TestNotAttemptedException,
 } from './attempt.exception';
-import {
-  UnauthorisedUserException,
-  UserNotFoundException,
-} from '../user/user.exception';
+import { UserNotFoundException } from '../user/user.exception';
 import { TestNotFoundException } from '../test/test.exception';
 import { Option } from '../question/option.entity';
 import { DatabaseException, RedisException } from 'src/base/base.exception';
@@ -230,7 +227,6 @@ export class AttemptService extends BaseService<Attempt> {
       );
       throw new CalculatingScoreOfAttemptException();
     }
-    await this.isUserAllowedToSubmit(attempt, userId);
     this.log(
       `Updating status of attempt ${attemptId} to CALCULATING...`,
       this.context,
@@ -363,6 +359,26 @@ export class AttemptService extends BaseService<Attempt> {
     this.log(`Deleting attempt from DB...`, this.context);
     await this.delete(attemptId);
     this.log(`Query to delete attempt ${attemptId} completed`, this.context);
+  }
+
+  public async getAttemptFromRepo(id: number): Promise<Attempt> {
+    this.log(`Retrieving attempt ${id} from DB...`, this.context);
+    const attempt: Attempt = await this.findOne({
+      relations: [
+        'questionAttempts',
+        'user',
+        'test',
+        'test.course',
+        'test.course.users',
+      ],
+      where: { attemptId: id },
+    });
+    if (!attempt) {
+      this.error(`Attempt ${id} not found`, this.context, this.getTrace());
+      throw new AttemptNotFoundException();
+    }
+    this.log(`Attempt ${id} retrieved`, this.context);
+    return attempt;
   }
 
   private async checkIfAttemptInRepo(id: number): Promise<Attempt> {
@@ -525,23 +541,6 @@ export class AttemptService extends BaseService<Attempt> {
         };
       }),
     };
-  }
-
-  private async isUserAllowedToSubmit(attempt: Attempt, userId: number) {
-    const { attemptId } = attempt;
-    this.log(
-      `Checking if attempt ${attemptId} belongs to user ${userId}`,
-      this.context,
-    );
-    if (attempt.user.userId !== userId) {
-      this.error(
-        `Attempt ${attemptId} does not belong to user ${userId}`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new UnauthorisedUserException();
-    }
-    this.log(`Attempt ${attemptId} belongs to user ${userId}`, this.context);
   }
 
   private async getQuestionAttemptsFromRedis(

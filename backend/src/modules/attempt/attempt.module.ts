@@ -8,6 +8,8 @@ import { QuestionAttempt } from './question.attempt.entity';
 import { AttemptController } from './attempt.controller';
 import { AttemptService } from './attempt.service';
 import { CourseModule } from '../course/course.module';
+import { AttemptTeacherGuard } from './attempt.teacher.guard';
+import { AttemptUserGuard } from './attempt.user.guard';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { CourseModule } from '../course/course.module';
     TypeOrmModule.forFeature([Attempt, QuestionAttempt]),
   ],
   controllers: [AttemptController],
-  providers: [AttemptService],
+  providers: [AttemptService, AttemptTeacherGuard, AttemptUserGuard],
   exports: [AttemptService, TypeOrmModule],
 })
 export class AttemptModule {}

@@ -78,6 +78,7 @@ export enum AttemptException {
   ALREADY_SUBMITTED = 84,
   CALCULATING_SCORE = 85,
   TIME_LIMIT_EXCEEDED = 86,
+  NO_ATTEMPT_ID = 87,
 }
 
 /**

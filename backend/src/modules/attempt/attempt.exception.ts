@@ -79,3 +79,9 @@ export class AttemptTimeLimitExceededException extends BaseException {
     );
   }
 }
+
+export class AttemptIdNotFoundException extends BaseException {
+  constructor() {
+    super(`Attempt ID was not provided`, 400, AttemptException.NO_ATTEMPT_ID);
+  }
+}

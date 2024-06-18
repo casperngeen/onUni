@@ -22,6 +22,8 @@ import {
 import { SelectOptionDto } from './question.attempt.entity';
 import { CourseUserGuard } from '../course/course.user.guard';
 import { TeacherGuard } from '../course/teacher.guard';
+import { AttemptUserGuard } from './attempt.user.guard';
+import { AttemptTeacherGuard } from './attempt.teacher.guard';
 
 @Controller('attempt')
 export class AttemptController {
@@ -43,6 +45,7 @@ export class AttemptController {
   }
 
   // get all attempts for one user for one test (and all related question attempts)
+  @UseGuards(CourseUserGuard)
   @Get()
   async getAllAttemptsOfUserForTest(
     @Body('testId') testId: number,
@@ -60,6 +63,7 @@ export class AttemptController {
   }
 
   // get single attempt (with all related question attempts)
+  @UseGuards(AttemptTeacherGuard)
   @Get('/:attemptId')
   async getAttempt(
     @Param('attemptId') attemptId: number,
@@ -72,6 +76,7 @@ export class AttemptController {
   }
 
   // update attempt information (changing status of submission)
+  @UseGuards(AttemptUserGuard)
   @Put('/:attemptId')
   async submitAttempt(
     @Param('attemptId') attemptId: number,
@@ -90,6 +95,7 @@ export class AttemptController {
     response.status(200).json(ResponseHandler.success());
   }
 
+  @UseGuards(AttemptUserGuard)
   @Put('/:attemptId')
   async saveQuestionAttempt(
     @Body() selectOptionDetails: SelectOptionDto,
