@@ -1,5 +1,6 @@
 import { Test } from 'src/modules/test/test.entity';
-import { Roles, User } from '../user/user.entity';
+import { User } from '../user/user.entity';
+import { Roles } from '../user/user.enum';
 import {
   Entity,
   Column,

@@ -22,6 +22,7 @@ import { ResponseHandler } from 'src/base/base.response';
 import { Response } from 'express';
 import { TeacherGuard } from './teacher.guard';
 import { CourseUserGuard } from './course.user.guard';
+import { Roles } from '../user/user.enum';
 
 @Controller('course')
 export class CourseController {
@@ -62,10 +63,11 @@ export class CourseController {
     @Res() response: Response,
   ) {
     const { userId, role } = request['user'];
+    const userRole: Roles = Roles[role as keyof typeof Roles];
     const courseId: CourseIdDto = await this.courseService.createNewCourse({
       ...courseDetails,
       adminId: userId,
-      role: role,
+      role: userRole,
     });
     response.status(201).json(ResponseHandler.success(courseId));
   }

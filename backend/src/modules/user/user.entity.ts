@@ -1,4 +1,5 @@
 import { Attempt } from '../attempt/attempt.entity';
+import { Roles } from './user.enum';
 import { Course } from 'src/modules/course/course.entity';
 import {
   Entity,
@@ -9,11 +10,6 @@ import {
   JoinTable,
 } from 'typeorm';
 import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator';
-
-export enum Roles {
-  STUDENT = 'student',
-  TEACHER = 'teacher',
-}
 
 @Entity('onuni_user')
 export class User {

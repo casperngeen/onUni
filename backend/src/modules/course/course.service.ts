@@ -11,7 +11,8 @@ import {
 } from './course.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Roles, User, UserIdDto } from '../user/user.entity';
+import { User, UserIdDto } from '../user/user.entity';
+import { Roles } from '../user/user.enum';
 import {
   CourseNotFoundException,
   NotTeacherOfCourseException,

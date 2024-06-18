@@ -16,18 +16,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-
-enum ScoringFormats {
-  AVERAGE = 'average',
-  HIGHEST = 'highest',
-  LATEST = 'latest',
-}
-
-enum TestTypes {
-  PRACTICE = 'practice',
-  EXAM = 'exam',
-  QUIZ = 'quiz',
-}
+import { ScoringFormats } from './test.enum';
+import { TestTypes } from './test.enum';
 
 @Entity()
 export class Test {
