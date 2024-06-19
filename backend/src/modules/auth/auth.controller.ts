@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Put,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Param, Post, Put, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   AuthTokenDto,
@@ -39,7 +30,7 @@ export class AuthController {
   }
 
   @Public()
-  @Get('forget')
+  @Post('forget')
   async forgetPassword(@Body() emailDto: EmailDto, @Res() response: Response) {
     await this.authService.forgetPassword(emailDto);
     response.status(200).json(ResponseHandler.success());

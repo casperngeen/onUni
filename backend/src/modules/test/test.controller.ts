@@ -22,12 +22,12 @@ import {
 import { TeacherGuard } from '../course/teacher.guard';
 import { CourseUserGuard } from '../course/course.user.guard';
 
-@Controller('test')
+@Controller()
 export class TestController {
   constructor(private readonly testService: TestService) {}
 
   @UseGuards(CourseUserGuard)
-  @Get()
+  @Get('course/:courseId/tests')
   async viewAllTests(
     @Param('courseId') courseId: number,
     @Res() response: Response,
@@ -39,7 +39,7 @@ export class TestController {
   }
 
   @UseGuards(CourseUserGuard)
-  @Get('/:testId')
+  @Get('test/:testId')
   async viewTestInformation(
     @Param('testId') id: number,
     @Res() response: Response,
@@ -51,7 +51,7 @@ export class TestController {
   }
 
   @UseGuards(TeacherGuard)
-  @Post()
+  @Post('test')
   async createNewTest(
     @Body('testDetails') testDetails: NewTestDto,
     @Res() response: Response,
@@ -61,7 +61,7 @@ export class TestController {
   }
 
   @UseGuards(TeacherGuard)
-  @Put('/:testId')
+  @Put('test/:testId')
   async updateTestInfo(
     @Param('testId') testId: number,
     @Body('testDetails') testDetails: TestInfoDto,
@@ -76,7 +76,7 @@ export class TestController {
   }
 
   @UseGuards(TeacherGuard)
-  @Delete('/:testId')
+  @Delete('test/:testId')
   async deleteTest(@Param('testId') id: number, @Res() response: Response) {
     await this.testService.deleteTest({ testId: id });
     response.status(200).json(ResponseHandler.success());

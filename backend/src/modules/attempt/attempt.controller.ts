@@ -25,12 +25,12 @@ import { TeacherGuard } from '../course/teacher.guard';
 import { AttemptUserGuard } from './attempt.user.guard';
 import { AttemptTeacherGuard } from './attempt.teacher.guard';
 
-@Controller('attempt')
+@Controller()
 export class AttemptController {
   constructor(private readonly attemptService: AttemptService) {}
 
   @UseGuards(CourseUserGuard)
-  @Post()
+  @Post('attempt')
   async createNewAttempt(
     @Body('testId') testId: number,
     @Req() request: Request,
@@ -46,7 +46,7 @@ export class AttemptController {
 
   // get all attempts for one user for one test (and all related question attempts)
   @UseGuards(CourseUserGuard)
-  @Get()
+  @Get('test/:testId/attempts')
   async getAllAttemptsOfUserForTest(
     @Body('testId') testId: number,
     @Req() request: Request,
@@ -64,7 +64,7 @@ export class AttemptController {
 
   // get single attempt (with all related question attempts)
   @UseGuards(AttemptTeacherGuard)
-  @Get('/:attemptId')
+  @Get('attempt/:attemptId')
   async getAttempt(
     @Param('attemptId') attemptId: number,
     @Res() response: Response,
@@ -77,7 +77,7 @@ export class AttemptController {
 
   // update attempt information (changing status of submission)
   @UseGuards(AttemptUserGuard)
-  @Put('/:attemptId')
+  @Put('attempt/:attemptId')
   async submitAttempt(
     @Param('attemptId') attemptId: number,
     // only include questions that have a selected answer (exclude all unselected options)
@@ -96,7 +96,7 @@ export class AttemptController {
   }
 
   @UseGuards(AttemptUserGuard)
-  @Put('/:attemptId')
+  @Put('attempt/:attemptId')
   async saveQuestionAttempt(
     @Body() selectOptionDetails: SelectOptionDto,
     @Param('attemptId') attemptId: number,
@@ -110,7 +110,7 @@ export class AttemptController {
   }
 
   @UseGuards(TeacherGuard)
-  @Delete('/:attemptId')
+  @Delete('attempt/:attemptId')
   async deleteAttempt(
     @Param('attemptId') attemptId: number,
     @Res() response: Response,

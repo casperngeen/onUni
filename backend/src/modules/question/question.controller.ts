@@ -26,12 +26,12 @@ import {
 import { TeacherGuard } from '../course/teacher.guard';
 import { CourseUserGuard } from '../course/course.user.guard';
 
-@Controller('question')
+@Controller()
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
   @UseGuards(TeacherGuard)
-  @Post()
+  @Post('question')
   async createNewQuestion(
     @Body('questionInfo') questionInfo: NewQuestionDto,
     @Res() response: Response,
@@ -42,7 +42,7 @@ export class QuestionController {
   }
 
   @UseGuards(TeacherGuard)
-  @Post('/:questionId')
+  @Post('question/:questionId')
   async createNewOptions(
     @Param('questionId') questionId: number,
     @Body('optionInfo') optionInfos: OptionInfoDto[],
@@ -58,9 +58,9 @@ export class QuestionController {
   }
 
   @UseGuards(CourseUserGuard)
-  @Get()
+  @Get('test/:testId/questions')
   async getAllQuestions(
-    @Body('testId') testId: number,
+    @Param('testId') testId: number,
     @Res() response: Response,
   ) {
     const allQuestions: QuestionInfoDto[] =
@@ -71,7 +71,7 @@ export class QuestionController {
   }
 
   @UseGuards(CourseUserGuard)
-  @Get('/:questionId')
+  @Get('question/:questionId')
   async getQuestion(
     @Param('questionId') questionId: number,
     @Res() response: Response,
@@ -83,7 +83,7 @@ export class QuestionController {
   }
 
   @UseGuards(TeacherGuard)
-  @Put('/:questionId')
+  @Put('question/:questionId')
   async updateQuestion(
     @Param('questionId') questionId: number,
     @Body('questionText') questionText: string,
@@ -113,7 +113,7 @@ export class QuestionController {
   }
 
   @UseGuards(TeacherGuard)
-  @Delete('/:questionId')
+  @Delete('question/:questionId')
   async deleteQuestion(
     @Param('questionId') questionId: number,
     @Res() response: Response,

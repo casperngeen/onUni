@@ -12,11 +12,11 @@ import { Response } from 'express';
 import { ResponseHandler } from 'src/base/base.response';
 import { NewUserDto, User, UserIdDto } from './user.entity';
 
-@Controller('user')
+@Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('/:courseId/student')
+  @Get('course/:courseId/students')
   async findStudentsInCourse(
     @Param('courseId') id: number,
     @Res() response: Response,
@@ -28,7 +28,7 @@ export class UserController {
     response.status(200).json(ResponseHandler.success(students));
   }
 
-  @Get('/:courseId/student')
+  @Get('course/:courseId/teachers')
   async findTeachersInCourse(
     @Param('courseId') id: number,
     @Res() response: Response,
@@ -40,7 +40,7 @@ export class UserController {
     response.status(200).json(ResponseHandler.success(teachers));
   }
 
-  @Post('teacher')
+  @Post('user/teacher')
   async createNewTeacher(
     @Body('userDetails') userDetails: NewUserDto,
     @Res() response: Response,
@@ -50,7 +50,7 @@ export class UserController {
     response.status(201).json(ResponseHandler.success(userId));
   }
 
-  @Post('student')
+  @Post('user/student')
   async createNewStudent(
     @Body('userDetails') userDetails: NewUserDto,
     @Res() response: Response,
@@ -69,7 +69,7 @@ export class UserController {
 
   //   }
 
-  @Delete('/:userId')
+  @Delete('user/:userId')
   async removeUser(@Param('userId') id: number, @Res() response: Response) {
     await this.userService.removeUser({ userId: id });
     response.status(200).json(ResponseHandler.success());
