@@ -1,0 +1,17 @@
+.container {
+    justify-content: space-between;
+}
+
+.leftGroup {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    grid-gap: 10px;
+    justify-self: flex-start;
+}
+
+//File casper-customization.scss
+
+$blue: #something;
+
+import 'casper-customization';
+import 'bootstrap.scss';
