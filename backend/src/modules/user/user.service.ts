@@ -92,11 +92,7 @@ export class UserService extends BaseService<User> {
    * @param email String representing email
    * @param role Role of user (Student/Teacher)
    */
-  private async createNewUser(
-    email: string,
-    profilePic: string,
-    role: Roles,
-  ): Promise<UserIdDto> {
+  private async createNewUser(email: string, role: Roles): Promise<UserIdDto> {
     this.log(`Query to create new ${role} with email ${email}`, this.context);
     this.log('Checking for duplicates...', this.context);
     const user: User = await this.findOne({ where: { email: email } });
@@ -120,7 +116,7 @@ export class UserService extends BaseService<User> {
       passwordHash: hash,
       role: role,
       email: email,
-      profilePic: profilePic,
+      profilePic: null,
       courses: [],
       attempts: [],
     });
@@ -137,11 +133,7 @@ export class UserService extends BaseService<User> {
    * @param emailObject Object containing email
    */
   public async createNewStudent(userDetails: NewUserDto): Promise<UserIdDto> {
-    return await this.createNewUser(
-      userDetails.email,
-      userDetails.profilePic,
-      Roles.STUDENT,
-    );
+    return await this.createNewUser(userDetails.email, Roles.STUDENT);
   }
 
   /**
@@ -149,11 +141,7 @@ export class UserService extends BaseService<User> {
    * @param emailObject Object containing email
    */
   public async createNewTeacher(userDetails: NewUserDto): Promise<UserIdDto> {
-    return await this.createNewUser(
-      userDetails.email,
-      userDetails.profilePic,
-      Roles.TEACHER,
-    );
+    return await this.createNewUser(userDetails.email, Roles.TEACHER);
   }
 
   async updateUserDetails() {}

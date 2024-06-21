@@ -48,7 +48,7 @@ export class AttemptController {
   @UseGuards(CourseUserGuard)
   @Get('test/:testId/attempts')
   async getAllAttemptsOfUserForTest(
-    @Body('testId') testId: number,
+    @Param('testId') testId: number,
     @Req() request: Request,
     @Res() response: Response,
   ) {
@@ -110,7 +110,7 @@ export class AttemptController {
   }
 
   @UseGuards(TeacherGuard)
-  @Delete('attempt/:attemptId')
+  @Delete('/:attemptId')
   async deleteAttempt(
     @Param('attemptId') attemptId: number,
     @Res() response: Response,

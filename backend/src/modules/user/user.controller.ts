@@ -42,11 +42,12 @@ export class UserController {
 
   @Post('user/teacher')
   async createNewTeacher(
-    @Body('userDetails') userDetails: NewUserDto,
+    @Body('email') email: string,
     @Res() response: Response,
   ) {
-    const userId: UserIdDto =
-      await this.userService.createNewTeacher(userDetails);
+    const userId: UserIdDto = await this.userService.createNewTeacher({
+      email: email,
+    });
     response.status(201).json(ResponseHandler.success(userId));
   }
 
@@ -70,8 +71,8 @@ export class UserController {
   //   }
 
   @Delete('user/:userId')
-  async removeUser(@Param('userId') id: number, @Res() response: Response) {
-    await this.userService.removeUser({ userId: id });
+  async removeUser(@Param('userId') userId: number, @Res() response: Response) {
+    await this.userService.removeUser({ userId: userId });
     response.status(200).json(ResponseHandler.success());
   }
 }

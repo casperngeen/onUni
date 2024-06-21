@@ -31,7 +31,7 @@ export class Test {
   description: string;
 
   @Column({ type: 'date', nullable: true })
-  deadline?: Date;
+  deadline?: string;
 
   @Column({
     type: 'enum',
@@ -84,7 +84,7 @@ export class TestInfoDto {
 
   @IsDate()
   @IsOptional()
-  deadline?: Date;
+  deadline?: string;
 
   @IsEnum(ScoringFormats)
   @IsOptional()

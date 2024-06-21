@@ -33,7 +33,7 @@ export class QuestionController {
   @UseGuards(TeacherGuard)
   @Post('question')
   async createNewQuestion(
-    @Body('questionInfo') questionInfo: NewQuestionDto,
+    @Body() questionInfo: NewQuestionDto,
     @Res() response: Response,
   ) {
     const questionId: QuestionIdDto =

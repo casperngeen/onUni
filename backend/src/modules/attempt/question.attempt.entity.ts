@@ -2,11 +2,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Question } from '../question/question.entity.js';
 import { Attempt } from './attempt.entity.js';
 import { IsEnum, IsInt, IsNotEmpty } from 'class-validator';
-
-export enum AnswerStatus {
-  CORRECT = 'correct',
-  INCORRECT = 'incorrect',
-}
+import { AnswerStatus } from './attempt.enum.js';
 
 @Entity()
 export class QuestionAttempt {

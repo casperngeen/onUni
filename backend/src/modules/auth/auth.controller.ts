@@ -29,10 +29,11 @@ export class AuthController {
     response.status(201).json(ResponseHandler.success());
   }
 
+  // return url to change pw
   @Public()
   @Post('forget')
-  async forgetPassword(@Body() emailDto: EmailDto, @Res() response: Response) {
-    await this.authService.forgetPassword(emailDto);
+  async forgetPassword(@Body() email: EmailDto, @Res() response: Response) {
+    await this.authService.forgetPassword(email);
     response.status(200).json(ResponseHandler.success());
   }
 

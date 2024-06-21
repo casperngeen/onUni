@@ -76,10 +76,6 @@ export class NewUserDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
-
-  @IsNotEmpty()
-  @IsString()
-  profilePic: string;
 }
 
 export class SignUpDto extends LoginDto {

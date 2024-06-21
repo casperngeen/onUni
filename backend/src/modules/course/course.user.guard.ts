@@ -30,7 +30,7 @@ export class CourseUserGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
     const { userId } = request['user'];
-    if (!request.body.courseId && !request.params.courseId) {
+    if (!request.query.courseId && !request.params.courseId) {
       this.loggerService.error(
         `Course ID not provided`,
         this.context,
@@ -39,8 +39,8 @@ export class CourseUserGuard implements CanActivate {
       throw new CourseIdNotFoundException();
     }
     let courseId: number;
-    if (request.body.courseId) {
-      courseId = request.body.courseId;
+    if (request.query.courseId) {
+      courseId = parseInt(request.query.courseId as string);
     } else {
       courseId = parseInt(request.params.courseId);
     }

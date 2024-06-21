@@ -23,6 +23,7 @@ import { Response } from 'express';
 import { TeacherGuard } from './teacher.guard';
 import { CourseUserGuard } from './course.user.guard';
 import { Roles } from '../user/user.enum';
+import { UserIdDto } from '../user/user.entity';
 
 @Controller('course')
 export class CourseController {
@@ -91,11 +92,11 @@ export class CourseController {
   @Put('/:courseId')
   async addUsertoCourse(
     @Param('courseId') courseId: number,
-    @Body('userId') userId: number,
+    @Body('userId') userId: UserIdDto,
     @Res() response: Response,
   ) {
     const userCourse: AddUserToCourseDto = {
-      userId: userId,
+      ...userId,
       courseId: courseId,
     };
     await this.courseService.addUserToCourse(userCourse);

@@ -65,11 +65,11 @@ export class NewCourseDetailsDto {
 
   @IsNotEmpty()
   @IsISO8601({ strict: true })
-  startDate: Date;
+  startDate: string;
 
   @IsNotEmpty()
   @IsISO8601({ strict: true })
-  endDate: Date;
+  endDate: string;
 }
 
 export class NewCourseDto extends NewCourseDetailsDto {
@@ -109,11 +109,11 @@ export class CourseInfoDto {
 
   @IsNotEmpty()
   @IsISO8601({ strict: true })
-  startDate: Date;
+  startDate: string;
 
   @IsNotEmpty()
   @IsISO8601({ strict: true })
-  endDate: Date;
+  endDate: string;
 
   @IsNotEmpty()
   @IsInt()

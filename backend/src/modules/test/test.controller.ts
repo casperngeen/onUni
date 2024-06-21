@@ -53,7 +53,7 @@ export class TestController {
   @UseGuards(TeacherGuard)
   @Post('test')
   async createNewTest(
-    @Body('testDetails') testDetails: NewTestDto,
+    @Body() testDetails: NewTestDto,
     @Res() response: Response,
   ) {
     const testId: TestIdDto = await this.testService.createNewTest(testDetails);
@@ -64,7 +64,7 @@ export class TestController {
   @Put('test/:testId')
   async updateTestInfo(
     @Param('testId') testId: number,
-    @Body('testDetails') testDetails: TestInfoDto,
+    @Body() testDetails: TestInfoDto,
     @Res() response: Response,
   ) {
     const updateTestDetails: UpdateTestDto = {

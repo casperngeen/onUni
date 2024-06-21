@@ -8,10 +8,9 @@ import {
   SubmitAttemptDto,
   UserTestDto,
 } from './attempt.entity';
-import { Status } from './attempt.enum';
+import { AnswerStatus, Status } from './attempt.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  AnswerStatus,
   QuestionAttempt,
   QuestionAttemptResponseDto,
   RedisOptionDto,
