@@ -529,6 +529,9 @@ export class AttemptService extends BaseService<Attempt> {
   ): AttemptResponseDto {
     return {
       attemptId: attemptId,
+      testTitle: test.title,
+      courseTitle: test.course.title,
+      timeLimit: test.timeLimit,
       questions: test.questions.map((question) => {
         return {
           questionId: question.questionId,

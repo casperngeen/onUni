@@ -26,7 +26,7 @@ export class User {
   emailToken: number;
 
   @Column('text', { nullable: true })
-  refreshToken?: string;
+  refreshToken: string | null;
 
   @Column('text', { nullable: true })
   profilePic: string;

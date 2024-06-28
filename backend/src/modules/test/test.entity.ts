@@ -31,20 +31,20 @@ export class Test {
   description: string;
 
   @Column({ type: 'date', nullable: true })
-  deadline?: string;
+  deadline: string | null;
 
   @Column({
     type: 'enum',
     enum: ScoringFormats,
     nullable: true,
   })
-  scoringFormat?: ScoringFormats;
+  scoringFormat: ScoringFormats | null;
 
   @Column({ type: 'int', nullable: true })
-  maxAttempt?: number;
+  maxAttempt: number | null;
 
   @Column({ type: 'int', nullable: true })
-  timeLimit?: number; // time in minutes
+  timeLimit: number | null; // time in minutes
 
   @Column({ type: 'int' })
   maxScore: number; // should be an integer
@@ -84,19 +84,19 @@ export class TestInfoDto {
 
   @IsDate()
   @IsOptional()
-  deadline?: string;
+  deadline: string | null;
 
   @IsEnum(ScoringFormats)
   @IsOptional()
-  scoringFormat?: ScoringFormats;
+  scoringFormat: ScoringFormats | null;
 
   @IsInt()
   @IsOptional()
-  maxAttempt?: number;
+  maxAttempt: number | null;
 
   @IsInt()
   @IsOptional()
-  timeLimit?: number; // time in minutes
+  timeLimit: number | null; // time in minutes
 
   @IsInt()
   @IsNotEmpty()

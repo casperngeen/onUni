@@ -20,6 +20,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -42,13 +43,13 @@ export class Attempt {
   start: Date; // the time when the user "starts" the test
 
   @Column({ type: 'date', nullable: true })
-  end?: Date; // the time when the user MUST end the test
+  end: Date | null; // the time when the user MUST end the test
 
   @Column({ type: 'date', nullable: true })
-  submitted?: Date;
+  submitted: Date | null;
 
   @Column('decimal', { nullable: true, precision: 7, scale: 3 })
-  score?: number;
+  score: number | null;
 
   @OneToMany(
     () => QuestionAttempt,
@@ -118,15 +119,15 @@ export class AttemptInfoDto {
 
   @IsOptional()
   @IsISO8601({ strict: true })
-  end?: Date;
+  end: Date | null;
 
   @IsOptional()
   @IsISO8601({ strict: true })
-  submitted?: Date;
+  submitted: Date | null;
 
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
-  score?: number;
+  score: number | null;
 
   @IsArray()
   @ValidateNested({ each: true })
@@ -138,6 +139,18 @@ export class AttemptResponseDto {
   @IsNotEmpty()
   @IsInt()
   attemptId: number;
+
+  @IsNotEmpty()
+  @IsString()
+  testTitle: string;
+
+  @IsNotEmpty()
+  @IsString()
+  courseTitle: string;
+
+  @IsOptional()
+  @IsInt()
+  timeLimit: number | null;
 
   @IsArray()
   @ValidateNested({ each: true })
