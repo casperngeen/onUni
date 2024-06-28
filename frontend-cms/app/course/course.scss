@@ -1,0 +1,57 @@
+@import '../../styles/_color.scss';
+@import '../../styles/custom.scss';
+@import '../../styles/response.scss';
+
+.course {
+    display: grid;
+    grid-template-rows: 1fr 1fr; /* Two rows of equal height */
+}
+
+.top {
+    background-color: map-get($blue, 'base');
+    color: $black;
+    font-weight: 600;
+    display: flex;
+    padding-left: $p-3;
+    padding-right: $p-3;
+    padding-top: $p-2;
+    padding-bottom: $p-2;
+    font-size: $font-size-S;
+    border-radius: $rounded-2 $rounded-2 0 0;
+}
+
+.bottom {
+    background-color: $white;
+    display: flex;
+    padding-left: $p-3;
+    padding-right: $p-3;
+    padding-top: $p-2;
+    padding-bottom: $p-2;
+    font-size: $font-size-XS;
+    border-radius: 0 0 $rounded-2 $rounded-2;
+}
+
+.word-row {
+    color: $gray-700
+}
+
+.date-row {
+    color: $black
+}
+
+.left-col {
+    margin-right: $gap-3;
+
+    &_last {
+        margin-right: $gap-0;
+    }
+}
+
+.right-col {
+    margin-left: auto;
+    margin-right: $gap-3;
+
+    &_last {
+        margin-right: $gap-0;
+    }
+}

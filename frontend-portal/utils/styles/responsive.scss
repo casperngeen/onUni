@@ -1,0 +1,222 @@
+$small-desktopW: 1200px;
+$tabletW: 992px;
+$mobileW: 768px;
+$small-mobileW: 576px;
+
+:root {
+  /**PADDING */
+  // -- ALL -- //
+  --p-0: 0;
+  --p-1: 0.25rem;
+  --p-2: 0.5rem;
+  --p-3: 0.75rem;
+  --p-4: 1rem;
+  --p-5: 1.25rem;
+  --p-6: 1.5rem;
+  --p-7: 1.75rem;
+  --p-8: 2rem;
+  --p-9: 2.25rem;
+  --p-10: 2.5rem;
+  --p-11: 2.75rem;
+  --p-12: 3rem;
+
+  /**GAP */
+  --gap-0: 0rem;
+  --gap-1: 0.25rem;
+  --gap-2: 0.5rem;
+  --gap-3: 0.75rem;
+  --gap-4: 1rem;
+  --gap-5: 1.25rem;
+  --gap-6: 1.5rem;
+  --gap-7: 1.75rem;
+  --gap-8: 2rem;
+  --gap-9: 2.25rem;
+  --gap-10: 2.5rem;
+  --gap-11: 2.75rem;
+  --gap-12: 3rem;
+
+  /**BORDER-RADIUS */
+  --rounded-1: 0.25rem;
+  --rounded-2: 0.5rem;
+  --rounded-3: 0.75rem;
+  --rounded-4: 1rem;
+  --rounded-5: 1.5rem;
+  --rounded-6: 2rem;
+
+  /**FONT-SIZE */
+  --font-size-XXS: 0.75rem;
+  --font-size-XS: 0.875rem;
+  --font-size-S: 1rem;
+  --font-size-M: 1.25rem;
+  --font-size-L: 1.5rem;
+  --font-size-XL: 1.75rem;
+  --font-size-2XL: 2rem;
+  --font-size-3XL: 2.5rem;
+  --font-size-4XL: 3rem;
+  --font-size-5XL: 3.5rem;
+  --font-size-XXL: 4rem;
+}
+
+@media only screen and (max-width: $tabletW) {
+  :root {
+    /**PADDING */
+    // -- ALL -- //
+    --p-0: 0;
+    --p-1: 0.25rem;
+    --p-2: 0.5rem;
+    --p-3: 0.5rem;
+    --p-4: 0.75rem;
+    --p-5: 1rem;
+    --p-6: 1.25rem;
+    --p-7: 1.5rem;
+    --p-8: 1.75rem;
+    --p-9: 1.75rem;
+    --p-10: 2rem;
+    --p-11: 2.25rem;
+    --p-12: 2.5rem;
+
+    /**GAP */
+    --gap-0: 0rem;
+    --gap-1: 0.25rem;
+    --gap-2: 0.5rem;
+    --gap-3: 0.5rem;
+    --gap-4: 0.75rem;
+    --gap-5: 1rem;
+    --gap-6: 1.25rem;
+    --gap-7: 1.25rem;
+    --gap-8: 1.75rem;
+    --gap-9: 1.75rem;
+    --gap-10: 2rem;
+    --gap-11: 2.25rem;
+    --gap-12: 2.5rem;
+
+    /**BORDER-RADIUS */
+    --rounded-1: 0.25rem;
+    --rounded-2: 0.5rem;
+    --rounded-3: 0.5rem;
+    --rounded-4: 0.75rem;
+    --rounded-5: 1.25rem;
+    --rounded-6: 1.75rem;
+
+    /**FONT-SIZE */
+    --font-size-XXS: 0.75rem;
+    --font-size-XS: 0.875rem;
+    --font-size-S: 1rem;
+    --font-size-M: 1rem;
+    --font-size-L: 1.25rem;
+    --font-size-XL: 1.5rem;
+    --font-size-2XL: 1.75rem;
+    --font-size-3XL: 2rem;
+    --font-size-4XL: 2.5rem;
+    --font-size-5XL: 3rem;
+    --font-size-XXL: 3.5rem;
+  }
+}
+
+@media only screen and (max-width: $mobileW) {
+  :root {
+    /**PADDING */
+    // -- ALL -- //
+    --p-0: 0;
+    --p-1: 0.25rem;
+    --p-2: 0.5rem;
+    --p-3: 0.5rem;
+    --p-4: 0.75rem;
+    --p-5: 1rem;
+    --p-6: 1rem;
+    --p-7: 1rem;
+    --p-8: 1.25rem;
+    --p-9: 1.25rem;
+    --p-10: 1.5rem;
+    --p-11: 1.5rem;
+    --p-12: 2rem;
+
+    /**GAP */
+    --gap-0: 0rem;
+    --gap-1: 0.25rem;
+    --gap-2: 0.5rem;
+    --gap-3: 0.5rem;
+    --gap-4: 0.75rem;
+    --gap-5: 1rem;
+    --gap-6: 1rem;
+    --gap-7: 1rem;
+    --gap-8: 1.25rem;
+    --gap-9: 1.25rem;
+    --gap-10: 1.5rem;
+    --gap-11: 1.5rem;
+    --gap-12: 2rem;
+
+    /**BORDER-RADIUS */
+    --rounded-1: 0.25rem;
+    --rounded-2: 0.5rem;
+    --rounded-3: 0.5rem;
+    --rounded-4: 0.75rem;
+    --rounded-5: 1rem;
+    --rounded-6: 1.5rem;
+
+    /**FONT-SIZE */
+    --font-size-XXS: 0.75rem;
+    --font-size-XS: 0.875rem;
+    --font-size-S: 0.875rem;
+    --font-size-M: 1rem;
+    --font-size-L: 1rem;
+    --font-size-XL: 1.25rem;
+    --font-size-2XL: 1.5rem;
+    --font-size-3XL: 1.75rem;
+    --font-size-4XL: 2rem;
+    --font-size-5XL: 2.5rem;
+    --font-size-XXL: 3rem;
+  }
+}
+
+/**PADDING */
+// -- ALL -- //
+$p-0: var(--p-0);
+$p-1: var(--p-1);
+$p-2: var(--p-2);
+$p-3: var(--p-3);
+$p-4: var(--p-4);
+$p-5: var(--p-5);
+$p-6: var(--p-6);
+$p-7: var(--p-7);
+$p-8: var(--p-8);
+$p-9: var(--p-9);
+$p-10: var(--p-10);
+$p-11: var(--p-11);
+$p-12: var(--p-12);
+
+/**GAP */
+$gap-0: var(--gap-0);
+$gap-1: var(--gap-1);
+$gap-2: var(--gap-2);
+$gap-3: var(--gap-3);
+$gap-4: var(--gap-4);
+$gap-5: var(--gap-5);
+$gap-6: var(--gap-6);
+$gap-7: var(--gap-7);
+$gap-8: var(--gap-8);
+$gap-9: var(--gap-9);
+$gap-10: var(--gap-10);
+$gap-11: var(--gap-11);
+$gap-12: var(--gap-12);
+
+/**BORDER-RADIUS */
+$rounded-1: var(--rounded-1);
+$rounded-2: var(--rounded-2);
+$rounded-3: var(--rounded-3);
+$rounded-4: var(--rounded-4);
+$rounded-5: var(--rounded-5);
+$rounded-6: var(--rounded-6);
+
+/**FONT-SIZE */
+$font-size-XXS: var(--font-size-XXS);
+$font-size-XS: var(--font-size-XS);
+$font-size-S: var(--font-size-S);
+$font-size-M: var(--font-size-M);
+$font-size-L: var(--font-size-L);
+$font-size-XL: var(--font-size-XL);
+$font-size-2XL: var(--font-size-2XL);
+$font-size-3XL: var(--font-size-3XL);
+$font-size-4XL: var(--font-size-4XL);
+$font-size-5XL: var(--font-size-5XL);
+$font-size-XXL: var(--font-size-XXL);

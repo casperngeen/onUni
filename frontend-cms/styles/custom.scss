@@ -1,0 +1,54 @@
+$spacer: 1rem;
+
+// this is a map -> to use map-get(mapName, key)
+$spacers: (
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer * 0.75,
+  4: $spacer,
+  5: $spacer * 1.25,
+  6: $spacer * 1.5,
+  7: $spacer * 1.75,
+  8: $spacer * 2,
+  9: $spacer * 2.25,
+  10: $spacer * 2.5,
+  11: $spacer * 2.75,
+  12: $spacer * 3,
+  13: $spacer * 3.25,
+  14: $spacer * 3.5,
+  15: $spacer * 3.75,
+  16: $spacer * 4,
+  s: $spacer * 0.125,
+  m: $spacer * 0.375,
+  special: $spacer * 0.625,
+  special-sm: $spacer * 0.875,
+  special-1: $spacer * 1.125,
+  special-2: $spacer * 1.375,
+  special-3: $spacer * 1.875,
+  valid-email: $spacer * 1.40625,
+  header: $spacer * 7.5
+);
+
+
+// standardize all the sizes here so in the future, these variables can be referenced in the future
+$headerH: 4.25rem;
+$headerH-mobile: 3.25rem;
+$footerH: 10rem;
+$left-sidebar: 22.5rem;
+// $left-sidebar: 33.5rem;
+$left-sidebar-tablet: 15rem;
+$bg-course-size: 9.75rem;
+$hide-sidebarH: 3.125rem;
+$current-lesson-sidebarH: 9.375rem;
+$task-text-sidebarW: 17.25rem;
+$lesson-exercise-cover-buttonH: 4rem;
+$lesson-exercise-cover-buttonH-mobile: 3.3125rem;
+$lesson-exercise-img-introH: calc(100vh - $headerH - 2rem - $lesson-exercise-cover-buttonH - 2.5625rem);
+// $lesson-side-unitW-tablet: 13rem;
+
+$--Theme-Success: #1aa179;
+$--Theme-Danger: #dc3545;
+
+// import after adjusting the values -> to set the values
+@import '~bootstrap/scss/bootstrap';

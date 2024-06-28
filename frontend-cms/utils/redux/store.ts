@@ -1,0 +1,1 @@
+// create one store to manage all the states (should have a mutator)

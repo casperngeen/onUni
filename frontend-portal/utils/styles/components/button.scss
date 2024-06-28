@@ -1,0 +1,15 @@
+@import '../color';
+@import '../responsive';
+
+.button {
+    border-radius: $rounded-1;
+    font-size: $font-size-XS;
+    
+    &_type-1 {
+        background-color: map-get($blue, 'lighten-4');
+        color: map-get($blue, 'base');
+        &:hover {
+            background-color: map-get($blue, 'lighten-2');
+        }
+    }
+}

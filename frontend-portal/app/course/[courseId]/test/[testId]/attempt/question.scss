@@ -1,0 +1,70 @@
+@import "../../../../../../utils/styles/styles.scss";
+@import "../../../../../../utils/styles/color";
+@import "../../../../../../utils/styles/responsive";
+// rewrite into alias
+
+.question {
+    display: flex;
+    flex-direction: column;
+    border-color: $gray-200;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: $rounded-4;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    padding: $p-4 $p-6 $p-4 $p-6;
+    border-width: 0px 0px 1px 0px;
+    border-color: $gray-200;
+    border-style: solid;
+    align-content: center;
+}
+
+.question-content {
+    display: flex;
+    flex-direction: column;
+    padding: $p-4 $p-6 $p-4 $p-6;
+    color: $gray-900;
+}
+
+.question-number {
+    margin-right: $gap-4;
+    font-size: $font-size-S;
+    align-self: center;
+}
+
+.bookmark-icon {
+    margin-right: $gap-2;
+    align-self: center;
+}
+
+.bookmark {
+    font-size: $font-size-XS;
+    align-self: center;
+    color: $gray-600;
+}
+
+.flag-icon {
+    align-self: center;
+    margin-right: $gap-2;
+}
+
+.report {
+    font-size: $font-size-XS;
+    color: #0D6EFD;
+    align-self: center;
+}
+
+.question-text {
+    font-size: $font-size-S;
+    margin-bottom: $gap-4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.option-gap {
+    margin-bottom: $gap-2;
+}

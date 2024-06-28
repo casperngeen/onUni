@@ -1,18 +1,76 @@
 // contains a single course (rendered in home page)
-import styles from "./course.module.css";
+"use client"
 
-export default function SingleCourse(title: string, start: Date, end: Date) {
+import UniButtonComp from "../../components/overwrite/uni.button";
+import { UniCol, UniRow } from "../../components/overwrite/uni.components";
+import { formatDate } from "../../utils/formatDate";
+import { useRouter } from "next/navigation";
+import './course.scss';
+
+interface SingleCourseProps {
+  title: string,
+  start: string,
+  end: string,
+  courseId: number,
+}
+
+const SingleCourse: React.FC<SingleCourseProps> = ({title, start, end, courseId}) => {
+  const router = useRouter();
+
+  const clickView = () => router.push(`course/${courseId}`);
+  const deleteCourse = () => {
+
+  }
+
   return (
-    <div className={`container-fluid ${styles.container}`}>
-      <div className="row h2 text-start">`${title}`</div>
-      <div className="row fs-4">
-        <div className={`${styles.leftGroup}`}>
-          <div>Start: ${start.toDateString()}</div>
-          <div>End: ${end.toDateString()}</div>
-        </div>
-        <div className="col">
-        </div>
+    <div className='course'>
+      <div className='top'>
+        <div className="left-col">{title}</div>
       </div>
+      
+      <UniRow className="bottom">
+      {/* <UniRow className='justify-content-between'>
+        <UniCol xs={4}>
+          <span>Start: {formatDate(start)}</span>
+          <span className="px-3">End: {formatDate(end)}</span>
+        </UniCol>
+
+        <UniCol xs={4} className="text-right">
+          <UniRow className="justify-content-end">
+            <UniCol xs={3}>
+            <UniButtonComp custombutton="type-1" onClick={deleteCourse}>
+              Delete
+            </UniButtonComp>
+            </UniCol>
+
+            <UniCol xs={3}>
+            <UniButtonComp custombutton="type-1" onClick={clickView}>
+            View
+            </UniButtonComp>
+            </UniCol>
+          </UniRow>
+        </UniCol> */}
+        <UniCol className='left-col' xs='auto'>
+          <div className='word-row'>Start:</div>
+          <div className='date-row'>{formatDate(start)}</div>
+        </UniCol>
+        <UniCol className='left-col_last'>
+          <div className='word-row'>End:</div>
+          <div className='date-row'>{formatDate(end)}</div>
+        </UniCol>
+        <div className='right-col'>
+          <UniButtonComp custombutton="type-1" onClick={deleteCourse}>
+            Delete
+          </UniButtonComp>
+        </div>
+        <div className='right-col_last'>
+          <UniButtonComp custombutton="type-1" onClick={clickView}>
+            View
+          </UniButtonComp>
+        </div>
+      </UniRow>
     </div>
   );
 }
+
+export default SingleCourse;
