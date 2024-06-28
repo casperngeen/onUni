@@ -306,6 +306,7 @@ export class AttemptService extends BaseService<Attempt> {
       this.context,
     );
     const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
+    // check end time in redis
     if (attempt.end && new Date() > attempt.end) {
       this.error(
         `User cannot update answer as time limit for attempt ${attemptId} has exceeded`,
@@ -314,6 +315,7 @@ export class AttemptService extends BaseService<Attempt> {
       );
       throw new AttemptTimeLimitExceededException();
     }
+    // no need to validate data here
     const question: Question = await this.getQuestionFromRepo(questionId);
     const option: Option = await this.ifOptionBelongsToQuestion(
       question,

@@ -66,17 +66,7 @@ export class QuestionAttemptResponseDto extends QuestionAttemptInfoDto {
   answerStatus: AnswerStatus;
 }
 
-export class SelectOptionDto {
-  @IsInt()
-  @IsNotEmpty()
-  questionId: number;
-
-  @IsInt()
-  @IsNotEmpty()
-  selectedOptionId: number;
-}
-
-export class UpdateQuestionAttemptDto extends SelectOptionDto {
+export class UpdateQuestionAttemptDto extends QuestionAttemptInfoDto {
   @IsInt()
   @IsNotEmpty()
   attemptId: number;

@@ -14,12 +14,12 @@ import { AttemptService } from './attempt.service';
 import { Response } from 'express';
 import { ResponseHandler } from 'src/base/base.response';
 import {
-  AttemptIdDto,
   AttemptInfoDto,
+  AttemptResponseDto,
   SubmitAttemptDto,
   SubmitAttemptInfoDto,
 } from './attempt.entity';
-import { SelectOptionDto } from './question.attempt.entity';
+import { QuestionAttemptInfoDto } from './question.attempt.entity';
 import { CourseUserGuard } from '../course/course.user.guard';
 import { TeacherGuard } from '../course/teacher.guard';
 import { AttemptUserGuard } from './attempt.user.guard';
@@ -37,11 +37,12 @@ export class AttemptController {
     @Res() response: Response,
   ) {
     const { userId } = request['user'];
-    const attemptId: AttemptIdDto = await this.attemptService.createNewAttempt({
-      testId: testId,
-      userId: userId,
-    });
-    response.status(201).json(ResponseHandler.success(attemptId));
+    const attemptDetails: AttemptResponseDto =
+      await this.attemptService.createNewAttempt({
+        testId: testId,
+        userId: userId,
+      });
+    response.status(201).json(ResponseHandler.success(attemptDetails));
   }
 
   // get all attempts for one user for one test (and all related question attempts)
@@ -95,10 +96,12 @@ export class AttemptController {
     response.status(200).json(ResponseHandler.success());
   }
 
+  // new route to save attempt
+
   @UseGuards(AttemptUserGuard)
   @Put('attempt/:attemptId')
   async saveQuestionAttempt(
-    @Body() selectOptionDetails: SelectOptionDto,
+    @Body() selectOptionDetails: QuestionAttemptInfoDto,
     @Param('attemptId') attemptId: number,
     @Res() response: Response,
   ) {
