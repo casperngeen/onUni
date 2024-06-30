@@ -7,6 +7,7 @@ import { AttemptService } from './attempt.service';
 import { AttemptIdNotFoundException } from './attempt.exception';
 import { Attempt } from './attempt.entity';
 import { CourseService } from '../course/course.service';
+import { Roles } from '../user/user.enum';
 
 @Injectable()
 export class AttemptTeacherGuard implements CanActivate {
@@ -29,6 +30,9 @@ export class AttemptTeacherGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
     const { userId, role } = request['user'];
+    if (role === Roles.TEACHER) {
+      return true;
+    }
     if (!request.params.attemptId) {
       this.loggerService.error(
         `Attempt ID not provided`,
@@ -40,9 +44,6 @@ export class AttemptTeacherGuard implements CanActivate {
     const attemptId: number = parseInt(request.params.attemptId);
     const attempt: Attempt =
       await this.attemptService.getAttemptFromRepo(attemptId);
-    return (
-      attempt.user.userId === userId ||
-      this.courseService.isTeacherOfCourse(role, userId, attempt.test.course)
-    );
+    return attempt.user.userId === userId;
   }
 }

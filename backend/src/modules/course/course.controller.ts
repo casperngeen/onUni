@@ -22,7 +22,7 @@ import { ResponseHandler } from 'src/base/base.response';
 import { Response } from 'express';
 import { TeacherGuard } from '../user/teacher.guard';
 import { CourseUserGuard } from './course.user.guard';
-import { UserIdDto } from '../user/user.entity';
+import { PayloadDto, UserIdDto } from '../user/user.entity';
 
 @Controller('course')
 export class CourseController {
@@ -30,10 +30,11 @@ export class CourseController {
 
   @Get()
   async viewAllCourses(@Req() request: Request, @Res() response: Response) {
-    const { userId } = request['user'];
+    const { userId, role } = request['user'] as PayloadDto;
     const courses: CourseInfoDto[] =
       await this.courseService.viewAllCoursesForUser({
         userId: userId,
+        role: role,
       });
     response.status(200).json(ResponseHandler.success(courses));
   }
@@ -60,14 +61,10 @@ export class CourseController {
   @Post()
   async createNewCourse(
     @Body('courseDetails') courseDetails: NewCourseDetailsDto,
-    @Req() request: Request,
     @Res() response: Response,
   ) {
-    const { userId } = request['user'];
-    const courseId: CourseIdDto = await this.courseService.createNewCourse({
-      ...courseDetails,
-      adminId: userId,
-    });
+    const courseId: CourseIdDto =
+      await this.courseService.createNewCourse(courseDetails);
     response.status(201).json(ResponseHandler.success(courseId));
   }
 

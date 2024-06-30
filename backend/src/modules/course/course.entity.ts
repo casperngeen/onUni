@@ -65,12 +65,6 @@ export class NewCourseDetailsDto {
   endDate: string;
 }
 
-export class NewCourseDto extends NewCourseDetailsDto {
-  @IsNotEmpty()
-  @IsInt()
-  adminId: number;
-}
-
 export class AddUserToCourseDto {
   @IsInt()
   @IsNotEmpty()

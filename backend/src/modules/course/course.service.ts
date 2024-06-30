@@ -5,13 +5,13 @@ import {
   Course,
   CourseIdDto,
   CourseInfoDto,
-  NewCourseDto,
+  NewCourseDetailsDto,
   UpdateCourseDto,
   ViewCourseDto,
 } from './course.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User, UserIdDto } from '../user/user.entity';
+import { PayloadDto, User } from '../user/user.entity';
 import {
   CourseNotFoundException,
   UserAlreadyInCourseException,
@@ -22,6 +22,7 @@ import { LoggerService } from '../logger/logger.service';
 import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
 import { DatabaseException } from 'src/base/base.exception';
+import { Roles } from '../user/user.enum';
 
 @Injectable()
 export class CourseService extends BaseService<Course> {
@@ -39,18 +40,21 @@ export class CourseService extends BaseService<Course> {
     )[0];
   }
 
-  // view all courses (for teachers)
-
-  public async viewAllCoursesForUser(userIdObject: UserIdDto) {
-    const { userId } = userIdObject;
-    this.log(`Query all courses for user ${userIdObject.userId}`, this.context);
+  public async viewAllCoursesForUser(payload: PayloadDto) {
+    const { userId, role } = payload;
+    this.log(`Query all courses for user ${userId}`, this.context);
     this.log(`Querying DB...`, this.context);
-    const courses: Course[] = await this.courseRepository
-      .createQueryBuilder('course')
-      .innerJoin('course.users', 'user', 'user.userId = :userId', {
-        userId: userId,
-      })
-      .getMany();
+    let courses: Course[];
+    if (role === Roles.TEACHER) {
+      courses = await this.findAll();
+    } else {
+      courses = await this.userRepository
+        .findOne({
+          where: { userId: userId },
+          relations: ['courses'],
+        })
+        .then((user) => user.courses);
+    }
 
     this.log(`All courses found for user ${userId}`, this.context);
     this.log(
@@ -92,19 +96,17 @@ export class CourseService extends BaseService<Course> {
   }
 
   public async createNewCourse(
-    newCourseDetails: NewCourseDto,
+    newCourseDetails: NewCourseDetailsDto,
   ): Promise<CourseIdDto> {
-    const { title, description, startDate, endDate, adminId } =
-      newCourseDetails;
+    const { title, description, startDate, endDate } = newCourseDetails;
     this.log(`Query to create new course titled ${title}`, this.context);
     this.log(`Inserting into DB...`, this.context);
-    const user: User = await this.isUserInRepo(adminId);
     const course: Course = await this.save({
       title: title,
       description: description,
       startDate: startDate,
       endDate: endDate,
-      users: [user],
+      users: [],
       tests: [],
     });
     this.log(`Course ${title} inserted into DB`, this.context);
