@@ -20,9 +20,8 @@ import {
 } from './course.entity';
 import { ResponseHandler } from 'src/base/base.response';
 import { Response } from 'express';
-import { TeacherGuard } from './teacher.guard';
+import { TeacherGuard } from '../user/teacher.guard';
 import { CourseUserGuard } from './course.user.guard';
-import { Roles } from '../user/user.enum';
 import { UserIdDto } from '../user/user.entity';
 
 @Controller('course')
@@ -57,18 +56,17 @@ export class CourseController {
     response.status(200).json(ResponseHandler.success(course));
   }
 
+  @UseGuards(TeacherGuard)
   @Post()
   async createNewCourse(
     @Body('courseDetails') courseDetails: NewCourseDetailsDto,
     @Req() request: Request,
     @Res() response: Response,
   ) {
-    const { userId, role } = request['user'];
-    const userRole: Roles = Roles[role as keyof typeof Roles];
+    const { userId } = request['user'];
     const courseId: CourseIdDto = await this.courseService.createNewCourse({
       ...courseDetails,
       adminId: userId,
-      role: userRole,
     });
     response.status(201).json(ResponseHandler.success(courseId));
   }
@@ -89,7 +87,7 @@ export class CourseController {
   }
 
   @UseGuards(TeacherGuard)
-  @Put('/:courseId')
+  @Put('/:courseId/user')
   async addUsertoCourse(
     @Param('courseId') courseId: number,
     @Body('userId') userId: UserIdDto,
@@ -104,7 +102,7 @@ export class CourseController {
   }
 
   @UseGuards(TeacherGuard)
-  @Delete('/:courseId')
+  @Delete('/:courseId/user')
   async removeUserfromCourse(
     @Param('courseId') courseId: number,
     @Body('userId') userId: number,

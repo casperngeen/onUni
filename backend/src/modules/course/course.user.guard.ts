@@ -9,6 +9,8 @@ import {
   CourseIdNotFoundException,
   UserNotInCourseException,
 } from './course.exception';
+import { PayloadDto } from '../user/user.entity';
+import { Roles } from '../user/user.enum';
 
 @Injectable()
 export class CourseUserGuard implements CanActivate {
@@ -29,7 +31,7 @@ export class CourseUserGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
-    const { userId } = request['user'];
+    const { role, userId } = request['user'] as PayloadDto;
     if (!request.query.courseId && !request.params.courseId) {
       this.loggerService.error(
         `Course ID not provided`,
@@ -38,17 +40,20 @@ export class CourseUserGuard implements CanActivate {
       );
       throw new CourseIdNotFoundException();
     }
-    let courseId: number;
-    if (request.query.courseId) {
-      courseId = parseInt(request.query.courseId as string);
-    } else {
-      courseId = parseInt(request.params.courseId);
+    if (role === Roles.STUDENT) {
+      let courseId: number;
+      if (request.query.courseId) {
+        courseId = parseInt(request.query.courseId as string);
+      } else {
+        courseId = parseInt(request.params.courseId);
+      }
+      const course: Course = await this.courseService.isCourseInRepo(courseId);
+      const userInCourse = this.courseService.isUserInCourse(userId, course);
+      if (!userInCourse) {
+        throw new UserNotInCourseException();
+      }
+      return userInCourse;
     }
-    const course: Course = await this.courseService.isCourseInRepo(courseId);
-    const userInCourse = this.courseService.isUserInCourse(userId, course);
-    if (!userInCourse) {
-      throw new UserNotInCourseException();
-    }
-    return userInCourse;
+    return true;
   }
 }

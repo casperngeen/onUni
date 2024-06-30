@@ -231,10 +231,6 @@ export class AttemptService extends BaseService<Attempt> {
       this.context,
     );
     this.update(attemptId, { status: Status.CALCULATING });
-    this.log(
-      `Status of attempt ${attemptId} updated to CALCULATING...`,
-      this.context,
-    );
     this.log(`Submitting attempt ${attemptId}...`, this.context);
     let status: Status = Status.SUBMIT;
     const submitTime = new Date();
@@ -255,17 +251,26 @@ export class AttemptService extends BaseService<Attempt> {
     let score: number = 0;
     await Promise.all(
       attempt.test.questions.map(async (question) => {
+        const { questionId } = question;
         if (savedAttempts.has(question.questionId)) {
           this.log(
-            `Saving answer for question ${question.questionId} for attempt ${attemptId}`,
+            `Saving answer for question ${questionId} for attempt ${attemptId}`,
             this.context,
           );
-          const result = savedAttempts.get(question.questionId);
+          const { selectedOptionId } = savedAttempts.get(questionId);
+          const question = await this.getQuestionFromRepo(questionId);
+          const option: Option = await this.ifOptionBelongsToQuestion(
+            question,
+            selectedOptionId,
+          )[0];
           await this.questionAttemptRepository.save({
-            ...result,
+            selectedOptionId: selectedOptionId,
+            answerStatus: option.isCorrect
+              ? AnswerStatus.CORRECT
+              : AnswerStatus.INCORRECT,
             attempt: attempt,
           });
-          if (result.answerStatus === AnswerStatus.CORRECT) {
+          if (option.isCorrect) {
             score++;
           }
           this.log(
@@ -300,13 +305,10 @@ export class AttemptService extends BaseService<Attempt> {
   public async saveQuestionAttempt(
     selectOptionDetails: UpdateQuestionAttemptDto,
   ) {
-    const { attemptId, selectedOptionId, questionId } = selectOptionDetails;
-    this.log(
-      `Query to save question attempt of question ${questionId} for attempt ${attemptId}`,
-      this.context,
-    );
-    const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
+    // const time = new Date().toISOString();
     // check end time in redis
+    const { attemptId, selectedOptionId, questionId } = selectOptionDetails;
+    const attempt = await this.checkIfAttemptInRepo(attemptId);
     if (attempt.end && new Date() > attempt.end) {
       this.error(
         `User cannot update answer as time limit for attempt ${attemptId} has exceeded`,
@@ -316,25 +318,19 @@ export class AttemptService extends BaseService<Attempt> {
       throw new AttemptTimeLimitExceededException();
     }
     // no need to validate data here
-    const question: Question = await this.getQuestionFromRepo(questionId);
-    const option: Option = await this.ifOptionBelongsToQuestion(
-      question,
-      selectedOptionId,
-    )[0];
+    // const question: Question = await this.getQuestionFromRepo(questionId);
+    // const option: Option = await this.ifOptionBelongsToQuestion(
+    //   question,
+    //   selectedOptionId,
+    // )[0];
     this.log(
       `Saving question ${questionId} of attempt ${attemptId} to Redis...`,
       this.context,
     );
 
-    const answerStatus: AnswerStatus = option.isCorrect
-      ? AnswerStatus.CORRECT
-      : AnswerStatus.INCORRECT;
-
     try {
       await this.redis.hset(
         `attempt:${attemptId}:question:${questionId}`,
-        `answerStatus`,
-        answerStatus,
         `selectedOptionId`,
         selectedOptionId,
       );
@@ -343,14 +339,13 @@ export class AttemptService extends BaseService<Attempt> {
         this.context,
       );
     } catch (error) {
-      this.error(`${error}`, this.context, this.getTrace());
+      this.error(
+        `Error saving question ${questionId} of attempt ${attemptId} to Redis: ${error}`,
+        this.context,
+        this.getTrace(),
+      );
       throw new RedisException();
     }
-
-    this.log(
-      `Query to save question attempt of question ${questionId} for attempt ${attemptId} completed`,
-      this.context,
-    );
   }
 
   public async deleteAttempt(attemptIdObject: AttemptIdDto) {
@@ -569,17 +564,15 @@ export class AttemptService extends BaseService<Attempt> {
         this.context,
       );
       keys.forEach((key, index) => {
-        const questionId = parseInt(key.split(':')[3]);
+        const values = key.split(':');
+        const questionId = parseInt(values[3]);
         this.log(
           `Formatting and hashing question attempt of question ${questionId}...`,
           this.context,
         );
-        const { answerStatus, selectedOptionId } = results[index];
-        const status: AnswerStatus =
-          AnswerStatus[answerStatus as keyof typeof AnswerStatus];
+        const { selectedOptionId } = results[index];
         const optionId: number = parseInt(selectedOptionId);
         result.set(questionId, {
-          answerStatus: status,
           selectedOptionId: optionId,
         });
         this.log(

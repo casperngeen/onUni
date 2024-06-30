@@ -38,7 +38,7 @@ export class AuthController {
   }
 
   @Public()
-  @Put('changePassword/:token')
+  @Put('change/:token')
   async changePassword(
     @Param('token') token: number,
     @Body() password: PasswordDto,

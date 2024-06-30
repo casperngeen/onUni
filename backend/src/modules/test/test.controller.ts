@@ -19,7 +19,7 @@ import {
   TestInfoDto,
   UpdateTestDto,
 } from './test.entity';
-import { TeacherGuard } from '../course/teacher.guard';
+import { TeacherGuard } from '../user/teacher.guard';
 import { CourseUserGuard } from '../course/course.user.guard';
 
 @Controller()

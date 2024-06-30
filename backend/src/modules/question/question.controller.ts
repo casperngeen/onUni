@@ -23,8 +23,8 @@ import {
   OptionInfoDto,
   UpdateOptionDto,
 } from './option.entity';
-import { TeacherGuard } from '../course/teacher.guard';
 import { CourseUserGuard } from '../course/course.user.guard';
+import { TeacherGuard } from '../user/teacher.guard';
 
 @Controller()
 export class QuestionController {
@@ -101,7 +101,7 @@ export class QuestionController {
   @Put('option/:optionId')
   async updateOption(
     @Param('optionId') optionId: number,
-    @Body('optionInfo') optionInfo: OptionInfoDto,
+    @Body() optionInfo: OptionInfoDto,
     @Res() response: Response,
   ) {
     const updateOptionDetails: UpdateOptionDto = {

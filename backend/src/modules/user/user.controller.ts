@@ -6,11 +6,13 @@ import {
   Param,
   Post,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Response } from 'express';
 import { ResponseHandler } from 'src/base/base.response';
 import { NewUserDto, User, UserIdDto } from './user.entity';
+import { TeacherGuard } from './teacher.guard';
 
 @Controller()
 export class UserController {
@@ -40,6 +42,7 @@ export class UserController {
     response.status(200).json(ResponseHandler.success(teachers));
   }
 
+  @UseGuards(TeacherGuard)
   @Post('user/teacher')
   async createNewTeacher(
     @Body('email') email: string,
@@ -51,6 +54,7 @@ export class UserController {
     response.status(201).json(ResponseHandler.success(userId));
   }
 
+  @UseGuards(TeacherGuard)
   @Post('user/student')
   async createNewStudent(
     @Body('userDetails') userDetails: NewUserDto,
@@ -70,6 +74,7 @@ export class UserController {
 
   //   }
 
+  @UseGuards(TeacherGuard)
   @Delete('user/:userId')
   async removeUser(@Param('userId') userId: number, @Res() response: Response) {
     await this.userService.removeUser({ userId: userId });

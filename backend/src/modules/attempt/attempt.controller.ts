@@ -17,11 +17,9 @@ import {
   AttemptInfoDto,
   AttemptResponseDto,
   SubmitAttemptDto,
-  SubmitAttemptInfoDto,
 } from './attempt.entity';
 import { QuestionAttemptInfoDto } from './question.attempt.entity';
 import { CourseUserGuard } from '../course/course.user.guard';
-import { TeacherGuard } from '../course/teacher.guard';
 import { AttemptUserGuard } from './attempt.user.guard';
 import { AttemptTeacherGuard } from './attempt.teacher.guard';
 
@@ -81,16 +79,13 @@ export class AttemptController {
   @Put('attempt/:attemptId')
   async submitAttempt(
     @Param('attemptId') attemptId: number,
-    // only include questions that have a selected answer (exclude all unselected options)
     @Req() request: Request,
-    @Body('attempt') details: SubmitAttemptInfoDto,
     @Res() response: Response,
   ) {
     const { userId } = request['user'];
     const submitAttempt: SubmitAttemptDto = {
       userId: userId,
       attemptId: attemptId,
-      ...details,
     };
     await this.attemptService.submitAttempt(submitAttempt);
     response.status(200).json(ResponseHandler.success());
@@ -98,8 +93,9 @@ export class AttemptController {
 
   // new route to save attempt
 
+  // delete from redis
   @UseGuards(AttemptUserGuard)
-  @Put('attempt/:attemptId')
+  @Put('attempt/:attemptId/question')
   async saveQuestionAttempt(
     @Body() selectOptionDetails: QuestionAttemptInfoDto,
     @Param('attemptId') attemptId: number,
@@ -112,7 +108,8 @@ export class AttemptController {
     response.status(200).json(ResponseHandler.success());
   }
 
-  @UseGuards(TeacherGuard)
+  // delete from redis
+  @UseGuards(AttemptTeacherGuard)
   @Delete('/:attemptId')
   async deleteAttempt(
     @Param('attemptId') attemptId: number,

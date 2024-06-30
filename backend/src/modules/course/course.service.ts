@@ -12,17 +12,12 @@ import {
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserIdDto } from '../user/user.entity';
-import { Roles } from '../user/user.enum';
 import {
   CourseNotFoundException,
-  NotTeacherOfCourseException,
   UserAlreadyInCourseException,
   UserNotInCourseException,
 } from './course.exception';
-import {
-  UnauthorisedUserException,
-  UserNotFoundException,
-} from '../user/user.exception';
+import { UserNotFoundException } from '../user/user.exception';
 import { LoggerService } from '../logger/logger.service';
 import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
@@ -43,6 +38,8 @@ export class CourseService extends BaseService<Course> {
       path.basename(frame.fileName),
     )[0];
   }
+
+  // view all courses (for teachers)
 
   public async viewAllCoursesForUser(userIdObject: UserIdDto) {
     const { userId } = userIdObject;
@@ -97,18 +94,9 @@ export class CourseService extends BaseService<Course> {
   public async createNewCourse(
     newCourseDetails: NewCourseDto,
   ): Promise<CourseIdDto> {
-    const { title, description, startDate, endDate, role, adminId } =
+    const { title, description, startDate, endDate, adminId } =
       newCourseDetails;
     this.log(`Query to create new course titled ${title}`, this.context);
-    if (role !== Roles.TEACHER) {
-      this.error(
-        `User ${adminId} is not authorised to create a new course`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new UnauthorisedUserException();
-    }
-    this.log(`User ${adminId} is allowed to create a new course`, this.context);
     this.log(`Inserting into DB...`, this.context);
     const user: User = await this.isUserInRepo(adminId);
     const course: Course = await this.save({
@@ -222,28 +210,6 @@ export class CourseService extends BaseService<Course> {
           this.context,
         );
     return userInCourse;
-  }
-
-  public isTeacherOfCourse(role: Roles, userId: number, course: Course) {
-    this.log(
-      `Checking if user ${userId} is a teacher of course ${course.courseId}...`,
-      this.context,
-    );
-    const result =
-      role === Roles.TEACHER && this.isUserInCourse(userId, course);
-    if (!result) {
-      this.error(
-        `User ${userId} is not a teacher of course ${course.courseId}`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new NotTeacherOfCourseException();
-    }
-    this.log(
-      `User ${userId} is a teacher of course ${course.courseId}`,
-      this.context,
-    );
-    return result;
   }
 
   public async isCourseInRepo(courseId: number) {

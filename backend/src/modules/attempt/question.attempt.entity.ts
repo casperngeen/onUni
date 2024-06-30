@@ -73,10 +73,6 @@ export class UpdateQuestionAttemptDto extends QuestionAttemptInfoDto {
 }
 
 export class RedisOptionDto {
-  @IsNotEmpty()
-  @IsEnum(AnswerStatus)
-  answerStatus: AnswerStatus;
-
   @IsInt()
   @IsNotEmpty()
   selectedOptionId: number;
