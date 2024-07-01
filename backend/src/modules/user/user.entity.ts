@@ -9,7 +9,14 @@ import {
   OneToMany,
   JoinTable,
 } from 'typeorm';
-import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 @Entity('onuni_user')
 export class User {
@@ -83,7 +90,7 @@ export class SignUpDto extends LoginDto {
   @IsEnum(Roles)
   role: Roles;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   profilePic: string;
 }

@@ -24,21 +24,18 @@ export class TeacherGuard implements CanActivate {
     const request: Request = context.switchToHttp().getRequest();
     const { role, userId } = request['user'];
     this.loggerService.log(
-      `Checking if user ${userId} is allowed to create a new course...`,
+      `Checking if user ${userId} is a teacher...`,
       this.context,
     );
     if (role !== Roles.TEACHER) {
       this.loggerService.error(
-        `User ${userId} is not authorised to create a new course`,
+        `User ${userId} is not a teacher`,
         this.context,
         this.getTrace(),
       );
       throw new UnauthorisedUserException();
     }
-    this.loggerService.log(
-      `User ${userId} is allowed to create a new course`,
-      this.context,
-    );
+    this.loggerService.log(`User ${userId} is a teacher`, this.context);
     return true;
   }
 }

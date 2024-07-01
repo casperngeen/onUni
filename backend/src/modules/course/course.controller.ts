@@ -60,7 +60,7 @@ export class CourseController {
   @UseGuards(TeacherGuard)
   @Post()
   async createNewCourse(
-    @Body('courseDetails') courseDetails: NewCourseDetailsDto,
+    @Body() courseDetails: NewCourseDetailsDto,
     @Res() response: Response,
   ) {
     const courseId: CourseIdDto =
@@ -87,7 +87,7 @@ export class CourseController {
   @Put('/:courseId/user')
   async addUsertoCourse(
     @Param('courseId') courseId: number,
-    @Body('userId') userId: UserIdDto,
+    @Body() userId: UserIdDto,
     @Res() response: Response,
   ) {
     const userCourse: AddUserToCourseDto = {
