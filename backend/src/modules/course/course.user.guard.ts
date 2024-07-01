@@ -40,6 +40,9 @@ export class CourseUserGuard implements CanActivate {
       );
       throw new CourseIdNotFoundException();
     }
+    if (role === Roles.TEACHER) {
+      return true;
+    }
     if (role === Roles.STUDENT) {
       let courseId: number;
       if (request.query.courseId) {
@@ -54,6 +57,5 @@ export class CourseUserGuard implements CanActivate {
       }
       return userInCourse;
     }
-    return true;
   }
 }

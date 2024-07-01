@@ -110,7 +110,7 @@ export class AttemptController {
 
   // delete from redis
   @UseGuards(AttemptTeacherGuard)
-  @Delete('/:attemptId')
+  @Delete('attempt/:attemptId')
   async deleteAttempt(
     @Param('attemptId') attemptId: number,
     @Res() response: Response,
