@@ -352,6 +352,30 @@ export class AttemptService extends BaseService<Attempt> {
     const { attemptId } = attemptIdObject;
     this.log(`Query to delete attempt ${attemptId}`, this.context);
     await this.checkIfAttemptInRepo(attemptId);
+
+    const stream = this.redis.scanStream({
+      match: `attempt:${attemptId}:question:*`,
+      count: 100,
+    });
+
+    stream.on('data', async (keys) => {
+      for (const key of keys) {
+        try {
+          await this.redis.del(key); // Delete the key
+          this.log(`Deleted key: ${key} from Redis`, this.context);
+        } catch (error) {
+          this.error(
+            `Error deleting key: ${key} from Redis`,
+            this.context,
+            this.getTrace(),
+          );
+        }
+      }
+    });
+    this.log(
+      `All question attempts of attempt ${attemptId} has been deleted from Redis`,
+      this.context,
+    );
     this.log(`Deleting attempt from DB...`, this.context);
     await this.delete(attemptId);
     this.log(`Query to delete attempt ${attemptId} completed`, this.context);
@@ -547,38 +571,37 @@ export class AttemptService extends BaseService<Attempt> {
     result: Map<number, RedisOptionDto>,
   ) {
     try {
-      this.log(
-        `Retrieving question attempts of attempt ${attemptId} from Redis...`,
-        this.context,
-      );
-      const keys = await this.redis.keys(`attempt:${attemptId}:question:*`);
-      const results = await Promise.all(
-        keys.map((key) => this.redis.hgetall(key)),
-      );
-      this.log(
-        `Retrieved all question attempts of attempt ${attemptId} from Redis`,
-        this.context,
-      );
-      this.log(
-        `Formatting and hashing question attempts of attempt ${attemptId} to hashmap...`,
-        this.context,
-      );
-      keys.forEach((key, index) => {
-        const values = key.split(':');
-        const questionId = parseInt(values[3]);
-        this.log(
-          `Formatting and hashing question attempt of question ${questionId}...`,
-          this.context,
-        );
-        const { selectedOptionId } = results[index];
-        const optionId: number = parseInt(selectedOptionId);
-        result.set(questionId, {
-          selectedOptionId: optionId,
-        });
-        this.log(
-          `Formatted and hashed question attempt of question ${questionId}`,
-          this.context,
-        );
+      const stream = this.redis.scanStream({
+        match: `attempt:${attemptId}:question:*`,
+        count: 100,
+      });
+      stream.on('data', async (resultKeys) => {
+        for (const resultKey of resultKeys) {
+          this.log(
+            `Retrieving question attempt ${attemptId} from Redis...`,
+            this.context,
+          );
+          const value = await this.redis.hgetall(resultKey);
+          this.log(
+            `Question attempt ${attemptId} retrieved from Redis...`,
+            this.context,
+          );
+          const keys = resultKey.split(':');
+          const questionId = parseInt(keys[3]);
+          this.log(
+            `Formatting and hashing question attempt of question ${questionId}...`,
+            this.context,
+          );
+          const { selectedOptionId } = value;
+          const optionId: number = parseInt(selectedOptionId);
+          result.set(questionId, {
+            selectedOptionId: optionId,
+          });
+          this.log(
+            `Formatted and hashed question attempt of question ${questionId}`,
+            this.context,
+          );
+        }
       });
       this.log(
         `Question attempts of attempt ${attemptId} have been formatted and hashed to hashmap`,
