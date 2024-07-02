@@ -13,7 +13,6 @@ interface IInitialState {
   attemptId: number,
   testId: number,
   questionsAnswers: {[questionId: number]: number},
-  answerCount: number,
   bookmarked: number[],
   questions: QuestionInfo[],
   courseTitle: string,
@@ -30,7 +29,6 @@ const initialState: IInitialState = {
   testTitle: '',
   timeLimit: null,
   questionsAnswers: {},
-  answerCount: 0,
   bookmarked: [],
   questions: [],
   loading: false,
@@ -41,9 +39,6 @@ const attemptSlice = createAppSlice({
   name: 'attempt',
   initialState,
   reducers: (create) => ({
-    incrementAnswerCount: create.reducer((state) => {
-      state.answerCount++;
-    }),
     updateQuestionAnswer: create.reducer((state, action: PayloadAction<ISaveQuestionAttemptBody>) => {
       state.questionsAnswers[action.payload.questionId] = action.payload.selectedOptionId;
     }),
@@ -115,7 +110,6 @@ const attemptSlice = createAppSlice({
     selectors: {
       selectAttemptId: (state) => state.attemptId,
       selectTestId: (state) => state.testId,
-      selectAnswerCount: (state) => state.answerCount,
       selectQuestionsAnswers: (state) => state.questionsAnswers,
       selectBookmarked: (state) => state.bookmarked,
       selectQuestions: (state) => state.questions,
@@ -127,9 +121,9 @@ const attemptSlice = createAppSlice({
     }
 })
 
-export const { incrementAnswerCount, updateQuestionAnswer, bookmarkQuestion, unbookmarkQuestion, setTestId, fetchAttempt } = attemptSlice.actions;
-export const { selectAttemptId, selectAnswerCount, selectQuestionsAnswers, 
+export const { updateQuestionAnswer, bookmarkQuestion, unbookmarkQuestion, setTestId, fetchAttempt } = attemptSlice.actions;
+export const { selectAttemptId, selectQuestionsAnswers, selectTestId,
   selectBookmarked, selectQuestions, selectLoading, 
   selectError, selectCourseTitle, selectTestTitle, 
-  selectTimeLimit, selectTestId } = attemptSlice.selectors;
+  selectTimeLimit} = attemptSlice.selectors;
 export default attemptSlice;

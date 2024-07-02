@@ -1,4 +1,6 @@
-import SingleQuestion from "../course/[courseId]/test/[testId]/attempt/question";
+"use client"
+
+import TestAttempt from "../course/[courseId]/test/[testId]/attempt/page";
 
 interface TestAttemptProps {
     title: string,
@@ -46,12 +48,12 @@ const testQuestionInfo: QuestionInfo = {
     }]
 }
 
-const QuestionPreview = () => {
+const Preview = () => {
     return (
         <div>
-          <SingleQuestion questionInfo={testQuestionInfo} questionNumber={1}></SingleQuestion>
+          <TestAttempt courseId={4} testId={4}></TestAttempt>
         </div>
       );
 }
 
-export default QuestionPreview;
+export default Preview;

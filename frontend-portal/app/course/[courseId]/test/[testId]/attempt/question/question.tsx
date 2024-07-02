@@ -4,9 +4,10 @@ import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { QuestionInfo } from "@/utils/request/types/attempt.types";
 import SingleOption from "../option/option";
 import Container from "react-bootstrap/Container";
-import { bookmarkQuestion, selectAttemptId, selectBookmarked, selectTestId, unbookmarkQuestion } from "@/utils/redux/slicers/attempt.slicer";
+import { bookmarkQuestion, selectBookmarked, selectQuestionsAnswers, selectTestId, unbookmarkQuestion } from "@/utils/redux/slicers/attempt.slicer";
 import './question.scss';
 import { Bookmark, BookmarkFill, Flag } from "react-bootstrap-icons";
+import { useEffect } from "react";
 
 interface SingleQuestionProps {
     questionInfo: QuestionInfo,
@@ -19,6 +20,7 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
     const selector = useAppSelector();
     const bookmarked = selector(selectBookmarked);
     const testId = selector(selectTestId);
+    const questionsAnswered = selector(selectQuestionsAnswers);
     const isSelected = bookmarked.includes(questionId);
     const clickBookmark = () => {
         if (isSelected) {
@@ -26,8 +28,15 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
         } else {
             dispatch(bookmarkQuestion(questionId));
         }
-        localStorage.setItem(`bookmark-${testId}`, JSON.stringify(bookmarked));
     }
+
+    useEffect(() => {
+        localStorage.setItem(`bookmark-${testId}`, JSON.stringify(bookmarked));
+    }, [testId, bookmarked]);
+
+    useEffect(() => {
+        localStorage.setItem(`answer-${testId}`, JSON.stringify(questionsAnswered));
+    }, [questionsAnswered, testId]);
 
     return (
         <Container className="question">

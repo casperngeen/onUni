@@ -26,7 +26,7 @@ export default class BaseRequest {
           "Accept": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(bodyData),
+        body: method === RequestTypes.GET ? null : JSON.stringify(bodyData),
       }).then((response) => response.json());
       
       // handle access token expiry

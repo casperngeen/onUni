@@ -1,5 +1,5 @@
 import UniProgressBar from "@/components/overwrite/uni.progress";
-import { selectAnswerCount, selectQuestions } from "@/utils/redux/slicers/attempt.slicer";
+import { selectQuestions, selectQuestionsAnswers } from "@/utils/redux/slicers/attempt.slicer";
 import { useAppSelector } from "@/utils/redux/utils/hooks";
 import './progress.scss';
 
@@ -7,7 +7,8 @@ import './progress.scss';
 const SidebarProgressBar: React.FC<{}> = () => {
     const selector = useAppSelector();
     const questions = selector(selectQuestions);
-    const answerCount = selector(selectAnswerCount);
+    const answers = selector(selectQuestionsAnswers);
+    const answerCount = Object.keys(answers).length;
     
     return (
         <div className="sidebar-header-bar">
