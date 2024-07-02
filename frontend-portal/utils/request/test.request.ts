@@ -1,27 +1,34 @@
 import { RequestTypes } from "./types/base.types";
-import { NewTestBody, TestResponse } from "./types/test.types";
+import { IDeleteTest, IGetTest, INewTest, ITestInfoForAttemptResponse, ITestResponse, IUpdateTest } from "./types/test.types";
 import BaseRequest from "./base.request";
 
 export default class TestRequest extends BaseRequest {
-    public async getAllTests(courseId: number) {
-        return await BaseRequest.request<TestResponse[]>(`course/${courseId}/tests`, RequestTypes.GET, {});
+    public static async getAllTests(courseId: number) {
+        return await BaseRequest.request<ITestResponse[]>(`course/${courseId}/tests`, RequestTypes.GET, {});
     }
 
-    public async getTest(testId: number, courseId: number) {
-        return await BaseRequest.request<TestResponse[]>(`test/${testId}?courseId=${courseId}`, RequestTypes.GET, {});
+    public static async getTest(params: IGetTest) {
+        const {testId, courseId} = params;
+        return await BaseRequest.request<ITestResponse[]>(`test/${testId}?courseId=${courseId}`, RequestTypes.GET, {});
+    }
+
+    public static async getTestInfoForAttempt(params: IGetTest) {
+        const {testId, courseId} = params;
+        return await BaseRequest.request<ITestInfoForAttemptResponse>(`test/${testId}/attempt?courseId=${courseId}`, RequestTypes.GET, {});
     }
     
-    public async createNewTest(newTest: NewTestBody) {
-        const courseId = newTest.courseId;
-        return await BaseRequest.request<TestResponse[]>(`test?courseId=${courseId}`, RequestTypes.POST, newTest);
+    public static async createNewTest(params: INewTest) {
+        const { courseId } = params;
+        return await BaseRequest.request<ITestResponse[]>(`test?courseId=${courseId}`, RequestTypes.POST, params);
     }
 
-    public async updateTest(testId: number, testDetails: NewTestBody) {
-        const courseId = testDetails.courseId;
-        return await BaseRequest.request(`test/${testId}?courseId=${courseId}`, RequestTypes.PUT, testDetails);
+    public static async updateTest(params: IUpdateTest) {
+        const {testId, courseId, ...testDetails } = params;
+        return await BaseRequest.request(`test/${testId}?courseId=${courseId}`, RequestTypes.PUT, {testId: testId, ...testDetails});
     }
 
-    public async deleteTest(testId: number, courseId: number) {
+    public static async deleteTest(params: IDeleteTest) {
+        const {testId, courseId} = params;
         return await BaseRequest.request(`test/${testId}?courseId=${courseId}`, RequestTypes.DELETE, {});
     }
 }

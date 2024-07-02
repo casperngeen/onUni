@@ -1,11 +1,15 @@
+"use client"
+
 import { useEffect } from "react";
-import SingleQuestion from "./question";
-import { QuestionInfo } from "@/utils/request/types/attempt.types";
-import { AttemptRequest } from "@/utils/request/attempt.request";
-import { shuffleArray } from "./shuffle";
+import SingleQuestion from "./question/question";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
-import { fetchAttempt, selectAnswerCount, selectAttemptId, selectBookmarked, selectError, selectLoading, selectQuestions, selectQuestionsAnswers } from "@/utils/redux/slicers/attempt.slicer";
-import { UniContainer } from "@/components/overwrite/uni.components";
+import { fetchAttempt, selectError, selectLoading, selectQuestions, setTestId } from "@/utils/redux/slicers/attempt.slicer";
+import { UniCol, UniContainer, UniRow } from "@/components/overwrite/uni.components";
+import './attempt.scss'
+import SidebarQuestions from "./sidebar/question/sidebar.question";
+import SidebarProgressBar from "./sidebar/progress/progress.bar";
+import SidebarHeader from "./sidebar/header/header";
+import SideBarButtons from "./sidebar/button/button";
 
 interface TestAttemptProps {
     testId: number,
@@ -16,45 +20,35 @@ const TestAttempt: React.FC<TestAttemptProps> = ({courseId, testId}) => {
     const selector = useAppSelector();
     const dispatch = useAppDispatch()();
     const questions = selector(selectQuestions);
-    const attemptId = selector(selectAttemptId);
-    const answerCount = selector(selectAnswerCount);
-    const bookmarked = selector(selectBookmarked);
-    const questionAnswers = selector(selectQuestionsAnswers);
     const error = selector(selectError);
     const loading = selector(selectLoading);
+
+    dispatch(setTestId(testId));
     
     useEffect(() => {
-        dispatch(fetchAttempt({testId: testId, courseId: courseId}))
+        dispatch(fetchAttempt({testId: testId, courseId: courseId}));
+        console.log('Fetched data');
     }, [courseId, dispatch, testId])
 
     return (
-        <UniContainer>
-            
+        <UniContainer className="attempt">
+            <UniRow className="h-100">
+                <UniCol className="col-md-3 sidebar">
+                    <SidebarHeader />
+                    <SidebarProgressBar />
+                    <SidebarQuestions />
+                    <SideBarButtons />
+                </UniCol>
+                <UniCol className="col-md-9 questions">
+                    {questions.map((question, index) => (
+                        <div key={question.questionId} id={`question-${index+1}`}>
+                            <SingleQuestion questionInfo={question} questionNumber={index+1}></SingleQuestion>
+                        </div>
+                    ))}
+                </UniCol>
+            </UniRow>
         </UniContainer>
     );
 }
 
-const testQuestionInfo: QuestionInfo = {
-    questionId: 1,
-    questionText: 'This is the question text',
-    options: [{
-        optionId: 1,
-        optionText: 'This is option 1',
-    }, {
-        optionId: 2,
-        optionText: 'This is option 2',
-    }, {
-        optionId: 3,
-        optionText: 'This is option 3',
-    }]
-}
-
-const Attempt = () => {
-    return (
-        <div>
-          <SingleQuestion questionInfo={testQuestionInfo} questionNumber={1}></SingleQuestion>
-        </div>
-      );
-}
-
-export default Attempt;
+export default TestAttempt;

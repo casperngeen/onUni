@@ -1,3 +1,5 @@
+import { GetQuestionResponse } from "./question.types"
+
 enum ScoringFormats {
     AVERAGE = 'average',
     HIGHEST = 'highest',
@@ -11,7 +13,7 @@ enum TestTypes {
 }
   
 
-export interface TestResponse {
+export interface ITestResponse {
     testId: number,
     title: string,
     description: string,
@@ -23,7 +25,14 @@ export interface TestResponse {
     timeLimit: number | null,
 }
 
-export interface NewTestBody {
+export interface ITestInfoForAttemptResponse {
+    testTitle: string,
+    courseTitle: string,
+    timeLimit: number | null,
+    questions: GetQuestionResponse[];
+}
+
+export interface INewTest {
     courseId: number,
     title: string,
     description: string,
@@ -33,4 +42,15 @@ export interface NewTestBody {
     scoringFormat?: ScoringFormats | null,
     maxAttempt?: number | null,
     timeLimit?: number | null,
+}
+
+export interface IGetTest {
+    courseId: number,
+    testId: number,
+}
+
+export interface IDeleteTest extends IGetTest {}
+
+export interface IUpdateTest extends INewTest {
+    testId: number,
 }

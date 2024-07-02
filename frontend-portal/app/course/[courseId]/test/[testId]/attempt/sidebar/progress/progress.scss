@@ -1,0 +1,25 @@
+@import "../../../../../../../../utils/styles/styles.scss";
+
+.progress-bar-count {
+    font-size: $font-size-XS;
+    font-weight: 600;
+    line-height: 21px;
+    margin-left: $gap-4;
+}
+
+.progress-bar-title {
+    font-weight: 400;
+    font-size: $font-size-S;
+    line-height: 24px;
+    margin-bottom: $gap-2;
+}
+
+.sidebar-header-bar {
+    border-style: solid;
+    border-color: $gray-200;
+    border-width: 0px 0px 1px 0px;
+    background-color: $white;
+    display: flex;
+    flex-direction: column;
+    padding: $p-3 $p-4;
+}

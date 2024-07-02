@@ -2,15 +2,13 @@ import { json } from "stream/consumers";
 import { ApiResponse, RequestTypes } from "./types/base.types";
 import RequestError from "./request.error";
 import { AuthException } from "./status.code";
-import Cookie from "../cookies";
 import { RefreshResponse } from "./types/auth.types";
 
 export default class BaseRequest {
   private static readonly baseRoute = `http://localhost:3000`;
-  protected static readonly cookie = new Cookie();
 
   protected static getAccessToken() {
-    return BaseRequest.cookie.get('accessToken');
+    return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzE5ODgyOTYzLCJleHAiOjE3MTk5MTg5NjN9.HAzkML4cvUMXrhWG-E-u1efiAiCpuaRMfo4KddRtzn8'
   }
 
   protected static async request<T>(
@@ -33,7 +31,7 @@ export default class BaseRequest {
       
       // handle access token expiry
       if (jsonResponse.code == AuthException.EXPIRED_TOKEN) {
-        const refresh = this.cookie.get('refreshToken');
+        const refresh = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzE5ODgyOTYzLCJleHAiOjE3MjA0ODc3NjN9.2gZK9zvmE7Vx4fgqNzbt8d3UkqYEHGSSkP5pR_mediQ';
         const refreshResponse: ApiResponse<RefreshResponse> = await fetch(`${this.baseRoute}/auth/refresh`, {
           method: method,
           headers: {
@@ -47,8 +45,8 @@ export default class BaseRequest {
         // if the refresh was successful -> set cookies and fetch original request again
         if (refreshResponse.code === 0) {
           const { accessToken, refreshToken } = refreshResponse.data;
-          this.cookie.set('accessToken', accessToken);
-          this.cookie.set('refreshToken', refreshToken);
+          // this.cookie.set('accessToken', accessToken);
+          // this.cookie.set('refreshToken', refreshToken);
           jsonResponse = await fetch(`${this.baseRoute}/${path}`, {
             method: method,
             headers: {

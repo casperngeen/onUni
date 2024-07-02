@@ -3,7 +3,7 @@ import { GetQuestionResponse, NewOptionBody, NewOptionResponse, NewQuestionBody,
 import BaseRequest from "./base.request";
 
 export default class QuestionRequest extends BaseRequest {
-    public async createNewQuestion(newQuestion: NewQuestionBody, courseId: number) {
+    public static async createNewQuestion(newQuestion: NewQuestionBody, courseId: number) {
         return await BaseRequest.request<NewQuestionResponse>(
             `question?courseId=${courseId}`, 
             RequestTypes.POST, 
@@ -11,7 +11,7 @@ export default class QuestionRequest extends BaseRequest {
         )
     }
 
-    public async createNewOptions(courseId: number, questionId: number, options: NewOptionBody[]) {
+    public static async createNewOptions(courseId: number, questionId: number, options: NewOptionBody[]) {
         // get all option ids in order
         return await BaseRequest.request<NewOptionResponse[]>(
             `question/${questionId}?courseId=${courseId}`, 
@@ -20,15 +20,15 @@ export default class QuestionRequest extends BaseRequest {
         )
     }
 
-    public async getAllQuestions(courseId: number, testId: number) {
-        return await BaseRequest.request<NewOptionResponse[]>(
+    public static async getAllQuestions(courseId: number, testId: number) {
+        return await BaseRequest.request<GetQuestionResponse[]>(
             `test/${testId}?courseId=${courseId}`, 
             RequestTypes.GET, 
             {}
         )
     }
 
-    public async getQuestion(questionId: number, courseId: number) {
+    public static async getQuestion(questionId: number, courseId: number) {
         return await BaseRequest.request<GetQuestionResponse>(
             `question/${questionId}?courseId=${courseId}`, 
             RequestTypes.GET, 
@@ -36,7 +36,7 @@ export default class QuestionRequest extends BaseRequest {
         )    
     }
 
-    public async updateQuestion(questionId: number, courseId: number, questionText: string) {
+    public static async updateQuestion(questionId: number, courseId: number, questionText: string) {
         await BaseRequest.request<GetQuestionResponse>(
             `question/${questionId}?courseId=${courseId}`, 
             RequestTypes.PUT, 
@@ -44,7 +44,7 @@ export default class QuestionRequest extends BaseRequest {
         )    
     }
 
-    public async updateOption(optionId: number, courseId: number, optionText: string) {
+    public static async updateOption(optionId: number, courseId: number, optionText: string) {
         await BaseRequest.request<GetQuestionResponse>(
             `option/${optionId}?courseId=${courseId}`, 
             RequestTypes.PUT, 
@@ -52,7 +52,7 @@ export default class QuestionRequest extends BaseRequest {
         )    
     }
 
-    public async deleteQuestion(questionId: number, courseId: number) {
+    public static async deleteQuestion(questionId: number, courseId: number) {
         await BaseRequest.request<GetQuestionResponse>(
             `question/${questionId}?courseId=${courseId}`, 
             RequestTypes.DELETE, 
@@ -60,7 +60,7 @@ export default class QuestionRequest extends BaseRequest {
         )    
     }
 
-    public async deleteOption(optionId: number, courseId: number) {
+    public static async deleteOption(optionId: number, courseId: number) {
         await BaseRequest.request<GetQuestionResponse>(
             `option/${optionId}?courseId=${courseId}`, 
             RequestTypes.DELETE, 

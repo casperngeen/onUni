@@ -1,0 +1,25 @@
+@import "../../../../../../utils/styles/styles.scss";
+
+.attempt {
+    background-color: $gray-100;
+    padding: $p-0 !important;
+    height: 100vh;
+}
+
+.sidebar {
+    border-style: solid;
+    border-color: $gray-400;
+    border-width: 0px 1px 0px 0px;
+    display:flex;
+    flex-direction: column;
+}
+
+.questions {
+    padding: $p-6 $p-7;
+    display: flex;
+    flex-direction: column;
+}
+
+.question-gap {
+    margin-bottom: $gap-6;
+}

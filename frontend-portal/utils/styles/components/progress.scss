@@ -1,0 +1,11 @@
+@import '../styles.scss';
+
+.uni-progress-attempt {
+    height: 0.5rem !important;
+    width: 100%;
+    .progress-bar {
+        height: 0.5rem;
+        border-radius: $rounded-2;
+        background-color: $--Theme-Success;
+    }
+}

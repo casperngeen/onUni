@@ -1,3 +1,5 @@
+import { QuestionInfo } from "./attempt.types";
+
 export interface NewQuestionBody {
     testId: number,
     questionText: string,
@@ -16,6 +18,4 @@ export interface NewOptionResponse {
     optionId: number,
 }
 
-export interface GetQuestionResponse {
-    
-}
+export interface GetQuestionResponse extends QuestionInfo {}

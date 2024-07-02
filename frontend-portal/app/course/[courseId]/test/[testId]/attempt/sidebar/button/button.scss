@@ -1,0 +1,14 @@
+@import "../../../../../../../../utils/styles/styles.scss";
+
+.sidebar-buttons {
+    padding: $p-4;
+    background-color: $white;
+    border-color: $gray-200;
+    border-width: 1px, 0px, 0px, 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.button-gap {
+    margin-top: $gap-3;
+}

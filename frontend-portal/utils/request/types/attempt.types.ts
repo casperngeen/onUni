@@ -1,6 +1,9 @@
 export interface NewAttemptResponse {
     attemptId: number,
     questions: QuestionInfo[],
+    testTitle: string,
+    courseTitle: string,
+    timeLimit: number | null,
 }
 
 export interface QuestionInfo {

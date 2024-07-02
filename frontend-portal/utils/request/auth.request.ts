@@ -7,8 +7,8 @@ export default class AuthRequest extends BaseRequest {
     public async login(body: LoginBody ) {
         const response = await BaseRequest.request<LoginResponse>('auth/login', RequestTypes.POST, body);
         const { accessToken, refreshToken } = response;
-        BaseRequest.cookie.set('accessToken', accessToken);
-        BaseRequest.cookie.set('refreshToken', refreshToken);
+        // BaseRequest.cookie.set('accessToken', accessToken);
+        // BaseRequest.cookie.set('refreshToken', refreshToken);
         return response.profilePic;
     }
 
@@ -27,8 +27,8 @@ export default class AuthRequest extends BaseRequest {
 
     public async logout() {
         await BaseRequest.request(`auth/refresh}`, RequestTypes.PUT, {});
-        BaseRequest.cookie.delete('accessToken');
-        BaseRequest.cookie.delete('refreshToken');
+        // BaseRequest.cookie.delete('accessToken');
+        // BaseRequest.cookie.delete('refreshToken');
     }
     
 }

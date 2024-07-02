@@ -1,15 +1,25 @@
-@import '../color';
-@import '../responsive';
+@import '../styles.scss';
 
-.button {
-    border-radius: $rounded-1;
-    font-size: $font-size-XS;
-    
-    &_type-1 {
-        background-color: map-get($blue, 'lighten-4');
-        color: map-get($blue, 'base');
-        &:hover {
-            background-color: map-get($blue, 'lighten-2');
-        }
-    }
+.button-confirm,
+.button-exit {
+    border-radius: $rounded-2;
+    font-size: $font-size-S;
+    font-weight: 600;
+    padding: $p-2 $p-3;
+    text-align: center;
+    line-height: 24px;
+    width: auto;
+}
+
+.button-confirm {
+        background-color: $primary;
+        color: $white;
+        border-style: hidden;
+}
+
+.button-exit {
+    background-color: $white;
+    color: $primary;
+    border-style: solid;
+    border-color: $primary;
 }

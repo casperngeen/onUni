@@ -1,14 +1,12 @@
 'use client'
 
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
-import { OptionInfo, QuestionInfo } from "@/utils/request/types/attempt.types";
-import SingleOption from "./option";
-import { shuffleArray } from "./shuffle";
+import { QuestionInfo } from "@/utils/request/types/attempt.types";
+import SingleOption from "../option/option";
 import Container from "react-bootstrap/Container";
-import { bookmarkQuestion, selectBookmarked, unbookmarkQuestion } from "@/utils/redux/slicers/attempt.slicer";
+import { bookmarkQuestion, selectAttemptId, selectBookmarked, selectTestId, unbookmarkQuestion } from "@/utils/redux/slicers/attempt.slicer";
 import './question.scss';
 import { Bookmark, BookmarkFill, Flag } from "react-bootstrap-icons";
-import { useEffect, useState } from "react";
 
 interface SingleQuestionProps {
     questionInfo: QuestionInfo,
@@ -20,6 +18,7 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
     const dispatch = useAppDispatch()();
     const selector = useAppSelector();
     const bookmarked = selector(selectBookmarked);
+    const testId = selector(selectTestId);
     const isSelected = bookmarked.includes(questionId);
     const clickBookmark = () => {
         if (isSelected) {
@@ -27,19 +26,8 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
         } else {
             dispatch(bookmarkQuestion(questionId));
         }
+        localStorage.setItem(`bookmark-${testId}`, JSON.stringify(bookmarked));
     }
-    const [optionState, setOptionState] = useState([] as OptionInfo[]);
-
-    useEffect(() => {
-        const storedArray = localStorage.getItem(`shuffledArray-${questionId}`);
-        if (storedArray) {
-          setOptionState(JSON.parse(storedArray));
-        } else {
-          const shuffledArray = shuffleArray(options)
-          setOptionState(shuffledArray);
-          localStorage.setItem(`shuffledArray-${questionId}`, JSON.stringify(shuffledArray));
-        }
-      }, [options, questionId]);
 
     return (
         <Container className="question">
@@ -48,8 +36,8 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
                     <div className="question-number">Q{questionNumber}</div>
                     <a onClick={clickBookmark}>
                     {isSelected
-                        ? <BookmarkFill size={16} className="bookmark-icon" color='#FFCD39'></BookmarkFill>
-                        : <Bookmark size={16} className="bookmark-icon" color='#6c757d'></Bookmark>
+                        ? <BookmarkFill size={16} className="bookmark-icon" color='#FFCD39' />
+                        : <Bookmark size={16} className="bookmark-icon" color='#6c757d' />
                     }
                     </a>
                     <div className="bookmark">Bookmark</div>
@@ -62,7 +50,7 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
             <div className="question-content">
                 <div className="question-text">{questionText}</div>
                 <div>
-                    {optionState.map((option, index) => (
+                    {questionInfo.options.map((option, index) => (
                         <div key={option.optionId}>
                             <SingleOption questionId={questionId} option={option}/>
                             {index !== options.length-1 && <div className="option-gap" />}

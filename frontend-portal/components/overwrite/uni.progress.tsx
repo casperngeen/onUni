@@ -1,13 +1,14 @@
-import { ProgressBar, ProgressBarProps } from "react-bootstrap";
+import ProgressBar, { ProgressBarProps } from "react-bootstrap/ProgressBar";
 import { BsPrefixProps, ReplaceProps } from "react-bootstrap/esm/helpers";
+import '../../utils/styles/components/progress.scss';
 
 type TProgressPros = React.PropsWithChildren<ReplaceProps<'div', BsPrefixProps<'div'> & ProgressBarProps>>;
 type UniProgressProps = {
-  customprogress?: 'type-1' | 'type-2' | 'type-3'
+  customprogress?: 'attempt' | 'type-2' | 'type-3'
 };
 const UniProgressBarComp = (props: TProgressPros & UniProgressProps) => {
-  if (props.customprogress == 'type-1') {
-    return <ProgressBar {...props} className="uni-progress-type-1" ></ProgressBar >
+  if (props.customprogress == 'attempt') {
+    return <ProgressBar {...props} className="uni-progress-attempt" ></ProgressBar >
   }
   if (props.customprogress == 'type-2') {
     return <ProgressBar {...props} className="uni-progress-type-2" ></ProgressBar >

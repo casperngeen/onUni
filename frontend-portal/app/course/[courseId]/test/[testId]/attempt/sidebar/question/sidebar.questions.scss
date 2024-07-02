@@ -1,0 +1,42 @@
+@import "../../../../../../../../utils/styles/styles.scss";
+
+.sidebar-questions {
+    padding: $p-3 $p-4;
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $p-3;
+    overflow: auto;
+
+}
+
+.sidebar-single-question {
+    border-style:solid;
+    border-radius: $rounded-2;
+    border-color: $gray-200;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $body-color;
+    &:hover {
+        background-color: $blue-100;
+    }
+}
+
+.sidebar-single-question-attempted {
+    @extend .sidebar-single-question;
+    background-color: $teal-500;
+}
+
+.question-number {
+    font-size: $font-size-XS;
+    line-height: 21px;
+    font-weight: 500px;
+    margin-right: $gap-2;
+}
+
+.question-number-attempted {
+    @extend .question-number;
+    color: $white;
+}
