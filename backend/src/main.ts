@@ -6,9 +6,12 @@ import { HttpExceptionFilter } from './http.exception.filter';
 import { AppModule } from './app.module';
 import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
+import 'dotenv/config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: { origin: [process.env.FRONTEND_PORTAL] },
+  });
   const logger = app.get(LoggerService);
   logger.log(
     'Application is starting...',
