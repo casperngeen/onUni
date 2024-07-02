@@ -1,5 +1,8 @@
 import { Course } from 'src/modules/course/course.entity';
-import { Question } from 'src/modules/question/question.entity';
+import {
+  Question,
+  QuestionInfoDto,
+} from 'src/modules/question/question.entity';
 import {
   Entity,
   Column,
@@ -9,15 +12,18 @@ import {
 } from 'typeorm';
 import { Attempt } from '../attempt/attempt.entity';
 import {
+  IsArray,
   IsDate,
   IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 import { ScoringFormats } from './test.enum';
 import { TestTypes } from './test.enum';
+import { Type } from 'class-transformer';
 
 @Entity()
 export class Test {
@@ -117,4 +123,23 @@ export class UpdateTestDto extends TestInfoDto {
   @IsInt()
   @IsNotEmpty()
   testId: number;
+}
+
+export class TestInfoForAttemptDto {
+  @IsNotEmpty()
+  @IsString()
+  testTitle: string;
+
+  @IsNotEmpty()
+  @IsString()
+  courseTitle: string;
+
+  @IsOptional()
+  @IsInt()
+  timeLimit: number | null;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => QuestionInfoDto)
+  questions: QuestionInfoDto[];
 }

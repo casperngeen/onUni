@@ -41,13 +41,25 @@ export class TestController {
   @UseGuards(CourseUserGuard)
   @Get('test/:testId')
   async viewTestInformation(
-    @Param('testId') id: number,
+    @Param('testId') testId: number,
     @Res() response: Response,
   ) {
     const test: Partial<Test> = await this.testService.viewTestInfo({
-      testId: id,
+      testId: testId,
     });
     response.status(200).json(ResponseHandler.success(test));
+  }
+
+  @UseGuards(CourseUserGuard)
+  @Get('test/:testId/attempt')
+  async getTestInfoForAttempt(
+    @Param('testId') testId: number,
+    @Res() response: Response,
+  ) {
+    const testInfo = await this.testService.getTestInfoForAttempt({
+      testId: testId,
+    });
+    response.status(200).json(ResponseHandler.success(testInfo));
   }
 
   @UseGuards(TeacherGuard)

@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import BaseService from 'src/base/base.service';
-import { NewTestDto, Test, TestIdDto, UpdateTestDto } from './test.entity';
+import {
+  NewTestDto,
+  Test,
+  TestIdDto,
+  TestInfoForAttemptDto,
+  UpdateTestDto,
+} from './test.entity';
 import { Repository } from 'typeorm';
 import { Course, CourseIdDto } from '../course/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,7 +31,6 @@ export class TestService extends BaseService<Test> {
     )[0];
   }
 
-  // for user in course
   public async viewAllTests(
     courseIdObject: CourseIdDto,
   ): Promise<Partial<Test>[]> {
@@ -77,7 +82,6 @@ export class TestService extends BaseService<Test> {
     return testsObject;
   }
 
-  // for user in course
   public async viewTestInfo(testIdObject: TestIdDto): Promise<Partial<Test>> {
     this.log(`Query for test ${testIdObject.testId}`, this.context);
     this.log(`Querying DB...`, this.context);
@@ -106,7 +110,36 @@ export class TestService extends BaseService<Test> {
     return testInfo;
   }
 
-  // for teacher of course
+  public async getTestInfoForAttempt(testIdObject: TestIdDto) {
+    const { testId } = testIdObject;
+    this.log(
+      `Query for test information of test ${testId} for attempt...`,
+      this.context,
+    );
+    this.log(`Querying DB for test information...`, this.context);
+    const test: Test = await this.findOne({
+      relations: ['course', 'questions', 'questions.options'],
+      where: { testId: testId },
+    });
+    if (!test) {
+      this.error(
+        `Test ${testId} could not be found`,
+        this.context,
+        this.getTrace(),
+      );
+    }
+    this.log(`Test ${testId} found`, this.context);
+    this.log(`Formatting test information for attempt...`, this.context);
+    const testInfo: TestInfoForAttemptDto = {
+      testTitle: test.title,
+      courseTitle: test.course.title,
+      timeLimit: test.timeLimit,
+      questions: test.questions,
+    };
+    this.log(`Test information for attempt formatted`, this.context);
+    return testInfo;
+  }
+
   public async createNewTest(newTestDetails: NewTestDto): Promise<TestIdDto> {
     const { courseId, ...testInfo } = newTestDetails;
     this.log(`Query to create new test`, this.context);
