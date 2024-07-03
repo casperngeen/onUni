@@ -1,6 +1,6 @@
-import { selectBookmarked, selectQuestions, selectQuestionsAnswers } from "@/utils/redux/slicers/attempt.slicer";
+import { SubmitStatus, selectAnswers, selectBookmarked, selectQuestions, selectQuestionsAnswers, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
 import { useAppSelector } from "@/utils/redux/utils/hooks";
-import { Bookmark, BookmarkFill } from "react-bootstrap-icons";
+import { Bookmark, BookmarkFill, CheckCircleFill, XCircleFill } from "react-bootstrap-icons";
 import './sidebar.questions.scss'
 
 
@@ -9,36 +9,55 @@ const SidebarQuestions: React.FC<{}> = () => {
     const questions = selector(selectQuestions);
     const bookmarked = selector(selectBookmarked);
     const questionAnswers = selector(selectQuestionsAnswers);
+    const submitStatus = selector(selectSubmitStatus);
+    const answers = selector(selectAnswers);
     
     return (
         <div className="sidebar-questions">
-            {questions.map((question, index) => (
-                <a key={question.questionId} href={`#question-${index+1}`} className="text-decoration-none">
-                    {
-                        question.questionId in questionAnswers
-                        ? <div className="sidebar-single-question-attempted">
-                            <div className="question-number-attempted">
-                                {index < 9 && 0}{index+1}
-                            </div>
-                            {
-                                bookmarked.includes(question.questionId)
-                                ? <BookmarkFill size={16} color='#FFCD39'></BookmarkFill>
-                                : <Bookmark size={16} color='#F8F9FA'></Bookmark>
-                            }
-                        </div>
-                        : <div className="sidebar-single-question">
+            {
+                submitStatus === SubmitStatus.SUCCESS
+                ? questions.map((question, index) => (
+                    <a key={question.questionId} href={`#question-${index+1}`} className="text-decoration-none">
+                        <div className="sidebar-single-question">
                             <div className="question-number">
                                 {index < 9 && 0}{index+1}
                             </div>
                             {
-                                bookmarked.includes(question.questionId)
-                                ? <BookmarkFill size={16} color='#FFCD39'></BookmarkFill>
-                                : <Bookmark size={16} color='#6C757D'></Bookmark>
+                                question.questionId in answers && answers[question.questionId].isCorrect
+                                ? <CheckCircleFill size={16} color='#FFCD39'/>
+                                : <XCircleFill size={16} color='#DC3545' />
                             }
                         </div>
-                    }
-                </a>
-            ))}
+                    </a>
+                ))
+                : questions.map((question, index) => (
+                    <a key={question.questionId} href={`#question-${index+1}`} className="text-decoration-none">
+                        {
+                            question.questionId in questionAnswers
+                            ? <div className="sidebar-single-question-attempted">
+                                <div className="question-number-attempted">
+                                    {index < 9 && 0}{index+1}
+                                </div>
+                                {
+                                    bookmarked.includes(question.questionId)
+                                    ? <BookmarkFill size={16} color='#FFCD39'></BookmarkFill>
+                                    : <Bookmark size={16} color='#F8F9FA'></Bookmark>
+                                }
+                            </div>
+                            : <div className="sidebar-single-question">
+                                <div className="question-number">
+                                    {index < 9 && 0}{index+1}
+                                </div>
+                                {
+                                    bookmarked.includes(question.questionId)
+                                    ? <BookmarkFill size={16} color='#FFCD39'></BookmarkFill>
+                                    : <Bookmark size={16} color='#6C757D'></Bookmark>
+                                }
+                            </div>
+                        }
+                    </a>
+                ))
+            }
         </div>
     )
 }

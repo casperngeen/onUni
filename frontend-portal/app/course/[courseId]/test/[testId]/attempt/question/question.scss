@@ -8,6 +8,7 @@
     border-style: solid;
     border-width: 2px;
     border-radius: $rounded-4;
+    gap: $gap-4;
 }
 
 .question-header {
@@ -52,10 +53,18 @@
     margin-right: $gap-2;
 }
 
-.report {
+.report-text {
     font-size: $font-size-XS;
     color: #0D6EFD;
     align-self: center;
+}
+
+.report {
+    display: flex;
+    text-decoration: none;
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .question-text {

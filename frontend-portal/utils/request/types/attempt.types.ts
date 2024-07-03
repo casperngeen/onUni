@@ -1,9 +1,12 @@
+import { TestTypes } from "./test.types";
+
 export interface NewAttemptResponse {
     attemptId: number,
     questions: QuestionInfo[],
     testTitle: string,
     courseTitle: string,
     timeLimit: number | null,
+    testType: TestTypes,
 }
 
 export interface QuestionInfo {
@@ -27,27 +30,27 @@ export enum Status {
 export enum AnswerStatus {
     CORRECT = 'correct',
     INCORRECT = 'incorrect',
-  }
+    UNATTEMPTED = 'unattempted',
+}
 
 export interface AttemptResponse {
     attemptId: number,
     status: Status,
     start: string,
-    end: string,
+    end: string | null,
     submitted: string | null,
     score: number | null,
-    questionAttempts: QuestionAttemptResponse[];
+    questionAttempts: QuestionAttemptResponse[],
+    questions: QuestionInfo[],
+    courseTitle: string,
+    testTitle: string,
+    testType: TestTypes,
 }
 
 export interface QuestionAttemptResponse {
     questionId: number,
     selectedOptionId: number,
     answerStatus: AnswerStatus,
-
-}
-
-export interface ISaveAttemptBody {
-    questionAttempts: ISaveQuestionAttemptBody[]
 }
 
 export interface ISaveQuestionAttemptBody {
@@ -68,9 +71,7 @@ export interface IGetAttempt {
 
 export interface IDeleteAttempt extends IGetAttempt {}
 
-export interface ISaveAttempt extends IGetAttempt {
-    body: ISaveAttemptBody,
-}
+export interface ISaveAttempt extends IGetAttempt {}
 
 export interface ISaveQuestionAttempt extends IGetAttempt {
     body: ISaveQuestionAttemptBody,

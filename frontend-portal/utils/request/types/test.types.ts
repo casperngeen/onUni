@@ -6,7 +6,7 @@ enum ScoringFormats {
     LATEST = 'latest',
 }
   
-enum TestTypes {
+export enum TestTypes {
     PRACTICE = 'practice',
     EXAM = 'exam',
     QUIZ = 'quiz',
@@ -30,6 +30,7 @@ export interface ITestInfoForAttemptResponse {
     courseTitle: string,
     timeLimit: number | null,
     questions: GetQuestionResponse[];
+    testType: TestTypes;
 }
 
 export interface INewTest {

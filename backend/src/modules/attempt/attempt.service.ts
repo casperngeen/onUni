@@ -125,12 +125,14 @@ export class AttemptService extends BaseService<Attempt> {
       this.context,
     );
     const start = new Date();
-    let end = null;
+    let end: string | null = null;
     if (test.timeLimit) {
-      end = new Date(start.getTime() + test.timeLimit * 60 * 1000);
+      end = new Date(
+        start.getTime() + test.timeLimit * 60 * 1000,
+      ).toISOString();
     }
     const attempt: Attempt = await this.save({
-      start: start,
+      start: start.toISOString(),
       end: end,
       questionAttempts: [],
       test: test,
@@ -156,7 +158,6 @@ export class AttemptService extends BaseService<Attempt> {
     return response;
   }
 
-  // for teachers + the student who is associated with the attempt
   public async getAllAttempts(
     userTestDetails: UserTestDto,
   ): Promise<AttemptInfoDto[]> {
@@ -193,7 +194,6 @@ export class AttemptService extends BaseService<Attempt> {
     return attemptsInfo;
   }
 
-  // same as above
   public async getAttempt(
     attemptIdObject: AttemptIdDto,
   ): Promise<AttemptInfoDto> {
@@ -233,7 +233,7 @@ export class AttemptService extends BaseService<Attempt> {
     this.log(`Submitting attempt ${attemptId}...`, this.context);
     let status: Status = Status.SUBMIT;
     const submitTime = new Date();
-    if (attempt.end && submitTime > attempt.end) {
+    if (attempt.end && submitTime.toISOString() > attempt.end) {
       status = Status.AUTOSUBMIT;
     }
     this.log(
@@ -293,7 +293,7 @@ export class AttemptService extends BaseService<Attempt> {
     );
     this.log(`Updating attempt ${attemptId} in DB...`, this.context);
     await this.update(attemptId, {
-      submitted: submitTime,
+      submitted: submitTime.toISOString(),
       status: status,
       score: score,
     });
@@ -308,7 +308,7 @@ export class AttemptService extends BaseService<Attempt> {
     // check end time in redis
     const { attemptId, selectedOptionId, questionId } = selectOptionDetails;
     const attempt = await this.checkIfAttemptInRepo(attemptId);
-    if (attempt.end && new Date() > attempt.end) {
+    if (attempt.end && new Date().toISOString() > attempt.end) {
       this.error(
         `User cannot update answer as time limit for attempt ${attemptId} has exceeded`,
         this.context,
@@ -424,6 +424,7 @@ export class AttemptService extends BaseService<Attempt> {
         'questionAttempts',
         'user',
         'test',
+        'test.course',
         'test.questions',
         'test.questions.options',
       ],
@@ -555,6 +556,10 @@ export class AttemptService extends BaseService<Attempt> {
       submitted: attempt.submitted,
       score: attempt.score,
       questionAttempts: questionAttemptResponse,
+      questions: attempt.test.questions,
+      testTitle: attempt.test.title,
+      courseTitle: attempt.test.course.title,
+      testType: attempt.test.testType,
     };
     this.log(
       `Attempt info for attempt ${attempt.attemptId} formatted`,
@@ -572,6 +577,7 @@ export class AttemptService extends BaseService<Attempt> {
       testTitle: test.title,
       courseTitle: test.course.title,
       timeLimit: test.timeLimit,
+      testType: test.testType,
       questions: test.questions.map((question) => {
         return {
           questionId: question.questionId,

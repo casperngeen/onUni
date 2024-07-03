@@ -93,7 +93,6 @@ export class AttemptController {
 
   // new route to save attempt
 
-  // delete from redis
   @UseGuards(AttemptUserGuard)
   @Put('attempt/:attemptId/question')
   async saveQuestionAttempt(
@@ -108,7 +107,6 @@ export class AttemptController {
     response.status(200).json(ResponseHandler.success());
   }
 
-  // delete from redis
   @UseGuards(AttemptTeacherGuard)
   @Delete('attempt/:attemptId')
   async deleteAttempt(

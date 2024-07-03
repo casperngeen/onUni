@@ -135,6 +135,7 @@ export class TestService extends BaseService<Test> {
       courseTitle: test.course.title,
       timeLimit: test.timeLimit,
       questions: test.questions,
+      testType: test.testType,
     };
     this.log(`Test information for attempt formatted`, this.context);
     return testInfo;

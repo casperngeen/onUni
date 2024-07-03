@@ -2,8 +2,9 @@
 
 .attempt {
     background-color: $gray-100;
-    padding: $p-0 !important;
     height: 100vh;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 .sidebar {
@@ -12,14 +13,27 @@
     border-width: 0px 1px 0px 0px;
     display:flex;
     flex-direction: column;
+    padding: 0 !important;
 }
 
 .questions {
-    padding: $p-6 $p-7;
+    padding: $p-6 $p-7!important;
     display: flex;
     flex-direction: column;
+    gap: $gap-6;
 }
 
 .question-gap {
     margin-bottom: $gap-6;
+}
+
+.header {
+    background-image: 'url("public/summary.png")';
+    padding: $p-12 $p-6;
+    border-style: hidden;
+    border-radius: $rounded-4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $gap-8
 }

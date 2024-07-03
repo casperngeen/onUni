@@ -1,5 +1,13 @@
 @import "../../../../../../../utils/styles/styles.scss";
 
 .option {
-    padding: $p-2;
+    .form-check-input:disabled {
+        background-color: inherit !important; 
+        border-color: inherit !important;
+        opacity: 1 !important;
+      }
+    
+      .form-check-label {
+        color: inherit !important;
+      }
 }

@@ -26,6 +26,7 @@ import {
 import { Type } from 'class-transformer';
 import { QuestionInfoDto } from '../question/question.entity';
 import { Status } from './attempt.enum';
+import { TestTypes } from '../test/test.enum';
 
 @Entity()
 export class Attempt {
@@ -40,13 +41,13 @@ export class Attempt {
   status: Status;
 
   @Column({ type: 'date' })
-  start: Date; // the time when the user "starts" the test
+  start: string; // the time when the user "starts" the test
 
   @Column({ type: 'date', nullable: true })
-  end: Date | null; // the time when the user MUST end the test
+  end: string | null; // the time when the user MUST end the test
 
   @Column({ type: 'date', nullable: true })
-  submitted: Date | null;
+  submitted: string | null;
 
   @Column('decimal', { nullable: true, precision: 7, scale: 3 })
   score: number | null;
@@ -115,15 +116,15 @@ export class AttemptInfoDto {
 
   @IsNotEmpty()
   @IsISO8601({ strict: true })
-  start: Date;
+  start: string;
 
   @IsOptional()
   @IsISO8601({ strict: true })
-  end: Date | null;
+  end: string | null;
 
   @IsOptional()
   @IsISO8601({ strict: true })
-  submitted: Date | null;
+  submitted: string | null;
 
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
@@ -133,6 +134,23 @@ export class AttemptInfoDto {
   @ValidateNested({ each: true })
   @Type(() => QuestionAttemptResponseDto)
   questionAttempts: QuestionAttemptResponseDto[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => QuestionInfoDto)
+  questions: QuestionInfoDto[];
+
+  @IsNotEmpty()
+  @IsString()
+  testTitle: string;
+
+  @IsNotEmpty()
+  @IsString()
+  courseTitle: string;
+
+  @IsEnum(TestTypes)
+  @IsNotEmpty()
+  testType: TestTypes;
 }
 
 export class AttemptResponseDto {
@@ -151,6 +169,10 @@ export class AttemptResponseDto {
   @IsOptional()
   @IsInt()
   timeLimit: number | null;
+
+  @IsEnum(TestTypes)
+  @IsNotEmpty()
+  testType: TestTypes;
 
   @IsArray()
   @ValidateNested({ each: true })

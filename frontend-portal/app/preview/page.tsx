@@ -1,5 +1,6 @@
 "use client"
 
+import { QuestionInfo } from "@/utils/request/types/attempt.types";
 import TestAttempt from "../course/[courseId]/test/[testId]/attempt/page";
 
 interface TestAttemptProps {
@@ -9,17 +10,6 @@ interface TestAttemptProps {
         attemptId: number,
         questions: QuestionInfo[]
     }
-}
-
-export interface QuestionInfo {
-    questionId: number,
-    questionText: string,
-    options: OptionInfo[],
-}
-
-export interface OptionInfo {
-    optionId: number,
-    optionText: string,
 }
 
 // const TestAttempt: React.FC<TestAttemptProps> = ({title, attemptDetails}) => {
@@ -48,12 +38,12 @@ const testQuestionInfo: QuestionInfo = {
     }]
 }
 
-const Preview = () => {
-    return (
-        <div>
-          <TestAttempt courseId={4} testId={4}></TestAttempt>
-        </div>
-      );
-}
+// const Preview = () => {
+//     return (
+//         <div>
+//           <TestAttempt courseId={4} testId={4}></TestAttempt>
+//         </div>
+//       );
+// }
 
-export default Preview;
+// export default Preview;

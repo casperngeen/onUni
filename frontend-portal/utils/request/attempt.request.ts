@@ -40,11 +40,11 @@ export class AttemptRequest extends BaseRequest {
     }
 
     public static async saveAttempt(params: ISaveAttempt) {
-        const { attemptId, body } = params;
+        const { attemptId } = params;
         await BaseRequest.request(
             `attempt/${attemptId}`,
             RequestTypes.PUT,
-            body,
+            {},
         )
     }
 

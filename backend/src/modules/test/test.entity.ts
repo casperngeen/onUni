@@ -142,4 +142,8 @@ export class TestInfoForAttemptDto {
   @ValidateNested({ each: true })
   @Type(() => QuestionInfoDto)
   questions: QuestionInfoDto[];
+
+  @IsNotEmpty()
+  @IsEnum(TestTypes)
+  testType: TestTypes;
 }
