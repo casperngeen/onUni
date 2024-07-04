@@ -32,12 +32,16 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
         : AnswerStatus.UNATTEMPTED; 
 
     useEffect(() => {
-        localStorage.setItem(`bookmark-${testId}`, JSON.stringify(bookmarked));
-    }, [testId, bookmarked]);
+        if (!viewOnly) {
+            localStorage.setItem(`bookmark-${testId}`, JSON.stringify(bookmarked));
+        }
+    }, [testId, bookmarked, viewOnly]);
 
     useEffect(() => {
-        localStorage.setItem(`answer-${testId}`, JSON.stringify(questionsAnswered));
-    }, [questionsAnswered, testId]);
+        if (!viewOnly) {
+            localStorage.setItem(`answer-${testId}`, JSON.stringify(questionsAnswered));
+        }
+    }, [questionsAnswered, testId, viewOnly]);
 
     const clickBookmark = () => {
         if (isSelected) {
@@ -57,14 +61,16 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
                 <div className="d-inline-flex position-relative">
                     <div className="question-number">Q{questionNumber}</div>
                     {!viewOnly && 
-                        <a onClick={clickBookmark}>
-                            {isSelected
-                                ? <BookmarkFill size={16} className="bookmark-icon" color='#FFCD39' />
-                                : <Bookmark size={16} className="bookmark-icon" color='#6C757D' />
-                            }
-                        </a>
+                        <>
+                            <a onClick={clickBookmark}>
+                                {isSelected
+                                    ? <BookmarkFill size={16} className="bookmark-icon" color='#FFCD39' />
+                                    : <Bookmark size={16} className="bookmark-icon" color='#6C757D' />
+                                }
+                            </a>
+                            <div className="bookmark">Bookmark</div>
+                        </>
                     }
-                    <div className="bookmark">Bookmark</div>
                 </div>
                 <a className="report" onClick={reportQuestion}>
                     <Flag size={16} className="flag-icon" color='#0D6EFD'></Flag>

@@ -5,7 +5,6 @@ import Form from 'react-bootstrap/Form';
 import { updateQuestionAnswer, selectQuestionsAnswers, selectAttemptId, selectAnswers, SubmitStatus, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { AttemptRequest } from "@/utils/request/attempt.request";
-import './option.scss';
 
 interface SingleOptionProps {
     questionId: number,
@@ -33,9 +32,7 @@ const SingleOption: React.FC<SingleOptionProps> = ({questionId, option}) => {
     return viewOnly
     ? (
         <Form.Check
-            className="option"
             readOnly
-            disabled
             label={optionText} 
             name={`question-${questionId}`}
             type={'radio'} 

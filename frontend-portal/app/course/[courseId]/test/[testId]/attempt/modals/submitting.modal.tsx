@@ -21,13 +21,13 @@ const SubmttingModal: React.FC<{}> = () => {
 
     useEffect(() => {
         if (submitting === SubmitStatus.SUCCESS) {
-            router.push(`course/${courseId}/test/${testId}/attempt/${attemptId}`)
+            router.push(`/course/${courseId}/test/${testId}/attempt/${attemptId}`)
         }
     }, [attemptId, courseId, router, submitting, testId]);
 
     return (
         <UniModal.Modal custommodal="submitting" show={show} backdrop="static">
-            <Image src='public/submitting.png' alt='Submitting test' height={180} width={200}></Image>
+            <Image src='/submitting.png' alt='Submitting test' height={180} width={200}></Image>
             {/* <div className="image-gap"></div> */}
             <div className="d-flex justify-content-center">
                 <Spinner className="spinner"></Spinner>

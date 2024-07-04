@@ -24,7 +24,7 @@ const SidebarQuestions: React.FC<{}> = () => {
                             </div>
                             {
                                 question.questionId in answers && answers[question.questionId].isCorrect
-                                ? <CheckCircleFill size={16} color='#FFCD39'/>
+                                ? <CheckCircleFill size={16} color='#1AA179'/>
                                 : <XCircleFill size={16} color='#DC3545' />
                             }
                         </div>

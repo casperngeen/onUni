@@ -1,9 +1,11 @@
+'use client'
+
 import { UniCol, UniContainer, UniRow } from "@/components/overwrite/uni.components";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import SidebarHeader from "../sidebar/header/header";
-import { getAttemptSummary, selectQuestions } from "@/utils/redux/slicers/attempt.slicer";
+import { SubmitStatus, getAttemptSummary, selectQuestions, setSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
 import SideBarButtons from "../sidebar/button/button";
 import SidebarQuestions from "../sidebar/question/sidebar.question";
 import SingleQuestion from "../question/question";
@@ -23,7 +25,8 @@ const AttemptSummary: React.FC<{}> = () => {
     const questions = selector(selectQuestions);
 
     const reAttempt = () => {
-        router.push(`course/${courseId}/test/${testId}/attempt`);
+        dispatch(setSubmitStatus(SubmitStatus.UNSUBMITTED));
+        router.push(`/course/${courseId}/test/${testId}/attempt/new`);
     }
     
     useEffect(() => {
@@ -38,7 +41,7 @@ const AttemptSummary: React.FC<{}> = () => {
                     <SidebarQuestions />
                     <SideBarButtons />
                 </UniCol>
-                <UniCol className="col-md-9 question">
+                <UniCol className="col-md-9 questions">
                     <div className="header">
                         <SummaryTitle />
                         <UniButton custombutton="exit" style={{width: 200}} onClick={reAttempt}>Re-attempt</UniButton>

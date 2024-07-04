@@ -28,6 +28,7 @@
     align-items: center;
     justify-content: center;
     color: $body-color;
+    gap: $gap-2;
     &:hover {
         background-color: $blue-100;
     }
@@ -42,7 +43,7 @@
     font-size: $font-size-XS;
     line-height: 21px;
     font-weight: 500px;
-    margin-right: $gap-2;
+    margin-right: $gap-0 !important;
 }
 
 .question-number-attempted {

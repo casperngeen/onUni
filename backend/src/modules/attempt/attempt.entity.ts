@@ -40,16 +40,16 @@ export class Attempt {
   })
   status: Status;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamp', nullable: true })
   start: string; // the time when the user "starts" the test
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   end: string | null; // the time when the user MUST end the test
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   submitted: string | null;
 
-  @Column('decimal', { nullable: true, precision: 7, scale: 3 })
+  @Column('decimal', { nullable: true, precision: 7, scale: 0 })
   score: number | null;
 
   @OneToMany(

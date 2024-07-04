@@ -6,7 +6,6 @@ import { Alarm, CheckCircle } from "react-bootstrap-icons";
 import './summary.scss';
 
 const SummaryTitle: React.FC<{}> = () => {
-    const dispatch = useAppDispatch()();
     const selector = useAppSelector();
     const numOfQuestions = selector(selectQuestions).length;
     const score = selector(selectScore);
@@ -28,7 +27,7 @@ const SummaryTitle: React.FC<{}> = () => {
                     <Alarm size={16} />
                     <div>Time taken</div>
                 </div>
-                <div className="display">{minutes}:{seconds}</div>
+                <div className="display">{minutes < 10 && 0}{minutes}:{seconds < 10 && 0}{seconds}</div>
             </div>
         </div>
     )

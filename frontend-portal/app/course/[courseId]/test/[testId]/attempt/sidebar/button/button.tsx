@@ -1,7 +1,7 @@
 import UniButton from '@/components/overwrite/uni.button';
 import './button.scss';
 import { useAppDispatch, useAppSelector } from '@/utils/redux/utils/hooks';
-import { SubmitStatus, flipShowExit, flipShowSubmit, selectAttemptId, selectQuestions, selectQuestionsAnswers, selectSubmitStatus, selectTestType, selectTimeLimit, submitAttempt } from '@/utils/redux/slicers/attempt.slicer';
+import { SubmitStatus, flipShowExit, flipShowSubmit, selectAttemptId, selectQuestions, selectQuestionsAnswers, selectSubmitStatus, selectTestType, selectTimeLimit, setSubmitStatus, submitAttempt } from '@/utils/redux/slicers/attempt.slicer';
 import { useParams, useRouter } from 'next/navigation';
 import { TestTypes } from '@/utils/request/types/test.types';
 
@@ -22,6 +22,9 @@ const SideBarButtons: React.FC<{}> = () => {
         if (Object.keys(questionsAnswered).length < questions.length) {
             dispatch(flipShowSubmit());
         } else {
+            localStorage.removeItem(`answer-${testId}`);
+            localStorage.removeItem(`bookmark-${testId}`);
+            localStorage.removeItem(`attemptId`);
             dispatch(submitAttempt({attemptId: attemptId}));
         }
     }
@@ -31,11 +34,13 @@ const SideBarButtons: React.FC<{}> = () => {
     }
 
     const reAttempt = () => {
-        router.push(`course/${courseId}/test/${testId}/attempt`);
+        dispatch(setSubmitStatus(SubmitStatus.UNSUBMITTED));
+        router.push(`/course/${courseId}/test/${testId}/attempt/new`);
     }
 
     const leavePage = () => {
-        router.push(`course/${courseId}/test/${testId}`);
+        dispatch(setSubmitStatus(SubmitStatus.UNSUBMITTED));
+        router.push(`/course/${courseId}/test/${testId}`);
     }
 
     return (

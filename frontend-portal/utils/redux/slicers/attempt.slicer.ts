@@ -80,6 +80,9 @@ const attemptSlice = createAppSlice({
     flipShowExit: create.reducer((state) => {
       state.showExit = !state.showExit;
     }),
+    setSubmitStatus: create.reducer((state, action: PayloadAction<SubmitStatus>) => {
+      state.submitStatus = action.payload;
+    }),
     createAttempt: create.asyncThunk(
       async (params: INewAttempt, thunkAPI) => {
         const testId = params.testId;
@@ -103,7 +106,10 @@ const attemptSlice = createAppSlice({
       },
       {
         pending: state => {
-          state.loading = true
+          state.submitStatus = SubmitStatus.UNSUBMITTED;
+          state.questionsAnswers = {};
+          state.bookmarked = [];
+          state.loading = true;
         },
         rejected: (state, action) => {
           if (action.payload instanceof Error) {
@@ -129,7 +135,8 @@ const attemptSlice = createAppSlice({
         },
         // settled is called for both rejected and fulfilled actions
         settled: state => {
-          state.loading = false
+          state.loading = false;
+          state.submitStatus = SubmitStatus.UNSUBMITTED;
         }
       }
     ),
@@ -202,8 +209,10 @@ const attemptSlice = createAppSlice({
             const isCorrect = qAttempt.answerStatus === AnswerStatus.CORRECT;
             state.answers[qAttempt.questionId] = {optionId: qAttempt.selectedOptionId, isCorrect: isCorrect};
           }
-          if (action.payload.score && action.payload.timeTaken) {
+          if (action.payload.score) {
             state.score = action.payload.score;
+          }
+          if (action.payload.timeTaken) {
             state.timeTaken = action.payload.timeTaken;
           }
           state.timeLimit = null;
@@ -236,7 +245,8 @@ const attemptSlice = createAppSlice({
 
 export const { updateQuestionAnswer, bookmarkQuestion, unbookmarkQuestion, 
   createAttempt, flipShowSubmit, getAttemptSummary,
-  flipShowExit, submitAttempt, deleteAttempt
+  flipShowExit, submitAttempt, deleteAttempt,
+  setSubmitStatus,
 } = attemptSlice.actions;
 
 export const { selectAttemptId, selectQuestionsAnswers, selectTestId,

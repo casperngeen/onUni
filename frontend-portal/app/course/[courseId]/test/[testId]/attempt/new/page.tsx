@@ -1,18 +1,18 @@
 "use client"
 
 import { useEffect } from "react";
-import SingleQuestion from "./question/question";
+import SingleQuestion from "../question/question";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
-import { createAttempt, selectError, selectLoading, selectQuestions } from "@/utils/redux/slicers/attempt.slicer";
+import { SubmitStatus, createAttempt, selectError, selectLoading, selectQuestions, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
 import { UniCol, UniContainer, UniRow } from "@/components/overwrite/uni.components";
-import './attempt.scss'
-import SidebarQuestions from "./sidebar/question/sidebar.question";
-import SidebarProgressBar from "./sidebar/progress/progress.bar";
-import SidebarHeader from "./sidebar/header/header";
-import SideBarButtons from "./sidebar/button/button";
-import WarningModal, { ModalType } from "./modals/warning.modal";
+import '../attempt.scss'
+import SidebarQuestions from "../sidebar/question/sidebar.question";
+import SidebarProgressBar from "../sidebar/progress/progress.bar";
+import SidebarHeader from "../sidebar/header/header";
+import SideBarButtons from "../sidebar/button/button";
+import WarningModal, { ModalType } from "../modals/warning.modal";
 import { useParams } from "next/navigation";
-import SubmttingModal from "./modals/submitting.modal";
+import SubmttingModal from "../modals/submitting.modal";
 
 const TestAttempt: React.FC<{}> = () => {
     const { courseId: courseIdString, testId: testIdString } = useParams();
@@ -22,10 +22,14 @@ const TestAttempt: React.FC<{}> = () => {
     const selector = useAppSelector();
     const dispatch = useAppDispatch()();
     const questions = selector(selectQuestions);
+    const submitting = selector(selectSubmitStatus) === SubmitStatus.SUBMITTING;
     const error = selector(selectError);
     const loading = selector(selectLoading);
     
     useEffect(() => {
+        localStorage.removeItem(`answer-${testId}`);
+        localStorage.removeItem(`bookmark-${testId}`);
+        localStorage.removeItem(`attemptId`);
         dispatch(createAttempt({testId: testId, courseId: courseId}));
     }, [courseId, dispatch, testId])
 

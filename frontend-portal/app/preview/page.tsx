@@ -1,49 +1,49 @@
-"use client"
+// "use client"
 
-import { QuestionInfo } from "@/utils/request/types/attempt.types";
-import TestAttempt from "../course/[courseId]/test/[testId]/attempt/page";
+// // import { QuestionInfo } from "@/utils/request/types/attempt.types";
+// // import TestAttempt from "../course/[courseId]/test/[testId]/attempt/page";
 
-interface TestAttemptProps {
-    title: string,
+// interface TestAttemptProps {
+//     title: string,
 
-    attemptDetails: {
-        attemptId: number,
-        questions: QuestionInfo[]
-    }
-}
-
-// const TestAttempt: React.FC<TestAttemptProps> = ({title, attemptDetails}) => {
-//     const { attemptId, questions } = attemptDetails;
-//     const numOfQuestions = questions.length;
-
-//     return (
-//         <div>
-
-//         </div>
-//     );
+//     attemptDetails: {
+//         attemptId: number,
+//         questions: QuestionInfo[]
+//     }
 // }
 
-const testQuestionInfo: QuestionInfo = {
-    questionId: 1,
-    questionText: 'This is the question text',
-    options: [{
-        optionId: 1,
-        optionText: 'This is option 1',
-    }, {
-        optionId: 2,
-        optionText: 'This is option 2',
-    }, {
-        optionId: 3,
-        optionText: 'This is option 3',
-    }]
-}
+// // const TestAttempt: React.FC<TestAttemptProps> = ({title, attemptDetails}) => {
+// //     const { attemptId, questions } = attemptDetails;
+// //     const numOfQuestions = questions.length;
 
-// const Preview = () => {
-//     return (
-//         <div>
-//           <TestAttempt courseId={4} testId={4}></TestAttempt>
-//         </div>
-//       );
+// //     return (
+// //         <div>
+
+// //         </div>
+// //     );
+// // }
+
+// const testQuestionInfo: QuestionInfo = {
+//     questionId: 1,
+//     questionText: 'This is the question text',
+//     options: [{
+//         optionId: 1,
+//         optionText: 'This is option 1',
+//     }, {
+//         optionId: 2,
+//         optionText: 'This is option 2',
+//     }, {
+//         optionId: 3,
+//         optionText: 'This is option 3',
+//     }]
 // }
 
-// export default Preview;
+// // const Preview = () => {
+// //     return (
+// //         <div>
+// //           <TestAttempt courseId={4} testId={4}></TestAttempt>
+// //         </div>
+// //       );
+// // }
+
+// // export default Preview;
