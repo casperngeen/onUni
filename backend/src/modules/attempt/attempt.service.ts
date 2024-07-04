@@ -268,6 +268,7 @@ export class AttemptService extends BaseService<Attempt> {
               ? AnswerStatus.CORRECT
               : AnswerStatus.INCORRECT,
             attempt: attempt,
+            question: question,
           });
           if (option.isCorrect) {
             score++;
@@ -422,6 +423,7 @@ export class AttemptService extends BaseService<Attempt> {
     const attempt: Attempt = await this.findOne({
       relations: [
         'questionAttempts',
+        'questionAttempts.question',
         'user',
         'test',
         'test.course',
