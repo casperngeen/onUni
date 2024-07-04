@@ -1,6 +1,9 @@
+'use client'
+
 import { selectQuestions, selectScore, selectTimeTaken } from "@/utils/redux/slicers/attempt.slicer";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { Alarm, CheckCircle } from "react-bootstrap-icons";
+import './summary.scss';
 
 const SummaryTitle: React.FC<{}> = () => {
     const dispatch = useAppDispatch()();
@@ -13,14 +16,14 @@ const SummaryTitle: React.FC<{}> = () => {
 
     return (
         <div className="summary">
-            <div className="summary-title">
+            <div className="summary-item">
                 <div className="title">
                     <CheckCircle size={16}/>
                     <div>Score</div>
                 </div>
                 <div className="display">{score}/{numOfQuestions}</div>
             </div>
-            <div className="summary-title">
+            <div className="summary-item">
                 <div className="title">
                     <Alarm size={16} />
                     <div>Time taken</div>
