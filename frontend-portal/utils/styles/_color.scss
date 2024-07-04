@@ -1,8 +1,11 @@
 $default-color: #212529;
 $alert-color: (
-  "alert-wrong-border": #f5c2c7,
-  "alert-correct-border": #badbcc,
-  "alert-correct-text": #0f5132
+  "alert-error-border": #f5c2c7,
+  "alert-error-text": #B02A37,
+  "alert-error-background": #F8D7DA,
+  "alert-success-border": #badbcc,
+  "alert-success-text": #0f5132,
+  "alert-success-background": #D1E7DD,
 );
 
 $red: (

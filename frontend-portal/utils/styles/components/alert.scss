@@ -1,4 +1,4 @@
-@use 'sass:map';
+@use "sass:map";
 @import '../styles.scss';
 
 .alert-success,
@@ -18,13 +18,13 @@
 }
 
 .alert-success {
-    background-color: map.get($alert-color, 'alert-success-background');
-    border-color: map.get($alert-color, 'alert-success-border');
-    color: map.get($alert-color, 'alert-success-text');
+    background-color: map-get($alert-color, 'alert-success-background') !important;
+    border-color: map-get($alert-color, 'alert-success-border') !important;
+    color: map-get($alert-color, 'alert-success-text') !important;
 }
 
 .alert-error {
-    background-color: map.get($alert-color, 'alert-error-background');
-    border-color: map.get($alert-color, 'alert-error-border');
-    color: map.get($alert-color, 'alert-error-text');
+    background-color: map-get($alert-color, 'alert-error-background') !important;
+    border-color: map-get($alert-color, 'alert-error-border') !important;
+    color: map-get($alert-color, 'alert-error-text') !important;
 }
