@@ -1,8 +1,7 @@
 @import '../styles.scss';
 
 .modal-warning,
-.modal-submitting {
-    padding: $p-6;
+.modal-loading {
     width: 480px;
 
     .modal-backdrop {
@@ -43,9 +42,17 @@
     }
 }
 
-.modal-submitting {
-    display: flex;
-    flex-direction: column;
-    gap: $gap-6;
-    justify-content: center;
+.modal-loading {
+    width: 100vw;
+    .modal-content {
+        display: flex;
+        flex-direction: column;
+        gap: $gap-6;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        padding: $p-6;
+    }
 }

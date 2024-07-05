@@ -9,7 +9,6 @@ const UniRow = <As extends React.ElementType = React.ElementType>(props: React.P
     return <Row {...props} ></Row>
 };
 
-
 const UniCol = <As extends React.ElementType = React.ElementType>(props: React.PropsWithChildren<ReplaceProps<As, BsPrefixProps<As> & ColProps>>) => {
     return <Col {...props} ></Col>
 };

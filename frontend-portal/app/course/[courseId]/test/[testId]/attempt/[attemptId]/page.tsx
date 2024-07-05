@@ -4,12 +4,12 @@ import { UniCol, UniContainer, UniRow } from "@/components/overwrite/uni.compone
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import SidebarHeader from "../sidebar/header/header";
-import { SubmitStatus, getAttemptSummary, selectQuestions, setSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
-import SideBarButtons from "../sidebar/button/button";
-import SidebarQuestions from "../sidebar/question/sidebar.question";
-import SingleQuestion from "../question/question";
-import '../attempt.scss';
+import SidebarHeader from "./sidebar/header/header";
+import { exitSummary, getAttemptSummary, selectQuestions, setSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
+import SideBarButtons from "./sidebar/button/button";
+import SidebarQuestions from "./sidebar/question/sidebar.question";
+import SingleQuestion from "./question/question";
+import './attempt.scss';
 import UniButton from "@/components/overwrite/uni.button";
 import SummaryTitle from "./summary/summary";
 
@@ -25,7 +25,7 @@ const AttemptSummary: React.FC<{}> = () => {
     const questions = selector(selectQuestions);
 
     const reAttempt = () => {
-        dispatch(setSubmitStatus(SubmitStatus.UNSUBMITTED));
+        dispatch(exitSummary());
         router.push(`/course/${courseId}/test/${testId}/attempt/new`);
     }
     
@@ -35,7 +35,7 @@ const AttemptSummary: React.FC<{}> = () => {
 
     return (
         <UniContainer fluid className="attempt">
-            <UniRow className="h-100 w-100 p-0 m-0">
+            <UniRow className="attempt-wrapper">
                 <UniCol className="col-md-3 sidebar">
                     <SidebarHeader />
                     <SidebarQuestions />

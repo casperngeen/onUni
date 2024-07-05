@@ -1,3 +1,5 @@
+'use client'
+
 import { useAppSelector } from "@/utils/redux/utils/hooks";
 import './header.scss';
 import { SubmitStatus, selectCourseTitle, selectSubmitStatus, selectTestTitle, selectTimeLimit } from "@/utils/redux/slicers/attempt.slicer";
@@ -24,7 +26,7 @@ const SidebarHeader: React.FC<{}> = () => {
                     {testTitle}
                 </div>
                 {timeLimit && unsubmitted &&
-                    <div className="mt-1 d-flex">
+                    <div className="timer">
                         <Clock size={16}/>
                         <Timer time={timeLimit * 60}></Timer>
                     </div>

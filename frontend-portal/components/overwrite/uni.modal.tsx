@@ -4,14 +4,14 @@ import '../../utils/styles/components/modal.scss'
 
 type TModalPros = React.PropsWithChildren<ReplaceProps<'div', BsPrefixProps<'div'> & ModalProps>>;
 type UniModalProps = {
-  custommodal?: 'warning' | 'submitting' | 'type-3'
+  custommodal?: 'warning' | 'loading' | 'type-3'
 };
 const UniModalComp = (props: TModalPros & UniModalProps) => {
   if (props.custommodal == 'warning') {
-    return <Modal {...props} className="modal-warning" centered></Modal >
+    return <Modal {...props} className="modal-warning" centered={true}></Modal >
   }
-  if (props.custommodal == 'submitting') {
-    return <Modal {...props} className="modal-submitting" ></Modal >
+  if (props.custommodal == 'loading') {
+    return <Modal {...props} className="modal-loading" centered={true}></Modal >
   }
   if (props.custommodal == 'type-3') {
     return <Modal {...props} className="uni-modal-type-3" ></Modal >

@@ -1,4 +1,4 @@
-@import "../../../../../../../utils/styles/styles.scss";
+@import "../../../../../../../../utils/styles/styles.scss";
 // rewrite into alias
 
 .question {
@@ -8,7 +8,6 @@
     border-style: solid;
     border-width: 2px;
     border-radius: $rounded-4;
-    gap: $gap-4;
 }
 
 .question-header {
@@ -21,21 +20,34 @@
     align-content: center;
 }
 
+.question-header-left {
+    display: flex;
+    gap: $gap-4;
+    align-items: center;
+}
+
 .question-content {
     display: flex;
     flex-direction: column;
     padding: $p-4 $p-6;
     color: $gray-900;
+    gap: $gap-4;
 }
 
 .question-number {
-    margin-right: $gap-4;
-    font-size: $font-size-S;
+    font-size: $font-size-S !important;
     align-self: center;
+    font-weight: 500;
+    color: $body-color;
+}
+
+.bookmark-group {
+    display: flex;
+    gap: $gap-2;
+    align-items: center;
 }
 
 .bookmark-icon {
-    margin-right: $gap-2;
     align-self: center;
     &:hover {
         cursor: pointer;
@@ -43,9 +55,11 @@
 }
 
 .bookmark {
-    font-size: $font-size-XS;
+    font-size: $font-size-XS !important;
     align-self: center;
     color: $gray-600;
+    font-weight: 500;
+    line-height: 21px;
 }
 
 .flag-icon {
@@ -57,6 +71,7 @@
     font-size: $font-size-XS;
     color: #0D6EFD;
     align-self: center;
+    font-weight: 500;
 }
 
 .report {
@@ -69,12 +84,14 @@
 
 .question-text {
     font-size: $font-size-S;
-    margin-bottom: $gap-4;
     word-wrap: break-word;
     overflow-wrap: break-word;
     white-space: pre-wrap;
+    font-weight: 500;
 }
 
-.option-gap {
-    margin-bottom: $gap-2;
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-2;
 }

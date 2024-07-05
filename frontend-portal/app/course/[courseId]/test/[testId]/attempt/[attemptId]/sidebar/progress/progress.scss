@@ -1,17 +1,21 @@
-@import "../../../../../../../../utils/styles/styles.scss";
+@import "../../../../../../../../../utils/styles/styles.scss";
 
 .progress-bar-count {
     font-size: $font-size-XS;
     font-weight: 600;
     line-height: 21px;
-    margin-left: $gap-4;
 }
 
 .progress-bar-title {
     font-weight: 400;
     font-size: $font-size-S;
     line-height: 24px;
-    margin-bottom: $gap-2;
+}
+
+.progress-bar-display {
+    display: flex;
+    gap: $gap-4;
+    align-items: center;
 }
 
 .sidebar-header-bar {
@@ -22,4 +26,5 @@
     display: flex;
     flex-direction: column;
     padding: $p-3 $p-4;
+    gap: $gap-2;
 }

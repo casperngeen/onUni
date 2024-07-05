@@ -1,0 +1,9 @@
+@import "../../../../../../../utils/styles/styles.scss";
+
+.description {
+    display: flex;
+    gap: $gap-3;
+    align-items: center;
+    color: $body-color;
+    font-weight: 400;
+}

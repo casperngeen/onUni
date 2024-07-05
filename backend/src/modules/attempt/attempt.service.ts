@@ -12,6 +12,7 @@ import { AnswerStatus, Status } from './attempt.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   QuestionAttempt,
+  QuestionAttemptInfoDto,
   QuestionAttemptResponseDto,
   RedisOptionDto,
   UpdateQuestionAttemptDto,
@@ -37,7 +38,6 @@ import { TestNotFoundException } from '../test/test.exception';
 import { Option } from '../question/option.entity';
 import { DatabaseException, RedisException } from 'src/base/base.exception';
 import { QuestionNotFoundException } from '../question/question.exception';
-import { UserNotInCourseException } from '../course/course.exception';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
 
@@ -96,6 +96,13 @@ export class AttemptService extends BaseService<Attempt> {
       `Checking if user ${userId} has reached attempt limit for test ${testId}`,
       this.context,
     );
+    const start = new Date();
+    let end: string | null = null;
+    if (test.timeLimit) {
+      end = new Date(
+        start.getTime() + test.timeLimit * 60 * 1000,
+      ).toISOString();
+    }
     if (test.maxAttempt) {
       // check this again
       const numOfAttempts: number = await this.attemptRepository
@@ -124,13 +131,6 @@ export class AttemptService extends BaseService<Attempt> {
       `Creating and inserting new attempt for test ${testId} for user ${userId} into DB`,
       this.context,
     );
-    const start = new Date();
-    let end: string | null = null;
-    if (test.timeLimit) {
-      end = new Date(
-        start.getTime() + test.timeLimit * 60 * 1000,
-      ).toISOString();
-    }
     const attempt: Attempt = await this.save({
       start: start.toISOString(),
       end: end,
@@ -203,6 +203,24 @@ export class AttemptService extends BaseService<Attempt> {
     const attemptInfo: AttemptInfoDto = this.formatAttemptInfo(attempt);
     this.log(`Query to get attempt ${attemptId} completed`, this.context);
     return attemptInfo;
+  }
+
+  public async getQuestionAttempts(attemptIdObject: AttemptIdDto) {
+    const { attemptId } = attemptIdObject;
+    const savedAttempts: Map<number, RedisOptionDto> = new Map();
+    this.log(
+      `Query to fetch existing question attempts of attempt ${attemptId}`,
+      this.context,
+    );
+    await this.getQuestionAttemptsFromRedis(attemptId, savedAttempts);
+    const questionAttempts: QuestionAttemptInfoDto[] = [];
+    for (const attempt of savedAttempts) {
+      questionAttempts.push({
+        questionId: attempt[0],
+        selectedOptionId: attempt[1].selectedOptionId,
+      });
+    }
+    return questionAttempts;
   }
 
   public async submitAttempt(submitAttemptDetails: SubmitAttemptDto) {
@@ -299,6 +317,7 @@ export class AttemptService extends BaseService<Attempt> {
       score: score,
     });
     this.log(`Attempt ${attemptId} updated`, this.context);
+    await this.deleteQuestionAttemptsFromRedis(attemptId);
     this.log(`Query to update attempt ${attemptId} completed`, this.context);
   }
 
@@ -317,12 +336,6 @@ export class AttemptService extends BaseService<Attempt> {
       );
       throw new AttemptTimeLimitExceededException();
     }
-    // no need to validate data here
-    // const question: Question = await this.getQuestionFromRepo(questionId);
-    // const option: Option = await this.ifOptionBelongsToQuestion(
-    //   question,
-    //   selectedOptionId,
-    // )[0];
     this.log(
       `Saving question ${questionId} of attempt ${attemptId} to Redis...`,
       this.context,
@@ -352,47 +365,7 @@ export class AttemptService extends BaseService<Attempt> {
     const { attemptId } = attemptIdObject;
     this.log(`Query to delete attempt ${attemptId}`, this.context);
     await this.checkIfAttemptInRepo(attemptId);
-
-    await new Promise<void>((resolve, reject) => {
-      const stream = this.redis.scanStream({
-        match: `attempt:${attemptId}:question:*`,
-        count: 100,
-      });
-
-      stream.on('data', (keys: string[]) => {
-        stream.pause();
-
-        Promise.all(
-          keys.map(async (key) => {
-            try {
-              await this.redis.del(key); // Delete the key
-              this.log(`Deleted key: '${key}' from Redis`, this.context);
-            } catch (error) {
-              this.error(
-                `Error deleting key: ${key} from Redis`,
-                this.context,
-                this.getTrace(),
-              );
-              throw new RedisException();
-            }
-          }),
-        ).then(() => {
-          stream.resume();
-        });
-
-        stream.on('end', () => {
-          this.log(
-            `All question attempts of attempt ${attemptId} has been deleted from Redis`,
-            this.context,
-          );
-          resolve();
-        });
-
-        stream.on('error', (error) => {
-          reject(error);
-        });
-      });
-    });
+    await this.deleteQuestionAttemptsFromRedis(attemptId);
     this.log(`Deleting attempt from DB...`, this.context);
     await this.delete(attemptId);
     this.log(`Query to delete attempt ${attemptId} completed`, this.context);
@@ -506,31 +479,6 @@ export class AttemptService extends BaseService<Attempt> {
     }
     this.log(`User ${userId} found`, this.context);
     return user;
-  }
-
-  private async isUserAllowedToTakeTest(user: User, test: Test) {
-    const { userId } = user;
-    const { testId } = test;
-    this.log(
-      `Checking if user ${userId} is allowed to take test ${testId}`,
-      this.context,
-    );
-    let userInCourse: boolean = false;
-    for (const user of test.course.users) {
-      if (user.userId === userId) {
-        userInCourse = true;
-        break;
-      }
-    }
-    if (!userInCourse) {
-      this.error(
-        `User ${userId} is not part of course ${test.course.courseId}`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new UserNotInCourseException();
-    }
-    this.log(`User ${userId} is allowed to take test ${testId}`, this.context);
   }
 
   private formatAttemptInfo(attempt: Attempt): AttemptInfoDto {
@@ -655,5 +603,48 @@ export class AttemptService extends BaseService<Attempt> {
       this.error(`${error}`, this.context, this.getTrace());
       throw new RedisException();
     }
+  }
+
+  private async deleteQuestionAttemptsFromRedis(attemptId: number) {
+    await new Promise<void>((resolve, reject) => {
+      const stream = this.redis.scanStream({
+        match: `attempt:${attemptId}:question:*`,
+        count: 100,
+      });
+
+      stream.on('data', (keys: string[]) => {
+        stream.pause();
+
+        Promise.all(
+          keys.map(async (key) => {
+            try {
+              await this.redis.del(key); // Delete the key
+              this.log(`Deleted key: '${key}' from Redis`, this.context);
+            } catch (error) {
+              this.error(
+                `Error deleting key: ${key} from Redis`,
+                this.context,
+                this.getTrace(),
+              );
+              throw new RedisException();
+            }
+          }),
+        ).then(() => {
+          stream.resume();
+        });
+
+        stream.on('end', () => {
+          this.log(
+            `All question attempts of attempt ${attemptId} has been deleted from Redis`,
+            this.context,
+          );
+          resolve();
+        });
+
+        stream.on('error', (error) => {
+          reject(error);
+        });
+      });
+    });
   }
 }

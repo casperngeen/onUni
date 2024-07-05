@@ -1,12 +1,16 @@
-@import "../../../../../../../../utils/styles/styles.scss";
+@import "../../../../../../../../../utils/styles/styles.scss";
+
+.sidebar-questions-wrapper {
+    flex: 1;
+    overflow: auto;
+}
 
 .sidebar-questions {
     padding: $p-3 $p-4;
-    flex-grow: 1;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(40, auto);
     gap: $p-3;
-    overflow: auto;
 
     &::before {
         position: fixed;

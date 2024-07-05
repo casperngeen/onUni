@@ -58,9 +58,15 @@ export interface ISaveQuestionAttemptBody {
     selectedOptionId: number,
 }
 
+export interface IQuestionAttemptInfo extends ISaveQuestionAttemptBody {}
+
 export interface INewAttempt {
     testId: number,
     courseId: number,
+}
+
+export interface IGetCurrentAttempt extends INewAttempt {
+    attemptId: number,    
 }
 
 export interface IAllAttempts extends INewAttempt {}

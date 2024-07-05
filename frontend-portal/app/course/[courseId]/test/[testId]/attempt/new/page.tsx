@@ -1,63 +1,52 @@
 "use client"
 
-import { useEffect } from "react";
-import SingleQuestion from "../question/question";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
-import { SubmitStatus, createAttempt, selectError, selectLoading, selectQuestions, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
-import { UniCol, UniContainer, UniRow } from "@/components/overwrite/uni.components";
-import '../attempt.scss'
-import SidebarQuestions from "../sidebar/question/sidebar.question";
-import SidebarProgressBar from "../sidebar/progress/progress.bar";
-import SidebarHeader from "../sidebar/header/header";
-import SideBarButtons from "../sidebar/button/button";
-import WarningModal, { ModalType } from "../modals/warning.modal";
-import { useParams } from "next/navigation";
-import SubmttingModal from "../modals/submitting.modal";
+import { selectLoading } from "@/utils/redux/slicers/attempt.slicer";
+import './modal.scss';
+import { useParams, useRouter } from "next/navigation";
+import UniModal from "@/components/overwrite/uni.modal";
+import { Image, Spinner } from "react-bootstrap";
+import { AttemptRequest } from "@/utils/request/attempt.request";
 
-const TestAttempt: React.FC<{}> = () => {
+const CreateAttempt: React.FC<{}> = () => {
+    const [toggleModal, setToggleModal] = useState(false);
     const { courseId: courseIdString, testId: testIdString } = useParams();
     const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
     const testId = Array.isArray(testIdString) ? parseInt(testIdString[0]) : parseInt(testIdString);
 
     const selector = useAppSelector();
     const dispatch = useAppDispatch()();
-    const questions = selector(selectQuestions);
-    const submitting = selector(selectSubmitStatus) === SubmitStatus.SUBMITTING;
-    const error = selector(selectError);
+    const router = useRouter();
+    const [ attemptId, setAttemptId ] = useState(0);
     const loading = selector(selectLoading);
+
     
     useEffect(() => {
-        localStorage.removeItem(`answer-${testId}`);
-        localStorage.removeItem(`bookmark-${testId}`);
-        localStorage.removeItem(`attemptId`);
-        dispatch(createAttempt({testId: testId, courseId: courseId}));
-    }, [courseId, dispatch, testId])
+        setToggleModal(true)
+        
+        const createAttempt = async () => {
+            const { attemptId } = await AttemptRequest.createNewAttempt({
+                testId: testId, 
+                courseId: courseId
+            });
+            setAttemptId(attemptId);
+            router.push(`/course/${courseId}/test/${testId}/attempt/${attemptId}/new`);
+        }
+
+        createAttempt();
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
-        <>
-            <UniContainer className="attempt" fluid>
-                <UniRow className="h-100 w-100 p-0 m-0">
-                    <UniCol className="col-md-3 sidebar">
-                        <SidebarHeader />
-                        <SidebarProgressBar />
-                        <SidebarQuestions />
-                        <SideBarButtons />
-                    </UniCol>
-                    <UniCol className="col-md-9 questions">
-                        {questions.map((question, index) => (
-                            <div key={question.questionId} id={`question-${index+1}`}>
-                                <SingleQuestion questionInfo={question} questionNumber={index+1}></SingleQuestion>
-                            </div>
-                        ))}
-                    </UniCol>
-                </UniRow>
-            </UniContainer>
-
-            <WarningModal type={ModalType.EXIT} />
-            <WarningModal type={ModalType.SUBMIT} />
-            <SubmttingModal />
-        </>
+        <UniModal.Modal custommodal="loading" show={toggleModal} backdrop="static">
+            <Image src='/submitting.png' alt='Submitting test' height={180} width={200} />
+            <div className="description">
+                <Spinner animation="border" variant="primary" size="sm"/>
+                <div>Creating new test...</div>
+            </div>
+        </UniModal.Modal>
     );
 }
 
-export default TestAttempt;
+export default CreateAttempt;

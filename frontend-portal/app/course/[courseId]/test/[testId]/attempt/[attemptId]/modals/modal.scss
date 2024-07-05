@@ -1,4 +1,4 @@
-@import "../../../../../../../utils/styles/styles.scss";
+@import "../../../../../../../../utils/styles/styles.scss";
 
 .warning-icon {
     height: 2rem;
@@ -19,8 +19,10 @@
     margin-bottom: $gap-6;
 }
 
-.spinner {
-    background-color: $primary;
-    size: 1.5rem;
-    margin-right: $gap-3;
+.description {
+    display: flex;
+    gap: $gap-3;
+    align-items: center;
+    color: $body-color;
+    font-weight: 400;
 }

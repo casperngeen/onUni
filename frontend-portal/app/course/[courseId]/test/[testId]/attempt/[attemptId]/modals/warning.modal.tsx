@@ -1,9 +1,12 @@
+'use client'
+
 import UniButton from "@/components/overwrite/uni.button";
 import UniModal from "@/components/overwrite/uni.modal"
 import { deleteAttempt, flipShowExit, flipShowSubmit, selectAttemptId, selectShowExit, selectShowSubmit, selectTestId, submitAttempt } from "@/utils/redux/slicers/attempt.slicer";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { ExclamationTriangleFill } from "react-bootstrap-icons";
 import './modal.scss';
+import { useParams } from "next/navigation";
 
 export enum ModalType {
     EXIT = "exit",
@@ -15,11 +18,13 @@ export interface IAttemptModalProps {
 }
 
 const WarningModal: React.FC<IAttemptModalProps> = ({type}) => {
+    const { testId: testIdString, attemptId: attemptIdString } = useParams();
+    const testId = Array.isArray(testIdString) ? parseInt(testIdString[0]) : parseInt(testIdString);
+    const attemptId = Array.isArray(attemptIdString) ? parseInt(attemptIdString[0]) : parseInt(attemptIdString);
+
     const dispatch = useAppDispatch()();
     const selector = useAppSelector();
     const isExit = type === ModalType.EXIT;
-    const attemptId = selector(selectAttemptId);
-    const testId = selector(selectTestId);
     const showModal = isExit ? selector(selectShowExit) : selector(selectShowSubmit);
 
     const handleClose = () => {
@@ -30,9 +35,7 @@ const WarningModal: React.FC<IAttemptModalProps> = ({type}) => {
         }
     }
     const handleSubmit = () => {
-        localStorage.removeItem(`answer-${testId}`);
         localStorage.removeItem(`bookmark-${testId}`);
-        localStorage.removeItem(`attemptId`);
         
         if (isExit) {
             dispatch(flipShowExit());

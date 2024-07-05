@@ -1,7 +1,7 @@
-import { shuffleArray } from "@/app/course/[courseId]/test/[testId]/attempt/shuffle";
+import { shuffleArray } from "@/app/course/[courseId]/test/[testId]/attempt/[attemptId]/shuffle";
 import { AttemptRequest } from "@/utils/request/attempt.request";
 import TestRequest from "@/utils/request/test.request";
-import { AnswerStatus, IDeleteAttempt, IGetAttempt, INewAttempt, ISaveAttempt, ISaveQuestionAttemptBody, QuestionInfo } from "@/utils/request/types/attempt.types";
+import { AnswerStatus, IDeleteAttempt, IGetAttempt, IGetCurrentAttempt, INewAttempt, ISaveAttempt, ISaveQuestionAttemptBody, QuestionInfo } from "@/utils/request/types/attempt.types";
 import { TestTypes } from "@/utils/request/types/test.types";
 import { PayloadAction, asyncThunkCreator, buildCreateSlice } from "@reduxjs/toolkit";
 
@@ -17,7 +17,6 @@ export enum SubmitStatus {
 }
 
 interface IInitialState {
-  attemptId: number,
   testId: number,
   questionsAnswers: {[questionId: number]: number},
   bookmarked: number[],
@@ -34,10 +33,10 @@ interface IInitialState {
   timeTaken: number,
   score: number,
   testType: TestTypes | null,
+  readyForView: boolean;
 }
 
 const initialState: IInitialState = {
-  attemptId: -1,
   testId: -1,
   courseTitle: '',
   testTitle: '',
@@ -50,6 +49,7 @@ const initialState: IInitialState = {
   showSubmit: false,
   showExit: false,
   submitStatus: SubmitStatus.UNSUBMITTED,
+  readyForView: false,
   answers: {},
   timeTaken: -1,
   score: -1,
@@ -83,26 +83,26 @@ const attemptSlice = createAppSlice({
     setSubmitStatus: create.reducer((state, action: PayloadAction<SubmitStatus>) => {
       state.submitStatus = action.payload;
     }),
-    createAttempt: create.asyncThunk(
-      async (params: INewAttempt, thunkAPI) => {
+    exitSummary: create.reducer((state) => {
+      state.readyForView = false;
+      state.submitStatus = SubmitStatus.UNSUBMITTED;
+    }),
+    fetchAttempt: create.asyncThunk(
+      async (params: IGetCurrentAttempt, thunkAPI) => {
         const testId = params.testId;
-        const prevAttempt = localStorage.getItem('attemptId');
-        if (prevAttempt) {
-          const { questions, testTitle, courseTitle, timeLimit, testType } = await TestRequest.getTestInfoForAttempt(params)
-          const shuffledQuestions: QuestionInfo[] = shuffleArray(questions);
-          for (let i = 0; i < questions.length; i++) {
-            shuffledQuestions[i].options = shuffleArray(shuffledQuestions[i].options)
-          }
-          return { testId, shuffledQuestions, attemptId: parseInt(prevAttempt), testTitle, courseTitle, timeLimit, testType }
-        } else {
-          const { questions, attemptId, testTitle, courseTitle, timeLimit, testType } = await AttemptRequest.createNewAttempt(params);
-          const shuffledQuestions: QuestionInfo[]= shuffleArray(questions);
-          for (let i = 0; i < questions.length; i++) {
-            shuffledQuestions[i].options = shuffleArray(shuffledQuestions[i].options)
-          }
-          localStorage.setItem('attemptId', attemptId.toString());
-          return { testId, shuffledQuestions, attemptId, testTitle, courseTitle, timeLimit, testType };
+        const { questions, testTitle, courseTitle, timeLimit, testType } = 
+          await TestRequest.getTestInfoForAttempt({
+            testId: params.testId, 
+            courseId: params.courseId
+          })
+        const shuffledQuestions: QuestionInfo[] = shuffleArray(questions);
+        for (let i = 0; i < questions.length; i++) {
+          shuffledQuestions[i].options = shuffleArray(shuffledQuestions[i].options)
         }
+        const questionAnswers = await AttemptRequest.getQuestionAttempts({
+          attemptId: params.attemptId,
+        })
+        return { testId, shuffledQuestions, testTitle, courseTitle, timeLimit, testType, questionAnswers }
       },
       {
         pending: state => {
@@ -117,7 +117,6 @@ const attemptSlice = createAppSlice({
           }
         },
         fulfilled: (state, action) => {
-          state.attemptId = action.payload.attemptId;
           state.questions = action.payload.shuffledQuestions;
           state.testTitle = action.payload.testTitle;
           state.courseTitle = action.payload.courseTitle;
@@ -125,12 +124,13 @@ const attemptSlice = createAppSlice({
           state.testType = action.payload.testType;
           state.testId = action.payload.testId;
           const bookmark = localStorage.getItem(`bookmark-${state.testId}`)
-          const answer = localStorage.getItem(`answer-${state.testId}`)
           if (bookmark) {
             state.bookmarked = JSON.parse(bookmark);
           }
-          if (answer) {
-            state.questionsAnswers = JSON.parse(answer);
+          if (action.payload.questionAnswers) {
+            for (const qAttempt of action.payload.questionAnswers) {
+              state.questionsAnswers[qAttempt.questionId] = qAttempt.selectedOptionId;
+            }
           }
         },
         // settled is called for both rejected and fulfilled actions
@@ -192,6 +192,7 @@ const attemptSlice = createAppSlice({
       }, {
         pending: state => {
           state.loading = true;
+          state.answers = {};
         },
         rejected: (state, action) => {
           if (action.payload instanceof Error) {
@@ -217,13 +218,13 @@ const attemptSlice = createAppSlice({
           }
           state.timeLimit = null;
         },
-        settled: (state, action) => {
-          state.loading = false
+        settled: (state) => {
+          state.loading = false;
+          state.readyForView = true;
         }
     }),
-    }),
-    selectors: {
-      selectAttemptId: (state) => state.attemptId,
+  }),
+  selectors: {
       selectTestId: (state) => state.testId,
       selectQuestionsAnswers: (state) => state.questionsAnswers,
       selectBookmarked: (state) => state.bookmarked,
@@ -240,20 +241,21 @@ const attemptSlice = createAppSlice({
       selectScore: (state) => state.score,
       selectTimeTaken: (state) => state.timeTaken,
       selectTestType: (state) => state.testType,
-    }
+      selectViewStatus: (state) => state.readyForView,
+  }
 })
 
 export const { updateQuestionAnswer, bookmarkQuestion, unbookmarkQuestion, 
-  createAttempt, flipShowSubmit, getAttemptSummary,
+  flipShowSubmit, getAttemptSummary, fetchAttempt,
   flipShowExit, submitAttempt, deleteAttempt,
-  setSubmitStatus,
+  setSubmitStatus, exitSummary, 
 } = attemptSlice.actions;
 
-export const { selectAttemptId, selectQuestionsAnswers, selectTestId,
+export const { selectQuestionsAnswers, selectTestId, selectViewStatus,
   selectBookmarked, selectQuestions, selectLoading, 
   selectError, selectCourseTitle, selectTestTitle, 
   selectTimeLimit, selectShowSubmit, selectShowExit,
   selectSubmitStatus, selectAnswers, selectScore, 
-  selectTimeTaken, selectTestType } = attemptSlice.selectors;
+  selectTimeTaken, selectTestType  } = attemptSlice.selectors;
 
 export default attemptSlice;

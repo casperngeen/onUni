@@ -74,6 +74,18 @@ export class AttemptController {
     response.status(200).json(ResponseHandler.success(attempt));
   }
 
+  @UseGuards(AttemptTeacherGuard)
+  @Get('attempt/:attemptId/answers')
+  async getQuestionAttempts(
+    @Param('attemptId') attemptId: number,
+    @Res() response: Response,
+  ) {
+    const questionAttempts = await this.attemptService.getQuestionAttempts({
+      attemptId: attemptId,
+    });
+    response.status(200).json(ResponseHandler.success(questionAttempts));
+  }
+
   // update attempt information (changing status of submission)
   @UseGuards(AttemptUserGuard)
   @Put('attempt/:attemptId')

@@ -1,4 +1,4 @@
-@import "../../../../../../utils/styles/styles.scss";
+@import "../../../../../../../utils/styles/styles.scss";
 
 .attempt {
     background-color: $gray-100;
@@ -18,6 +18,11 @@
     }
 }
 
+.attempt-wrapper {
+    padding: $p-0 !important;
+    margin: $p-0 !important;
+}
+
 .sidebar {
     border-style: solid;
     border-color: $gray-400;
@@ -25,6 +30,9 @@
     display:flex;
     flex-direction: column;
     padding: 0 !important;
+    height: 100vh;
+    position: sticky;
+    top: 0;
 }
 
 .questions {
@@ -32,10 +40,7 @@
     display: flex;
     flex-direction: column;
     gap: $gap-6;
-}
-
-.question-gap {
-    margin-bottom: $gap-6;
+    overflow-y: scroll;
 }
 
 .header {

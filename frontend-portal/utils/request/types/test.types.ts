@@ -45,12 +45,12 @@ export interface INewTest {
     timeLimit?: number | null,
 }
 
-export interface IGetTest {
+export interface IDeleteTest {
     courseId: number,
     testId: number,
 }
 
-export interface IDeleteTest extends IGetTest {}
+export interface IGetTest extends IDeleteTest {}
 
 export interface IUpdateTest extends INewTest {
     testId: number,

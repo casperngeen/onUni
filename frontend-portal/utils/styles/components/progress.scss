@@ -2,7 +2,7 @@
 
 .uni-progress-attempt {
     height: 0.5rem !important;
-    width: 100%;
+    flex: 1;
     .progress-bar {
         height: 0.5rem;
         border-radius: $rounded-2;

@@ -1,8 +1,9 @@
 import { Form, FormProps } from "react-bootstrap";
 import { BsPrefixProps, ReplaceProps } from "react-bootstrap/esm/helpers";
+import '../../utils/styles/components/form.scss';
 
 const UniFormComp = <As extends React.ElementType = React.ElementType>(props: React.PropsWithChildren<ReplaceProps<As, BsPrefixProps<As> & FormProps>>) => {
-  return <Form {...props} ></Form>
+  return <Form {...props} className="uni-form"></Form>
 };
 
 const UniForm = {

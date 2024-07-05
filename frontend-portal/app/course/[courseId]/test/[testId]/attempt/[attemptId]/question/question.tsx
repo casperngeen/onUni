@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { AnswerStatus, QuestionInfo } from "@/utils/request/types/attempt.types";
 import SingleOption from "../option/option";
 import Container from "react-bootstrap/Container";
-import { bookmarkQuestion, selectBookmarked, selectQuestionsAnswers, selectTestId, unbookmarkQuestion, selectAnswers, selectSubmitStatus, SubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
+import { bookmarkQuestion, selectBookmarked, selectQuestionsAnswers, selectTestId, unbookmarkQuestion, selectAnswers, selectViewStatus } from "@/utils/redux/slicers/attempt.slicer";
 import './question.scss';
 import { Bookmark, BookmarkFill, CheckCircleFill, ExclamationCircleFill, Flag } from "react-bootstrap-icons";
 import { useEffect } from "react";
@@ -21,10 +21,9 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
     const selector = useAppSelector();
     const bookmarked = selector(selectBookmarked);
     const testId = selector(selectTestId);
-    const questionsAnswered = selector(selectQuestionsAnswers);
     const isSelected = bookmarked.includes(questionId);
     const answers = selector(selectAnswers);
-    const viewOnly = selector(selectSubmitStatus) === SubmitStatus.SUCCESS;
+    const viewOnly = selector(selectViewStatus);
     const answerStatus = questionId in answers 
         ? answers[questionId].isCorrect
             ? AnswerStatus.CORRECT
@@ -36,12 +35,6 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
             localStorage.setItem(`bookmark-${testId}`, JSON.stringify(bookmarked));
         }
     }, [testId, bookmarked, viewOnly]);
-
-    useEffect(() => {
-        if (!viewOnly) {
-            localStorage.setItem(`answer-${testId}`, JSON.stringify(questionsAnswered));
-        }
-    }, [questionsAnswered, testId, viewOnly]);
 
     const clickBookmark = () => {
         if (isSelected) {
@@ -58,10 +51,10 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
     return (
         <Container className="question">
             <div className="question-header">
-                <div className="d-inline-flex position-relative">
+                <div className="question-header-left">
                     <div className="question-number">Q{questionNumber}</div>
                     {!viewOnly && 
-                        <>
+                        <div className="bookmark-group">
                             <a onClick={clickBookmark}>
                                 {isSelected
                                     ? <BookmarkFill size={16} className="bookmark-icon" color='#FFCD39' />
@@ -69,7 +62,7 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
                                 }
                             </a>
                             <div className="bookmark">Bookmark</div>
-                        </>
+                        </div>
                     }
                 </div>
                 <a className="report" onClick={reportQuestion}>
@@ -79,11 +72,10 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
             </div>
             <div className="question-content">
                 <div className="question-text">{questionText}</div>
-                <div>
+                <div className="options">
                     {questionInfo.options.map((option, index) => (
                         <div key={option.optionId}>
                             <SingleOption questionId={questionId} option={option}/>
-                            {index !== options.length-1 && <div className="option-gap" />}
                         </div>
                     ))}
                 </div>

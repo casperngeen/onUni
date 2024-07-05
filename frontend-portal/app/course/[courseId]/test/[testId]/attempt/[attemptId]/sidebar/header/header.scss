@@ -1,4 +1,4 @@
-@import "../../../../../../../../utils/styles/styles.scss";
+@import "../../../../../../../../../utils/styles/styles.scss";
 
 .sidebar-header-title {
     border-style: solid;
@@ -8,6 +8,7 @@
     background-color: $white;
     display: flex;
     flex-direction: column;
+    gap: $gap-1;
 }
 
 .sidebar-course {
@@ -15,6 +16,7 @@
     display: flex;
     margin-bottom: $gap-1;
     align-items: center;
+    gap: $gap-4;
 }
 
 .sidebar-course-logo {
@@ -24,7 +26,6 @@
     border-width: 1px;
     border-style: solid;
     border-color: $blue-200;
-    margin-right: $gap-4;
 }
 
 .sidebar-course-title {
@@ -35,10 +36,11 @@
 }
 
 .sidebar-test-title {
-    padding: $p-2, $p-1;
+    padding: $p-2 $p-1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: $gap-2;
 }
 
 .sidebar-test-title-text {
@@ -48,8 +50,13 @@
     font-size: $font-size-M;
 }
 
-.sidebar-timer {
-    margin-left: $gap-2;
+.time {
+    display: flex;
+    gap: $gap-2;
+    align-items: center;
+}
+
+.timer-time {
     font-weight: 700;
     font-size: $font-size-S;
     line-height: 24px;

@@ -1,10 +1,12 @@
 'use client'
 
 import { OptionInfo } from "@/utils/request/types/attempt.types";
-import Form from 'react-bootstrap/Form';
-import { updateQuestionAnswer, selectQuestionsAnswers, selectAttemptId, selectAnswers, SubmitStatus, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
+import { updateQuestionAnswer, selectQuestionsAnswers, selectAnswers, SubmitStatus, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { AttemptRequest } from "@/utils/request/attempt.request";
+import UniForm from "@/components/overwrite/uni.form";
+import './option.scss';
+import { useParams } from "next/navigation";
 
 interface SingleOptionProps {
     questionId: number,
@@ -17,10 +19,12 @@ const SingleOption: React.FC<SingleOptionProps> = ({questionId, option}) => {
     const {optionId, optionText} = option;
     const viewOnly = selector(selectSubmitStatus) === SubmitStatus.SUCCESS;
     const questionsAnswered = selector(selectQuestionsAnswers)
-    const isSelected = questionsAnswered[questionId] === optionId
-    const attemptId = selector(selectAttemptId);
+    const isSelected = questionsAnswered[questionId] === optionId;
     const answers = selector(selectAnswers);
     const isSubmitedSelected = questionId in answers && answers[questionId].optionId === optionId;
+
+    const { attemptId: attemptIdString } = useParams();
+    const attemptId = Array.isArray(attemptIdString) ? parseInt(attemptIdString[0]) : parseInt(attemptIdString);
 
     const selectOption = async () => {
         if (!(questionId in questionsAnswered) || questionsAnswered[questionId] !== optionId) {
@@ -31,25 +35,25 @@ const SingleOption: React.FC<SingleOptionProps> = ({questionId, option}) => {
     
     return viewOnly
     ? (
-        <Form.Check
+        <UniForm.Check
             readOnly
             label={optionText} 
             name={`question-${questionId}`}
             type={'radio'} 
             id={`${optionId}`}
-            style={{fontSize: 14}}
             checked = {isSubmitedSelected}
+            className="option"
         />
     )
     : (
-        <Form.Check
+        <UniForm.Check
             label={optionText} 
             name={`question-${questionId}`}
-            type={'radio'} 
+            type='radio' 
             id={`${optionId}`}
-            style={{fontSize: 14}}
             onChange = {selectOption}
             checked = {isSelected}
+            className="option"
         />
     )
 }
