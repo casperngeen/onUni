@@ -1,3 +1,4 @@
+import { GetQuestionResponse } from "./question.types";
 import { TestTypes } from "./test.types";
 
 export interface NewAttemptResponse {
@@ -26,6 +27,15 @@ export enum AnswerStatus {
     CORRECT = 'correct',
     INCORRECT = 'incorrect',
     UNATTEMPTED = 'unattempted',
+}
+
+export interface ITestInfoForAttemptResponse {
+    testTitle: string,
+    courseTitle: string,
+    timeRemaining: number | null,
+    questions: GetQuestionResponse[];
+    testType: TestTypes;
+    startTime: string;
 }
 
 export interface AttemptResponse {
@@ -66,6 +76,10 @@ export interface IAllAttempts extends INewAttempt {}
 
 export interface IGetAttempt {
     attemptId: number,
+}
+
+export interface IGetTestInfoForAttempt extends IGetAttempt {
+    courseId: number,
 }
 
 export interface IDeleteAttempt extends IGetAttempt {}

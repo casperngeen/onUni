@@ -143,3 +143,26 @@ export class AttemptInfoDto {
   @IsNotEmpty()
   testType: TestTypes;
 }
+
+export class TestInfoForAttemptDto {
+  @IsNotEmpty()
+  @IsString()
+  testTitle: string;
+
+  @IsNotEmpty()
+  @IsString()
+  courseTitle: string;
+
+  @IsOptional()
+  @IsInt()
+  timeRemaining: number | null;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => QuestionInfoDto)
+  questions: QuestionInfoDto[];
+
+  @IsNotEmpty()
+  @IsEnum(TestTypes)
+  testType: TestTypes;
+}

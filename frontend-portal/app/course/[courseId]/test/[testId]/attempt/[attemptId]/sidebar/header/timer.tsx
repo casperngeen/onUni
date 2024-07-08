@@ -6,10 +6,10 @@ import { useAppDispatch } from "@/utils/redux/utils/hooks";
 import { submitAttempt } from "@/utils/redux/slicers/attempt.slicer";
 import { useParams } from "next/navigation";
 
-const Timer: React.FC<{time: number}> = ({time}) => {
-    // stores the time in seconds
-    const [minutesLeft, setMinutesLeft] = useState(time);
-    const [secondsLeft, setSecondsLeft] = useState(0);
+const Timer: React.FC<{minutes: number, seconds: number}> = ({minutes, seconds}) => {
+
+    const [minutesLeft, setMinutesLeft] = useState(minutes);
+    const [secondsLeft, setSecondsLeft] = useState(seconds);
     const dispatch = useAppDispatch()();
 
     const { attemptId: attemptIdString } = useParams();

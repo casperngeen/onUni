@@ -2,7 +2,7 @@
 
 import { useAppSelector } from "@/utils/redux/utils/hooks";
 import './header.scss';
-import { SubmitStatus, selectCourseTitle, selectSubmitStatus, selectTestTitle, selectTimeLimit } from "@/utils/redux/slicers/attempt.slicer";
+import { SubmitStatus, selectCourseTitle, selectSubmitStatus, selectTestTitle, selectTimeRemaining } from "@/utils/redux/slicers/attempt.slicer";
 import { Clock } from "react-bootstrap-icons";
 import Timer from "./timer";
 
@@ -10,7 +10,7 @@ const SidebarHeader: React.FC<{}> = () => {
     const selector = useAppSelector();
     const testTitle = selector(selectTestTitle);
     const courseTitle = selector(selectCourseTitle);
-    const timeLimit = selector(selectTimeLimit);
+    const timeRemaining = selector(selectTimeRemaining);
     const unsubmitted = selector(selectSubmitStatus) === SubmitStatus.UNSUBMITTED;
 
     return (
@@ -25,10 +25,13 @@ const SidebarHeader: React.FC<{}> = () => {
                 <div className="sidebar-test-title-text">
                     {testTitle}
                 </div>
-                {timeLimit && unsubmitted &&
+                {timeRemaining && unsubmitted &&
                     <div className="timer">
                         <Clock size={16}/>
-                        <Timer time={timeLimit}></Timer>
+                        <Timer 
+                            minutes={Math.floor(timeRemaining/60)} 
+                            seconds={timeRemaining - Math.floor(timeRemaining/60)*60} 
+                        />
                     </div>
                 }
             </div>

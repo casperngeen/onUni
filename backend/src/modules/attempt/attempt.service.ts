@@ -5,6 +5,7 @@ import {
   AttemptIdDto,
   AttemptInfoDto,
   SubmitAttemptDto,
+  TestInfoForAttemptDto,
   UserTestDto,
 } from './attempt.entity';
 import { AnswerStatus, Status } from './attempt.enum';
@@ -395,6 +396,54 @@ export class AttemptService extends BaseService<Attempt> {
     return attempt;
   }
 
+  public async getTestInfoForAttempt(attemptIdObject: AttemptIdDto) {
+    const { attemptId } = attemptIdObject;
+    this.log(
+      `Query for test information for attempt ${attemptId}...`,
+      this.context,
+    );
+    this.log(`Querying DB for test information...`, this.context);
+    const attempt: Attempt = await this.findOne({
+      relations: [
+        'test',
+        'test.course',
+        'test.questions',
+        'test.questions.options',
+      ],
+      where: { attemptId: attemptId },
+    });
+    if (!attempt) {
+      this.error(
+        `Attempt ${attemptId} could not be found`,
+        this.context,
+        this.getTrace(),
+      );
+    }
+    this.log(`Attempt ${attemptId} found`, this.context);
+    this.log(
+      `Retrieving shuffled questions for attempt ${attemptId}...`,
+      this.context,
+    );
+    const questions: Question[] = await this.getQuestionFromRedis(attemptId);
+    this.log(`Formatting test information for attempt...`, this.context);
+    const timeRemaining = attempt.test.timeLimit
+      ? new Date().getTime() - Date.parse(attempt.start) <
+        attempt.test.timeLimit * 1000 * 60
+        ? attempt.test.timeLimit * 1000 * 60 -
+          (new Date().getTime() - Date.parse(attempt.start))
+        : 0
+      : null;
+    const testInfo: TestInfoForAttemptDto = {
+      testTitle: attempt.test.title,
+      courseTitle: attempt.test.course.title,
+      timeRemaining: timeRemaining,
+      questions: questions,
+      testType: attempt.test.testType,
+    };
+    this.log(`Test information for attempt formatted`, this.context);
+    return testInfo;
+  }
+
   private async checkIfAttemptInRepo(id: number): Promise<Attempt> {
     this.log(`Checking for attempt ${id} in DB...`, this.context);
     const attempt: Attempt = await this.findOne({
@@ -657,6 +706,28 @@ export class AttemptService extends BaseService<Attempt> {
     } catch (error) {
       this.error(
         `Error saving shuffled questions and options of attempt ${attemptId} to Redis: ${error}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new RedisException();
+    }
+  }
+
+  private async getQuestionFromRedis(attemptId: number) {
+    try {
+      const questionsString = await this.redis.hget(
+        `shuffled-attempt:${attemptId}`,
+        `questions`,
+      );
+      this.log(
+        `Retrieved shuffled questions and options of attempt ${attemptId} from Redis`,
+        this.context,
+      );
+      const questions: Question[] = JSON.parse(questionsString);
+      return questions;
+    } catch (error) {
+      this.error(
+        `Error retrieving shuffled questions and options of attempt ${attemptId}: ${error}`,
         this.context,
         this.getTrace(),
       );

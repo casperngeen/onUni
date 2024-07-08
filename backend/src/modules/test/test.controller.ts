@@ -50,20 +50,6 @@ export class TestController {
     response.status(200).json(ResponseHandler.success(test));
   }
 
-  @UseGuards(CourseUserGuard)
-  @Get('test/:testId/attempt/:attemptId')
-  async getTestInfoForAttempt(
-    @Param('testId') testId: number,
-    @Param('attemptId') attemptId: number,
-    @Res() response: Response,
-  ) {
-    const testInfo = await this.testService.getTestInfoForAttempt({
-      testId: testId,
-      attemptId: attemptId,
-    });
-    response.status(200).json(ResponseHandler.success(testInfo));
-  }
-
   @UseGuards(TeacherGuard)
   @Post('test')
   async createNewTest(

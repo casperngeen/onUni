@@ -22,7 +22,7 @@ interface IInitialState {
   questions: QuestionInfo[],
   courseTitle: string,
   testTitle: string,
-  timeLimit: number | null,
+  timeRemaining: number | null,
   loading: boolean,
   error: string | null,
   showSubmit: boolean,
@@ -32,14 +32,14 @@ interface IInitialState {
   timeTaken: number,
   score: number,
   testType: TestTypes | null,
-  readyForView: boolean;
+  readyForView: boolean,
 }
 
 const initialState: IInitialState = {
   testId: -1,
   courseTitle: '',
   testTitle: '',
-  timeLimit: null,
+  timeRemaining: null,
   questionsAnswers: {},
   bookmarked: [],
   questions: [],
@@ -89,16 +89,18 @@ const attemptSlice = createAppSlice({
     fetchAttempt: create.asyncThunk(
       async (params: IGetCurrentAttempt, thunkAPI) => {
         const testId = params.testId;
-        const { questions, testTitle, courseTitle, timeLimit, testType } = 
-          await TestRequest.getTestInfoForAttempt({
-            testId: params.testId, 
+        let { questions, testTitle, courseTitle, timeRemaining, testType } = 
+          await AttemptRequest.getTestInfoForAttempt({
             courseId: params.courseId,
             attemptId: params.attemptId,
           })
         const questionAnswers = await AttemptRequest.getQuestionAttempts({
           attemptId: params.attemptId,
         })
-        return { testId, questions, testTitle, courseTitle, timeLimit, testType, questionAnswers }
+        if (timeRemaining) {
+          timeRemaining = Math.round(timeRemaining / 1000)
+        }
+        return { testId, questions, testTitle, courseTitle, timeRemaining, testType, questionAnswers }
       },
       {
         pending: state => {
@@ -116,7 +118,7 @@ const attemptSlice = createAppSlice({
           state.questions = action.payload.questions;
           state.testTitle = action.payload.testTitle;
           state.courseTitle = action.payload.courseTitle;
-          state.timeLimit = action.payload.timeLimit;
+          state.timeRemaining = action.payload.timeRemaining;
           state.testType = action.payload.testType;
           state.testId = action.payload.testId;
           const bookmark = localStorage.getItem(`bookmark-${state.testId}`)
@@ -204,7 +206,7 @@ const attemptSlice = createAppSlice({
           if (action.payload.timeTaken) {
             state.timeTaken = action.payload.timeTaken;
           }
-          state.timeLimit = null;
+          state.timeRemaining = null;
         },
         settled: (state) => {
           state.loading = false;
@@ -219,7 +221,7 @@ const attemptSlice = createAppSlice({
       selectQuestions: (state) => state.questions,
       selectCourseTitle: (state) => state.courseTitle,
       selectTestTitle: (state) => state.testTitle,
-      selectTimeLimit: (state) => state.timeLimit,
+      selectTimeRemaining: (state) => state.timeRemaining,
       selectLoading: (state) => state.loading,
       selectError: (state) => state.error,
       selectShowSubmit: (state) => state.showSubmit,
@@ -242,7 +244,7 @@ export const { updateQuestionAnswer, bookmarkQuestion, unbookmarkQuestion,
 export const { selectQuestionsAnswers, selectTestId, selectViewStatus,
   selectBookmarked, selectQuestions, selectLoading, 
   selectError, selectCourseTitle, selectTestTitle, 
-  selectTimeLimit, selectShowSubmit, selectShowExit,
+  selectTimeRemaining, selectShowSubmit, selectShowExit,
   selectSubmitStatus, selectAnswers, selectScore, 
   selectTimeTaken, selectTestType  } = attemptSlice.selectors;
 
