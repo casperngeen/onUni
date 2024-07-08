@@ -93,7 +93,6 @@ export class QuestionService extends BaseService<Question> {
       this.context,
     );
     const question: Question = await this.ifQuestionInRepo(questionId);
-    this.log(`Question ${JSON.stringify(question)} found`, this.context);
     const options: OptionIdDto[] = [];
     for (const optionInfo of optionInfos) {
       const { isCorrect, optionText } = optionInfo;

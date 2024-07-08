@@ -19,7 +19,9 @@ export class QuestionAttempt {
   })
   answerStatus: AnswerStatus;
 
-  @ManyToOne(() => Question)
+  @ManyToOne(() => Question, (question) => question.questionId, {
+    onDelete: 'CASCADE',
+  })
   question: Question;
 
   @ManyToOne(() => Attempt, (attempt) => attempt.questionAttempts, {

@@ -28,7 +28,7 @@ const SidebarHeader: React.FC<{}> = () => {
                 {timeLimit && unsubmitted &&
                     <div className="timer">
                         <Clock size={16}/>
-                        <Timer time={timeLimit * 60}></Timer>
+                        <Timer time={timeLimit}></Timer>
                     </div>
                 }
             </div>
