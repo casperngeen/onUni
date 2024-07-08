@@ -1,4 +1,4 @@
-import { AttemptResponse, IAllAttempts, IDeleteAttempt, IGetAttempt, INewAttempt, IQuestionAttemptInfo, ISaveAttempt, ISaveQuestionAttempt, NewAttemptResponse, QuestionAttemptResponse } from "./types/attempt.types";
+import { AttemptResponse, IAllAttempts, IDeleteAttempt, IGetAttempt, INewAttempt, IQuestionAttemptInfo, ISaveAttempt, ISaveQuestionAttempt, NewAttemptResponse } from "./types/attempt.types";
 import { RequestTypes } from "./types/base.types";
 import BaseRequest from "./base.request";
 

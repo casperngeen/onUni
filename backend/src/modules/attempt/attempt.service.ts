@@ -502,12 +502,16 @@ export class AttemptService extends BaseService<Attempt> {
       `Formatting attempt info for attempt ${attempt.attemptId}...`,
       this.context,
     );
+    const timeTaken = attempt.submitted
+      ? attempt.end
+        ? Math.min(Date.parse(attempt.end), Date.parse(attempt.submitted)) -
+          Date.parse(attempt.start)
+        : Date.parse(attempt.submitted) - Date.parse(attempt.start)
+      : null;
     const attemptInfo: AttemptInfoDto = {
       attemptId: attempt.attemptId,
       status: attempt.status,
-      start: attempt.start,
-      end: attempt.end,
-      submitted: attempt.submitted,
+      timeTaken: timeTaken,
       score: attempt.score,
       questionAttempts: questionAttemptResponse,
       questions: attempt.test.questions,

@@ -15,7 +15,6 @@ import {
 import {
   IsArray,
   IsEnum,
-  IsISO8601,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -114,17 +113,9 @@ export class AttemptInfoDto {
   @IsEnum(Status)
   status: Status;
 
+  @IsInt()
   @IsNotEmpty()
-  @IsISO8601({ strict: true })
-  start: string;
-
-  @IsOptional()
-  @IsISO8601({ strict: true })
-  end: string | null;
-
-  @IsOptional()
-  @IsISO8601({ strict: true })
-  submitted: string | null;
+  timeTaken: number;
 
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })

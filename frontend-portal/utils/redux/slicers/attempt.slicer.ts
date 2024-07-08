@@ -176,15 +176,7 @@ const attemptSlice = createAppSlice({
     ),
     getAttemptSummary: create.asyncThunk(
       async(params: IGetAttempt, thunkAPI) => {
-        const { start, end, submitted, score, questionAttempts, questions, testTitle, courseTitle, testType } = await AttemptRequest.getAttempt(params);
-        if (submitted) {
-          const timeTaken = end
-            ? Math.min(Date.parse(end), Date.parse(submitted)) - Date.parse(start)
-            : Date.parse(submitted) - Date.parse(start);
-          return { timeTaken, score, questionAttempts, questions, testTitle, courseTitle, testType };
-        } else {
-          return { questionAttempts, questions, testTitle, courseTitle, testType, timeTaken: null, score: null };
-        }
+        return await AttemptRequest.getAttempt(params);
       }, {
         pending: state => {
           state.loading = true;

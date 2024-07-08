@@ -31,9 +31,7 @@ export enum AnswerStatus {
 export interface AttemptResponse {
     attemptId: number,
     status: Status,
-    start: string,
-    end: string | null,
-    submitted: string | null,
+    timeTaken: number | null,
     score: number | null,
     questionAttempts: QuestionAttemptResponse[],
     questions: QuestionInfo[],
