@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import BaseService from 'src/base/base.service';
 import {
+  AttemptTestIdDto,
   NewTestDto,
   Test,
   TestIdDto,
@@ -15,6 +16,10 @@ import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
 import { CourseNotFoundException } from '../course/course.exception';
 import { TestNotFoundException } from './test.exception';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import { Redis } from 'ioredis';
+import { RedisException } from 'src/base/base.exception';
+import { Question } from '../question/question.entity';
 
 @Injectable()
 export class TestService extends BaseService<Test> {
@@ -23,6 +28,8 @@ export class TestService extends BaseService<Test> {
     private readonly testRepository: Repository<Test>,
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+    @InjectRedis()
+    private readonly redis: Redis,
     loggerService: LoggerService,
   ) {
     super(testRepository, loggerService);
@@ -110,8 +117,8 @@ export class TestService extends BaseService<Test> {
     return testInfo;
   }
 
-  public async getTestInfoForAttempt(testIdObject: TestIdDto) {
-    const { testId } = testIdObject;
+  public async getTestInfoForAttempt(attemptInfoObject: AttemptTestIdDto) {
+    const { testId, attemptId } = attemptInfoObject;
     this.log(
       `Query for test information of test ${testId} for attempt...`,
       this.context,
@@ -129,12 +136,17 @@ export class TestService extends BaseService<Test> {
       );
     }
     this.log(`Test ${testId} found`, this.context);
+    this.log(
+      `Retrieving shuffled questions for attempt ${attemptId}...`,
+      this.context,
+    );
+    const questions: Question[] = await this.getQuestionFromRedis(attemptId);
     this.log(`Formatting test information for attempt...`, this.context);
     const testInfo: TestInfoForAttemptDto = {
       testTitle: test.title,
       courseTitle: test.course.title,
       timeLimit: test.timeLimit,
-      questions: test.questions,
+      questions: questions,
       testType: test.testType,
     };
     this.log(`Test information for attempt formatted`, this.context);
@@ -208,5 +220,27 @@ export class TestService extends BaseService<Test> {
     await this.delete(testId);
     this.log(`Test ${testId} deleted from DB`, this.context);
     this.log(`Query to delete test ${testId}`, this.context);
+  }
+
+  private async getQuestionFromRedis(attemptId: number) {
+    try {
+      const questionsString = await this.redis.hget(
+        `shuffled-attempt:${attemptId}`,
+        `questions`,
+      );
+      this.log(
+        `Retrieved shuffled questions and options of attempt ${attemptId} from Redis`,
+        this.context,
+      );
+      const questions: Question[] = JSON.parse(questionsString);
+      return questions;
+    } catch (error) {
+      this.error(
+        `Error retrieving shuffled questions and options of attempt ${attemptId}: ${error}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new RedisException();
+    }
   }
 }

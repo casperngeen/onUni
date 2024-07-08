@@ -1,5 +1,5 @@
 import { RequestTypes } from "./types/base.types";
-import { IDeleteTest, IGetTest, INewTest, ITestInfoForAttemptResponse, ITestResponse, IUpdateTest } from "./types/test.types";
+import { IDeleteTest, IGetTest, IGetTestInfoForAttempt, INewTest, ITestInfoForAttemptResponse, ITestResponse, IUpdateTest } from "./types/test.types";
 import BaseRequest from "./base.request";
 
 export default class TestRequest extends BaseRequest {
@@ -8,13 +8,13 @@ export default class TestRequest extends BaseRequest {
     }
 
     public static async getTest(params: IGetTest) {
-        const {testId, courseId} = params;
+        const { testId, courseId } = params;
         return await BaseRequest.request<ITestResponse[]>(`test/${testId}?courseId=${courseId}`, RequestTypes.GET, {});
     }
 
-    public static async getTestInfoForAttempt(params: IGetTest) {
-        const {testId, courseId} = params;
-        return await BaseRequest.request<ITestInfoForAttemptResponse>(`test/${testId}/attempt?courseId=${courseId}`, RequestTypes.GET, {});
+    public static async getTestInfoForAttempt(params: IGetTestInfoForAttempt) {
+        const { testId, courseId, attemptId } = params;
+        return await BaseRequest.request<ITestInfoForAttemptResponse>(`test/${testId}/attempt/${attemptId}?courseId=${courseId}`, RequestTypes.GET, {});
     }
     
     public static async createNewTest(params: INewTest) {

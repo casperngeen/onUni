@@ -1,4 +1,3 @@
-import { shuffleArray } from "@/app/course/[courseId]/test/[testId]/attempt/[attemptId]/shuffle";
 import { AttemptRequest } from "@/utils/request/attempt.request";
 import TestRequest from "@/utils/request/test.request";
 import { AnswerStatus, IDeleteAttempt, IGetAttempt, IGetCurrentAttempt, INewAttempt, ISaveAttempt, ISaveQuestionAttemptBody, QuestionInfo } from "@/utils/request/types/attempt.types";
@@ -93,16 +92,13 @@ const attemptSlice = createAppSlice({
         const { questions, testTitle, courseTitle, timeLimit, testType } = 
           await TestRequest.getTestInfoForAttempt({
             testId: params.testId, 
-            courseId: params.courseId
+            courseId: params.courseId,
+            attemptId: params.attemptId,
           })
-        const shuffledQuestions: QuestionInfo[] = shuffleArray(questions);
-        for (let i = 0; i < questions.length; i++) {
-          shuffledQuestions[i].options = shuffleArray(shuffledQuestions[i].options)
-        }
         const questionAnswers = await AttemptRequest.getQuestionAttempts({
           attemptId: params.attemptId,
         })
-        return { testId, shuffledQuestions, testTitle, courseTitle, timeLimit, testType, questionAnswers }
+        return { testId, questions, testTitle, courseTitle, timeLimit, testType, questionAnswers }
       },
       {
         pending: state => {
@@ -117,7 +113,7 @@ const attemptSlice = createAppSlice({
           }
         },
         fulfilled: (state, action) => {
-          state.questions = action.payload.shuffledQuestions;
+          state.questions = action.payload.questions;
           state.testTitle = action.payload.testTitle;
           state.courseTitle = action.payload.courseTitle;
           state.timeLimit = action.payload.timeLimit;

@@ -77,7 +77,7 @@ export class AttemptService extends BaseService<Attempt> {
     );
     this.log(`Checking for test ${testId} in DB...`, this.context);
     const test: Test = await this.testRepository.findOne({
-      relations: ['course', 'course.users'],
+      relations: ['questions', 'questions.options', 'course', 'course.users'],
       where: { testId: testId },
     });
     if (!test) {
@@ -140,6 +140,19 @@ export class AttemptService extends BaseService<Attempt> {
       `Created and inserted new attempt for test ${testId} for user ${userId} into DB`,
       this.context,
     );
+    this.log(
+      `Shuffling questions and options for attempt ${attempt.attemptId}`,
+      this.context,
+    );
+    const shuffledQuestions: Question[] = this.shuffleArray(test.questions);
+    for (const question of shuffledQuestions) {
+      this.shuffleArray(question.options);
+    }
+    this.log(
+      `Saving questions and options for attempt ${attempt.attemptId} to Redis...`,
+      this.context,
+    );
+    await this.saveQuestionsToRedis(shuffledQuestions, attempt.attemptId);
     this.log(
       `Query to create new attempt for user ${userId} for test ${testId} completed`,
       this.context,
@@ -307,6 +320,7 @@ export class AttemptService extends BaseService<Attempt> {
     });
     this.log(`Attempt ${attemptId} updated`, this.context);
     await this.deleteQuestionAttemptsFromRedis(attemptId);
+    await this.deleteQuestionFromRedis(attemptId);
     this.log(`Query to update attempt ${attemptId} completed`, this.context);
   }
 
@@ -355,6 +369,7 @@ export class AttemptService extends BaseService<Attempt> {
     this.log(`Query to delete attempt ${attemptId}`, this.context);
     await this.checkIfAttemptInRepo(attemptId);
     await this.deleteQuestionAttemptsFromRedis(attemptId);
+    await this.deleteQuestionFromRedis(attemptId);
     this.log(`Deleting attempt from DB...`, this.context);
     await this.delete(attemptId);
     this.log(`Query to delete attempt ${attemptId} completed`, this.context);
@@ -610,5 +625,55 @@ export class AttemptService extends BaseService<Attempt> {
         });
       });
     });
+  }
+
+  /**
+   * An in-place shuffling of any array (using Durstenfeld shuffle, an optimized version of Knuth shuffle)
+   * @param array The array to be shuffled
+   */
+  private shuffleArray(array: any[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  private async saveQuestionsToRedis(questions: Question[], attemptId: number) {
+    try {
+      await this.redis.hset(
+        `shuffled-attempt:${attemptId}`,
+        `questions`,
+        JSON.stringify(questions),
+      );
+      this.log(
+        `Saved shuffled questions and options of attempt ${attemptId} to Redis`,
+        this.context,
+      );
+    } catch (error) {
+      this.error(
+        `Error saving shuffled questions and options of attempt ${attemptId} to Redis: ${error}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new RedisException();
+    }
+  }
+
+  private async deleteQuestionFromRedis(attemptId: number) {
+    try {
+      await this.redis.hdel(`shuffled-attempt:${attemptId}`, `questions`);
+      this.log(
+        `Deleted shuffled questions and options of attempt ${attemptId} from Redis`,
+        this.context,
+      );
+    } catch (error) {
+      this.error(
+        `Error retrieving shuffled questions and options of attempt ${attemptId}: ${error}`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new RedisException();
+    }
   }
 }

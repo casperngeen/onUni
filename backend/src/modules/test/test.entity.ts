@@ -79,6 +79,12 @@ export class TestIdDto {
   testId: number;
 }
 
+export class AttemptTestIdDto extends TestIdDto {
+  @IsInt()
+  @IsNotEmpty()
+  attemptId: number;
+}
+
 export class TestInfoDto {
   @IsString()
   @IsNotEmpty()

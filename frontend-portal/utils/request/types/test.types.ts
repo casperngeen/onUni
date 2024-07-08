@@ -52,6 +52,10 @@ export interface IDeleteTest {
 
 export interface IGetTest extends IDeleteTest {}
 
+export interface IGetTestInfoForAttempt extends IDeleteTest {
+    attemptId: number,
+}
+
 export interface IUpdateTest extends INewTest {
     testId: number,
 }
