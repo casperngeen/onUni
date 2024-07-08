@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { AnswerStatus, QuestionInfo } from "@/utils/request/types/attempt.types";
 import SingleOption from "../option/option";
 import Container from "react-bootstrap/Container";
-import { bookmarkQuestion, selectBookmarked, selectQuestionsAnswers, selectTestId, unbookmarkQuestion, selectAnswers, selectViewStatus } from "@/utils/redux/slicers/attempt.slicer";
+import { bookmarkQuestion, selectBookmarked, selectTestId, unbookmarkQuestion, selectAnswers, selectViewStatus } from "@/utils/redux/slicers/attempt.slicer";
 import './question.scss';
 import { Bookmark, BookmarkFill, CheckCircleFill, ExclamationCircleFill, Flag } from "react-bootstrap-icons";
 import { useEffect } from "react";

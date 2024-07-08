@@ -8,7 +8,7 @@ export default class BaseRequest {
   private static readonly baseRoute = `http://localhost:3000`;
 
   protected static getAccessToken() {
-    return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzIwMTQyNDk4LCJleHAiOjE3MjAxNzg0OTh9.gLuQ36JGgzy_fmlv_E2p0oMiqVwjUd4cmfvCMpcrQHA';
+    return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzIwNDAzMjEyLCJleHAiOjE3MjA0MzkyMTJ9.WIBb82-JtybiXAtRaN1LB6hp2CR2VYF-xA0UZN-T6yE';
   }
 
   protected static async request<T>(

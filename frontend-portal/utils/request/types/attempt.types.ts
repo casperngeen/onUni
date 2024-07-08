@@ -2,11 +2,6 @@ import { TestTypes } from "./test.types";
 
 export interface NewAttemptResponse {
     attemptId: number,
-    questions: QuestionInfo[],
-    testTitle: string,
-    courseTitle: string,
-    timeLimit: number | null,
-    testType: TestTypes,
 }
 
 export interface QuestionInfo {

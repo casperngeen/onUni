@@ -4,7 +4,6 @@ import {
   Attempt,
   AttemptIdDto,
   AttemptInfoDto,
-  AttemptResponseDto,
   SubmitAttemptDto,
   UserTestDto,
 } from './attempt.entity';
@@ -78,7 +77,7 @@ export class AttemptService extends BaseService<Attempt> {
     );
     this.log(`Checking for test ${testId} in DB...`, this.context);
     const test: Test = await this.testRepository.findOne({
-      relations: ['questions', 'questions.options', 'course', 'course.users'],
+      relations: ['course', 'course.users'],
       where: { testId: testId },
     });
     if (!test) {
@@ -91,7 +90,6 @@ export class AttemptService extends BaseService<Attempt> {
     }
     this.log(`Test ${testId} found`, this.context);
     const user: User = await this.getUserFromRepo(userId);
-    // await this.isUserAllowedToTakeTest(user, test);
     this.log(
       `Checking if user ${userId} has reached attempt limit for test ${testId}`,
       this.context,
@@ -143,19 +141,10 @@ export class AttemptService extends BaseService<Attempt> {
       this.context,
     );
     this.log(
-      `Formatting questions and options for test ${testId}...`,
-      this.context,
-    );
-    const response = this.formatAttemptResponse(test, attempt.attemptId);
-    this.log(
-      `Questions and options for test ${testId} have been formatted`,
-      this.context,
-    );
-    this.log(
       `Query to create new attempt for user ${userId} for test ${testId} completed`,
       this.context,
     );
-    return response;
+    return { attemptId: attempt.attemptId };
   }
 
   public async getAllAttempts(
@@ -516,31 +505,6 @@ export class AttemptService extends BaseService<Attempt> {
       this.context,
     );
     return attemptInfo;
-  }
-
-  private formatAttemptResponse(
-    test: Test,
-    attemptId: number,
-  ): AttemptResponseDto {
-    return {
-      attemptId: attemptId,
-      testTitle: test.title,
-      courseTitle: test.course.title,
-      timeLimit: test.timeLimit,
-      testType: test.testType,
-      questions: test.questions.map((question) => {
-        return {
-          questionId: question.questionId,
-          questionText: question.questionText,
-          options: question.options.map((option) => {
-            return {
-              optionId: option.optionId,
-              optionText: option.optionText,
-            };
-          }),
-        };
-      }),
-    };
   }
 
   private async getQuestionAttemptsFromRedis(

@@ -15,12 +15,7 @@ const CreateAttempt: React.FC<{}> = () => {
     const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
     const testId = Array.isArray(testIdString) ? parseInt(testIdString[0]) : parseInt(testIdString);
 
-    const selector = useAppSelector();
-    const dispatch = useAppDispatch()();
     const router = useRouter();
-    const [ attemptId, setAttemptId ] = useState(0);
-    const loading = selector(selectLoading);
-
     
     useEffect(() => {
         setToggleModal(true)
@@ -30,7 +25,6 @@ const CreateAttempt: React.FC<{}> = () => {
                 testId: testId, 
                 courseId: courseId
             });
-            setAttemptId(attemptId);
             router.push(`/course/${courseId}/test/${testId}/attempt/${attemptId}/new`);
         }
 
