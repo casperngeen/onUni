@@ -31,7 +31,23 @@ const AttemptSummary: React.FC<{}> = () => {
     
     useEffect(() => {
         dispatch(getAttemptSummary({attemptId: attemptId}));
+
+        const handleScroll = () => {
+            const hash =  window.location.hash;
+            if (hash) {
+                const elementId = hash.replace('#', '');
+                setTimeout(() => {
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 100);
+            }
+        }
+
+        handleScroll();
     }, [attemptId, dispatch]);
+
 
     return (
         <UniContainer fluid className="attempt">

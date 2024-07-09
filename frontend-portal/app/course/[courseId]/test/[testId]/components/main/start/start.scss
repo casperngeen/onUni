@@ -1,0 +1,10 @@
+@import '../../../../../../../../utils/styles/styles.scss';
+
+.start {
+    display: flex;
+    justify-content: flex-end;
+    padding: $p-3 $p-7;
+    border-width: 1 0 0 0;
+    border-style: solid;
+    border-color: $gray-200;
+}

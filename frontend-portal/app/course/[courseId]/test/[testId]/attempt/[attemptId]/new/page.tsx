@@ -11,7 +11,7 @@ import SidebarProgressBar from "../sidebar/progress/progress.bar";
 import SidebarHeader from "../sidebar/header/header";
 import SideBarButtons from "../sidebar/button/button";
 import WarningModal, { ModalType } from "../modals/warning.modal";
-import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import SubmttingModal from "../modals/submitting.modal";
 
 const TestAttempt: React.FC<{}> = () => {
@@ -25,8 +25,6 @@ const TestAttempt: React.FC<{}> = () => {
     const questions = selector(selectQuestions);
     const error = selector(selectError);
     const loading = selector(selectLoading);
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
 
     
     useEffect(() => {
@@ -44,16 +42,14 @@ const TestAttempt: React.FC<{}> = () => {
                 const elementId = hash.replace('#', '');
                 setTimeout(() => {
                     const element = document.getElementById(elementId);
-                    console.log(element);
                     if (element) {
                         element.scrollIntoView({ behavior: 'smooth' });
-                        console.log("hello world")
                     }
                 }, 100);
             }
         }
         handleScroll();
-    }, [searchParams, pathname]);
+    }, []);
 
     return (
         <>
