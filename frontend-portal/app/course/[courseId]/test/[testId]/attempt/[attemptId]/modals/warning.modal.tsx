@@ -2,7 +2,7 @@
 
 import UniButton from "@/components/overwrite/uni.button";
 import UniModal from "@/components/overwrite/uni.modal"
-import { deleteAttempt, flipShowExit, flipShowSubmit, selectAttemptId, selectShowExit, selectShowSubmit, selectTestId, submitAttempt } from "@/utils/redux/slicers/attempt.slicer";
+import { deleteAttempt, flipShowExit, flipShowSubmit, selectShowExit, selectShowSubmit, submitAttempt } from "@/utils/redux/slicers/attempt.slicer";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { ExclamationTriangleFill } from "react-bootstrap-icons";
 import './modal.scss';
