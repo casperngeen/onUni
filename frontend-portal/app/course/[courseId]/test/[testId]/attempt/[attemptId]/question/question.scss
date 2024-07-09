@@ -84,9 +84,7 @@
 
 .question-text {
     font-size: $font-size-S;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: pre-wrap;
+    white-space: normal;
     font-weight: 500;
 }
 
