@@ -1,0 +1,51 @@
+@import '../../../../../../../../../utils/styles/styles.scss';
+
+.quiz-content {
+    border-radius: $rounded-4;
+    border-style: hidden;
+    background-color: $white;
+    display: flex;
+    flex-direction: column;
+}
+
+.quiz-info {
+    padding: $p-6 0 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $gap-4;
+    background-color: $blue-100;
+}
+
+.info-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $gap-3;
+}
+
+.test-title {
+    font-size: $font-size-3XL;
+    font-weight: 600;
+    line-height: 50;
+    color: $body-color;
+}
+
+.test-questions {
+    font-size: $font-size-M;
+    line-height: 24;
+    color: $gray-700;
+    font-weight: 600;
+}
+
+.test-description {
+    font-size: $font-size-XS;
+    line-height: 21;
+    color: $gray-700;
+    font-weight: 500;
+}
+
+.image {
+    height: 160;
+    width: 220;
+}

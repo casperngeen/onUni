@@ -4,7 +4,7 @@ import './start.scss';
 const StartButton: React.FC<{}> = () => {
     return (
         <div className="start">
-            <UniButton custombutton="confirm">Start</UniButton>
+            <UniButton custombutton="confirm" style={{width: 120}}>Start</UniButton>
         </div>
     )
 }
