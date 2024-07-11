@@ -1,0 +1,10 @@
+@import '../../../../../utils/styles/styles.scss';
+
+.course-sidebar {
+    width: 360px;
+    overflow: auto;
+    border-width: 0px 1px 0px 0px;
+    border-style: solid;
+    border-color: $gray-400;
+    background-color: $white;
+}

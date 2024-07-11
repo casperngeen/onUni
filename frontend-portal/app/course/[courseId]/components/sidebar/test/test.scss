@@ -1,0 +1,29 @@
+@import '../../../../../../utils/styles/styles.scss';
+
+.sidebar-test {
+    display: flex;
+    gap: $gap-4;
+    align-items: center;
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    border-color: $gray-200;
+
+    &:hover {
+        background-color: $blue-100;
+        cursor: pointer;
+    }
+}
+
+.test-status {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-test-title {
+    line-height: 24px;
+    font-size: $font-size-S;
+    font-weight: 400;
+    color: $body-color;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}

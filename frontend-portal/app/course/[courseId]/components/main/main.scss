@@ -1,0 +1,8 @@
+@import '../../../../../utils/styles/styles.scss';
+
+.course-main {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    flex: 1;
+}

@@ -1,0 +1,38 @@
+@import '../../../../../../utils/styles/styles.scss';
+
+.course-sidebar-header {
+    border-width: 0px 0px 0px 8px;
+    border-color: $primary;
+    border-style: solid;
+    background-color: $blue-100;
+    display: flex;
+    gap: $gap-4;
+    padding: $p-4 $p-6;
+}
+
+.sidebar-logo {
+    display: flex;
+    background-color: $white;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-info {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-1;
+}
+
+.header-course-title {
+    color: $body-color;
+    font-size: $font-size-S;
+    line-height: 24px;
+    font-weight: 600;
+}
+
+.header-num-tests {
+    color: $gray-700;
+    font-size: $font-size-XS;
+    line-height: 21px;
+    font-weight: 400;
+}
