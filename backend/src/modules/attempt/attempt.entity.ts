@@ -48,7 +48,7 @@ export class Attempt {
   @Column({ type: 'timestamp', nullable: true })
   submitted: string | null;
 
-  @Column('decimal', { nullable: true, precision: 7, scale: 0 })
+  @Column('int', { nullable: true })
   score: number | null;
 
   @OneToMany(
@@ -165,4 +165,22 @@ export class TestInfoForAttemptDto {
   @IsNotEmpty()
   @IsEnum(TestTypes)
   testType: TestTypes;
+}
+
+export class AttemptHistory {
+  @IsNotEmpty()
+  @IsInt()
+  attemptId: number;
+
+  @IsNotEmpty()
+  @IsEnum(Status)
+  status: Status;
+
+  @IsOptional()
+  @IsString()
+  submitted: string | null;
+
+  @IsOptional()
+  @IsInt()
+  score: number | null;
 }

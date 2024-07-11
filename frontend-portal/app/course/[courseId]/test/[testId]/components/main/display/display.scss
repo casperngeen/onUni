@@ -1,0 +1,27 @@
+@import '../../../../../../../../utils/styles/styles.scss';
+
+.test-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: $p-4 $p-7;
+    gap: $gap-4;
+}
+
+.test-header {
+    display: flex;
+    gap: $gap-4;
+}
+
+.expand-icon {
+    height: 24;
+    width: 24;
+}
+
+.test-title {
+    flex: 1;
+    font-size: $font-size-M;
+    font-weight: 600;
+    line-height: 25;
+    color: $body-color;
+}

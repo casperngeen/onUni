@@ -14,7 +14,6 @@ import { Response } from 'express';
 import { TestService } from './test.service';
 import {
   NewTestDto,
-  Test,
   TestIdDto,
   TestInfoDto,
   UpdateTestDto,
@@ -32,7 +31,7 @@ export class TestController {
     @Param('courseId') courseId: number,
     @Res() response: Response,
   ) {
-    const tests: Partial<Test>[] = await this.testService.viewAllTests({
+    const tests = await this.testService.viewAllTests({
       courseId: courseId,
     });
     response.status(200).json(ResponseHandler.success(tests));
@@ -44,7 +43,7 @@ export class TestController {
     @Param('testId') testId: number,
     @Res() response: Response,
   ) {
-    const test: Partial<Test> = await this.testService.viewTestInfo({
+    const test = await this.testService.viewTestInfo({
       testId: testId,
     });
     response.status(200).json(ResponseHandler.success(test));

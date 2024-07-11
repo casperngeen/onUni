@@ -1,29 +1,45 @@
+'use client'
+
 import { Image } from "react-bootstrap";
 import ExamContentPage from "./exam/exam";
 import PracticeContentPage from "./practice/practice";
 import QuizContentPage from "./quiz/quiz";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
+import { selectTestTitle, selectTestType, selectViewSidebar } from "@/utils/redux/slicers/test.slicer";
+import './display.scss';
+import { TestTypes } from "@/utils/request/types/test.types";
 
-const Display: React.FC<{}> = () => {
-    const clickExpand = () => {
-        // toggle sidebar state
+const TestDisplay: React.FC<{}> = () => {
+    const dispatch = useAppDispatch()();
+    const selector = useAppSelector();
+    const showExpand = !selector(selectViewSidebar);
+    const testTitle = selector(selectTestTitle);
+    const testType = selector(selectTestType);
+    
+    const toggleSidebar = () => {
+        dispatch(toggleSidebar);
     }
+
     return (
-        <div className="display">
-            <div className="header">
-                {false && <a onClick={clickExpand}><Image alt="expand-1" /></a>}
-                <div className="test-title">test title</div>
+        <div className="test-display">
+            <div className="test-header">
+                {showExpand &&
+                <a onClick={toggleSidebar}>
+                    <Image className="expand-icon" alt="expand-1" />
+                </a>}
+                <div className="test-title">{testTitle}</div>
             </div>
-            {true &&
+            {testType === TestTypes.QUIZ &&
                 <QuizContentPage />
             }
-            {false &&
+            {testType === TestTypes.PRACTICE &&
                 <PracticeContentPage />
             }
-            {false &&
+            {testType === TestTypes.EXAM &&
                 <ExamContentPage />
             }
         </div>
     )
 }
 
-export default Display;
+export default TestDisplay;

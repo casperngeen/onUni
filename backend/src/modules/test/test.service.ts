@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import BaseService from 'src/base/base.service';
-import { NewTestDto, Test, TestIdDto, UpdateTestDto } from './test.entity';
+import {
+  NewTestDto,
+  Test,
+  TestIdDto,
+  TestInfoDto,
+  TestInfoWithHistoryDto,
+  UpdateTestDto,
+} from './test.entity';
 import { Repository } from 'typeorm';
 import { Course, CourseIdDto } from '../course/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,6 +18,7 @@ import { CourseNotFoundException } from '../course/course.exception';
 import { TestNotFoundException } from './test.exception';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
+import { AttemptHistory } from '../attempt/attempt.entity';
 
 @Injectable()
 export class TestService extends BaseService<Test> {
@@ -29,9 +37,7 @@ export class TestService extends BaseService<Test> {
     )[0];
   }
 
-  public async viewAllTests(
-    courseIdObject: CourseIdDto,
-  ): Promise<Partial<Test>[]> {
+  public async viewAllTests(courseIdObject: CourseIdDto) {
     const { courseId } = courseIdObject;
     this.log(
       `Query all tests for course ${courseIdObject.courseId}`,
@@ -56,13 +62,14 @@ export class TestService extends BaseService<Test> {
       this.context,
     );
     this.log(`Formatting tests...`, this.context);
-    const testsObject: Partial<Test>[] = tests.map((test) => {
+    const testsObject: TestInfoDto[] = tests.map((test) => {
       return {
         testId: test.testId,
-        title: test.title,
-        description: test.description,
+        testTitle: test.title,
+        testDescription: test.description,
         testType: test.testType,
         maxScore: test.maxScore,
+        start: test.start,
         deadline: test.deadline,
         scoringFormat: test.scoringFormat,
         maxAttempt: test.maxAttempt,
@@ -80,10 +87,13 @@ export class TestService extends BaseService<Test> {
     return testsObject;
   }
 
-  public async viewTestInfo(testIdObject: TestIdDto): Promise<Partial<Test>> {
+  public async viewTestInfo(testIdObject: TestIdDto) {
     this.log(`Query for test ${testIdObject.testId}`, this.context);
     this.log(`Querying DB...`, this.context);
-    const test: Test = await this.findOne({ where: testIdObject });
+    const test: Test = await this.findOne({
+      relations: ['attempts', 'course'],
+      where: testIdObject,
+    });
     if (!test) {
       this.error(
         `Test ${testIdObject.testId} could not be found`,
@@ -93,16 +103,27 @@ export class TestService extends BaseService<Test> {
     }
     this.log(`Test ${testIdObject.testId} found`, this.context);
     this.log(`Formatting test information...`, this.context);
-    const testInfo: Partial<Test> = {
+    const attempts: AttemptHistory[] = test.attempts.map((attempt) => {
+      return {
+        attemptId: attempt.attemptId,
+        status: attempt.status,
+        submitted: attempt.submitted,
+        score: attempt.score,
+      };
+    });
+    const testInfo: TestInfoWithHistoryDto = {
       testId: test.testId,
-      title: test.title,
-      description: test.description,
+      courseTitle: test.course.title,
+      testTitle: test.title,
+      testDescription: test.description,
       testType: test.testType,
       maxScore: test.maxScore,
+      start: test.start,
       deadline: test.deadline,
       scoringFormat: test.scoringFormat,
       maxAttempt: test.maxAttempt,
       timeLimit: test.timeLimit,
+      attempts: attempts,
     };
     this.log(`Test information formatted`, this.context);
     return testInfo;

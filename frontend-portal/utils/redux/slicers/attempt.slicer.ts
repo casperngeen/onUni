@@ -1,5 +1,4 @@
 import { AttemptRequest } from "@/utils/request/attempt.request";
-import TestRequest from "@/utils/request/test.request";
 import { AnswerStatus, IDeleteAttempt, IGetAttempt, IGetCurrentAttempt, INewAttempt, ISaveAttempt, ISaveQuestionAttemptBody, QuestionInfo } from "@/utils/request/types/attempt.types";
 import { TestTypes } from "@/utils/request/types/test.types";
 import { PayloadAction, asyncThunkCreator, buildCreateSlice } from "@reduxjs/toolkit";

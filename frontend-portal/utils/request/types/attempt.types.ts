@@ -38,6 +38,13 @@ export interface ITestInfoForAttemptResponse {
     startTime: string;
 }
 
+export interface AttemptHistoryResponse {
+    attemptId: number,
+    status: Status,
+    submitted: string | null,
+    score: number | null,
+}
+
 export interface AttemptResponse {
     attemptId: number,
     status: Status,

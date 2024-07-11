@@ -1,0 +1,128 @@
+@import '../../../../../../../../../utils/styles/styles.scss';
+
+.history {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $gap-4;
+}
+
+.title {
+    font-size: $font-size-XS;
+    line-height: 21px;
+    font-weight: 400;
+    color: $body-color;
+}
+
+.history-display {
+    display: flex;
+    flex-direction: column;
+    border-radius: $rounded-3;
+    border-width: 1;
+    border-style: solid;
+    border-color: $gray-200;
+}
+
+.history-header,
+.history-row {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    border-style: solid;
+    border-width: 0 0 1 0;
+    border-color: $gray-200;
+}
+
+.history-header {
+    background-color: $gray-100;
+}
+
+.number,
+.number-row,
+.time,
+.time-row,
+.score-header,
+.score-row,
+.status,
+.status-row,
+.link,
+.link-row {
+    padding: $p-0 $p-3;
+    font-size: $font-size-XS;
+    color: $body-color;
+    line-height: 21px;
+}
+
+.link-row {
+    color: $primary;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.number,
+.time,
+.score-header,
+.status,
+.link {
+    font-weight: 600;
+}
+
+.number-row,
+.time-row,
+.score-row,
+.status-row,
+.link-row {
+    font-weight: 500;
+}
+
+.number,
+.number-row {
+    width: 80px;
+}
+
+.time,
+.time-row {
+    flex: 1;
+}
+
+.score-header,
+.score-row {
+    width: 160px;
+}
+
+.status,
+.status-row {
+    width: 200px;
+}
+
+.link,
+.link-row {
+    width: 120px;
+}
+
+.no-attempts {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-2;
+    padding: $p-4 $p-0;
+    align-items: center;
+}
+
+.image {
+    width: 40px;
+    height: 40px;
+}
+
+.no-attempt-message {
+    font-size: $font-size-XS;
+    font-weight: 500;
+    color: $gray-700;
+    line-height: 21px;
+}
+
+.attempt-rows {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}

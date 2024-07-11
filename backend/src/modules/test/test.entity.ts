@@ -7,17 +7,20 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { Attempt } from '../attempt/attempt.entity';
+import { Attempt, AttemptHistory } from '../attempt/attempt.entity';
 import {
-  IsDate,
+  IsArray,
   IsEnum,
+  IsISO8601,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 import { ScoringFormats } from './test.enum';
 import { TestTypes } from './test.enum';
+import { Type } from 'class-transformer';
 
 @Entity()
 export class Test {
@@ -30,7 +33,10 @@ export class Test {
   @Column('text')
   description: string;
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
+  start: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
   deadline: string | null;
 
   @Column({
@@ -79,16 +85,20 @@ export class AttemptTestIdDto extends TestIdDto {
   attemptId: number;
 }
 
-export class TestInfoDto {
+class TestDetailsDto {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  testTitle: string;
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  testDescription: string;
 
-  @IsDate()
+  @IsISO8601()
+  @IsOptional()
+  start: string | null;
+
+  @IsISO8601()
   @IsOptional()
   deadline: string | null;
 
@@ -106,21 +116,34 @@ export class TestInfoDto {
 
   @IsInt()
   @IsNotEmpty()
-  maxScore: number; // should be an integer
+  maxScore: number;
 
   @IsEnum(TestTypes)
   @IsNotEmpty()
   testType: TestTypes;
 }
 
-export class NewTestDto extends TestInfoDto {
+export class NewTestDto extends TestDetailsDto {
   @IsInt()
   @IsNotEmpty()
   courseId: number;
 }
 
-export class UpdateTestDto extends TestInfoDto {
+export class UpdateTestDto extends TestDetailsDto {
   @IsInt()
   @IsNotEmpty()
   testId: number;
+}
+
+export class TestInfoDto extends UpdateTestDto {}
+
+export class TestInfoWithHistoryDto extends TestInfoDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AttemptHistory)
+  attempts: AttemptHistory[];
+
+  @IsNotEmpty()
+  @IsString()
+  courseTitle: string;
 }

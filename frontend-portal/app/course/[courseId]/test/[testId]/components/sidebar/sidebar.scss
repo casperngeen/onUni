@@ -6,4 +6,9 @@
     border-width: 0 1 0 0;
     border-color: $gray-400;
     border-style: solid;
+    transition: all 0.3s ease;
+
+    &.collapse {
+        width: 0;
+    }
 }

@@ -6,7 +6,7 @@ import { deleteAttempt, flipShowExit, flipShowSubmit, selectShowExit, selectShow
 import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { ExclamationTriangleFill } from "react-bootstrap-icons";
 import './modal.scss';
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 export enum ModalType {
     EXIT = "exit",
@@ -18,7 +18,8 @@ export interface IAttemptModalProps {
 }
 
 const WarningModal: React.FC<IAttemptModalProps> = ({type}) => {
-    const { testId: testIdString, attemptId: attemptIdString } = useParams();
+    const { courseId: courseIdString, testId: testIdString, attemptId: attemptIdString } = useParams();
+    const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
     const testId = Array.isArray(testIdString) ? parseInt(testIdString[0]) : parseInt(testIdString);
     const attemptId = Array.isArray(attemptIdString) ? parseInt(attemptIdString[0]) : parseInt(attemptIdString);
 
@@ -26,6 +27,7 @@ const WarningModal: React.FC<IAttemptModalProps> = ({type}) => {
     const selector = useAppSelector();
     const isExit = type === ModalType.EXIT;
     const showModal = isExit ? selector(selectShowExit) : selector(selectShowSubmit);
+    const router = useRouter();
 
     const handleClose = () => {
         if (isExit) {
@@ -40,6 +42,7 @@ const WarningModal: React.FC<IAttemptModalProps> = ({type}) => {
         if (isExit) {
             dispatch(flipShowExit());
             dispatch(deleteAttempt({attemptId: attemptId}));
+            router.push(`/course/${courseId}/test/${testId}`)
         } else {
             dispatch(flipShowSubmit());
             dispatch(submitAttempt({attemptId: attemptId}));

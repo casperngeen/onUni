@@ -1,4 +1,6 @@
-enum ScoringFormats {
+import { AttemptHistoryResponse } from "./attempt.types"
+
+export enum ScoringFormats {
     AVERAGE = 'average',
     HIGHEST = 'highest',
     LATEST = 'latest',
@@ -13,14 +15,20 @@ export enum TestTypes {
 
 export interface ITestResponse {
     testId: number,
-    title: string,
-    description: string,
+    testTitle: string,
+    testDescription: string,
     testType: TestTypes,
-    maxScore: number
+    maxScore: number,
+    start: string | null,
     deadline: string | null,
     scoringFormat: ScoringFormats | null,
     maxAttempt: number | null,
     timeLimit: number | null,
+}
+
+export interface ISingleTestResponse extends ITestResponse {
+    attempts: AttemptHistoryResponse[],
+    courseTitle: string,
 }
 
 export interface INewTest {

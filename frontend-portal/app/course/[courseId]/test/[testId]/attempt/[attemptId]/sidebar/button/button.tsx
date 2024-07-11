@@ -3,7 +3,7 @@
 import UniButton from '@/components/overwrite/uni.button';
 import './button.scss';
 import { useAppDispatch, useAppSelector } from '@/utils/redux/utils/hooks';
-import { SubmitStatus, exitSummary, flipShowExit, flipShowSubmit, selectQuestions, selectQuestionsAnswers, selectSubmitStatus, selectTestType, selectTimeLimit, setSubmitStatus, submitAttempt } from '@/utils/redux/slicers/attempt.slicer';
+import { SubmitStatus, exitSummary, flipShowExit, flipShowSubmit, selectQuestions, selectQuestionsAnswers, selectSubmitStatus, selectTestType, setSubmitStatus, submitAttempt } from '@/utils/redux/slicers/attempt.slicer';
 import { useParams, useRouter } from 'next/navigation';
 import { TestTypes } from '@/utils/request/types/test.types';
 

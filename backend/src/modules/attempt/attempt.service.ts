@@ -268,7 +268,7 @@ export class AttemptService extends BaseService<Attempt> {
       `Submitting question attempts of attempt ${attemptId}...`,
       this.context,
     );
-    let score: number = 0;
+    let score = 0;
     await Promise.all(
       attempt.test.questions.map(async (question) => {
         const { questionId } = question;
