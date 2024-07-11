@@ -42,35 +42,33 @@ const TestHistory: React.FC<{}> = () => {
           <div className='no-attempt-message'>Not attempted</div>
         </div>
         }
-        <div className='attempt-rows'>
-          {attempts.length > 0 && 
-            attempts.map((attempt, index) => (
-              <div key={index} className='history-row'>
-                <div className='number-row'>{index+1}</div>
-                <div className='time-row'>{attempt.submitted}</div>
-                <div className='score-row'>
-                  {attempt.score != null
-                    ? `${attempt.score}/${maxScore}`
-                    : `--`
-                  }
-                </div>
-                <div className='status-row'>{attempt.status}</div>
-                <div className='link-row'>
-                {attempt.status === Status.SUBMIT
-                    ? <a onClick={(event) => {
-                      event.preventDefault();
-                      clickReview(attempt.attemptId);
-                    }}>Review</a> 
-                    : <a onClick={(event) => {
-                      event.preventDefault();
-                      clickContinue(attempt.attemptId);
-                    }}>Continue</a>
+        {attempts.length > 0 && 
+          attempts.map((attempt, index) => (
+            <div key={index} className='history-row'>
+              <div className='number-row'>{index+1}</div>
+              <div className='time-row'>{attempt.submitted}</div>
+              <div className='score-row'>
+                {attempt.score != null
+                  ? `${attempt.score}/${maxScore}`
+                  : `--`
                 }
-                </div>
               </div>
-            ))
-          }
-        </div>
+              <div className='status-row'>{attempt.status}</div>
+              <div className='link-row'>
+              {attempt.status === Status.SUBMIT
+                  ? <a onClick={(event) => {
+                    event.preventDefault();
+                    clickReview(attempt.attemptId);
+                  }}>Review</a> 
+                  : <a onClick={(event) => {
+                    event.preventDefault();
+                    clickContinue(attempt.attemptId);
+                  }}>Continue</a>
+              }
+              </div>
+            </div>
+          ))
+        }
       </div>
     </div>
   )

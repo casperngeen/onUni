@@ -17,19 +17,23 @@ const QuizContentPage: React.FC<{}> = () => {
         <div className='quiz-content'>
             <div className='quiz-info'>
                 <div className='info-title'>
-                    <div className='test-title'>
+                    <div className='quiz-test-title'>
                         {testTitle}
                     </div>
                     <div className='test-questions'>
                         {maxScore} questions
                     </div>
                 </div>
-                <div className='test-description'>
+                <div className='quiz-test-description'>
                     {testDescription}
                 </div>
-                <Image className='image' alt='online-learning-1'/>
+                <div>
+                    <Image className='quiz-image' alt='online-learning-1'/>
+                </div>
             </div>
-            <TestHistory />
+            <div className='history-container'>
+                <TestHistory />
+            </div>
         </div>
     )
 }

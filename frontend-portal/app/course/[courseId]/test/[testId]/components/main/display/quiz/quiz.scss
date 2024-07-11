@@ -1,14 +1,16 @@
 @import '../../../../../../../../../utils/styles/styles.scss';
 
 .quiz-content {
-    border-radius: $rounded-4;
     border-style: hidden;
+    border-radius: $rounded-4;
     background-color: $white;
     display: flex;
     flex-direction: column;
 }
 
 .quiz-info {
+    border-top-left-radius: $rounded-4;
+    border-top-right-radius: $rounded-4;
     padding: $p-6 0 0 0;
     display: flex;
     flex-direction: column;
@@ -24,28 +26,33 @@
     gap: $gap-3;
 }
 
-.test-title {
+.quiz-test-title {
     font-size: $font-size-3XL;
     font-weight: 600;
-    line-height: 50;
+    line-height: 50px;
     color: $body-color;
 }
 
 .test-questions {
     font-size: $font-size-M;
-    line-height: 24;
+    line-height: 24px;
     color: $gray-700;
     font-weight: 600;
 }
 
-.test-description {
+.quiz-test-description {
     font-size: $font-size-XS;
-    line-height: 21;
+    line-height: 21px;
     color: $gray-700;
     font-weight: 500;
 }
 
-.image {
-    height: 160;
-    width: 220;
+.quiz-image {
+    height: 160px;
+    width: 220px;
+}
+
+.history-container {
+    padding: $p-4 $p-6;
+    display: flex;
 }
