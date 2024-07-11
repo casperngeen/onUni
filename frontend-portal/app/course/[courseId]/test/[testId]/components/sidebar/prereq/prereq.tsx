@@ -1,11 +1,11 @@
 'use client'
 
 import { Image } from 'react-bootstrap';
-import './test.scss';
+import './prereq.scss';
 import { useAppSelector } from '@/utils/redux/utils/hooks';
 import { selectTestTitle } from '@/utils/redux/slicers/test.slicer';
 
-const TestTab: React.FC<{}> = () => {
+const PreReqTab: React.FC<{}> = () => {
     const selector = useAppSelector();
     const testTitle = selector(selectTestTitle);
     return (
@@ -18,4 +18,4 @@ const TestTab: React.FC<{}> = () => {
     )
 }
 
-export default TestTab;
+export default PreReqTab;

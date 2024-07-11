@@ -43,6 +43,10 @@ export interface INewTest {
     timeLimit?: number | null,
 }
 
+export interface IGetAllTests {
+    courseId: number,
+}
+
 export interface IDeleteTest {
     courseId: number,
     testId: number,

@@ -15,8 +15,11 @@
 }
 
 .expand-icon {
-    height: 24;
-    width: 24;
+    height: 24px;
+    width: 24px;
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .test-title {

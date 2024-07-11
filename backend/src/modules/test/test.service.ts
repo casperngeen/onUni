@@ -62,20 +62,22 @@ export class TestService extends BaseService<Test> {
       this.context,
     );
     this.log(`Formatting tests...`, this.context);
-    const testsObject: TestInfoDto[] = tests.map((test) => {
-      return {
-        testId: test.testId,
-        testTitle: test.title,
-        testDescription: test.description,
-        testType: test.testType,
-        maxScore: test.maxScore,
-        start: test.start,
-        deadline: test.deadline,
-        scoringFormat: test.scoringFormat,
-        maxAttempt: test.maxAttempt,
-        timeLimit: test.timeLimit,
-      };
-    });
+    const testsObject: TestInfoDto[] = tests
+      .map((test) => {
+        return {
+          testId: test.testId,
+          testTitle: test.title,
+          testDescription: test.description,
+          testType: test.testType,
+          maxScore: test.maxScore,
+          start: test.start,
+          deadline: test.deadline,
+          scoringFormat: test.scoringFormat,
+          maxAttempt: test.maxAttempt,
+          timeLimit: test.timeLimit,
+        };
+      })
+      .sort((a, b) => a.testId - b.testId);
     this.log(
       `Tests for course: ${courseIdObject.courseId} formatted`,
       this.context,

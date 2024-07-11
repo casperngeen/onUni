@@ -1,9 +1,10 @@
 import { RequestTypes } from "./types/base.types";
-import { IDeleteTest, IGetTest, INewTest, ISingleTestResponse, ITestResponse, IUpdateTest } from "./types/test.types";
+import { IDeleteTest, IGetAllTests, IGetTest, INewTest, ISingleTestResponse, ITestResponse, IUpdateTest } from "./types/test.types";
 import BaseRequest from "./base.request";
 
 export default class TestRequest extends BaseRequest {
-    public static async getAllTests(courseId: number) {
+    public static async getAllTests(params: IGetAllTests) {
+        const { courseId } = params;
         return await BaseRequest.request<ITestResponse[]>(`course/${courseId}/tests`, RequestTypes.GET, {});
     }
 
