@@ -93,7 +93,27 @@ const testSlice = createAppSlice({
 		),
 		fetchTestInfo: create.asyncThunk(
 			async (params: IGetTest, thunkAPI) => {
-				return await TestRequest.getTest(params);
+				let {deadline, start, attempts, ...testInfo} = await TestRequest.getTest(params);
+				const formatDate = (date: Date) => {
+					const localYear = date.getFullYear();
+					const localMonth = date.getMonth() < 9 ? `0${date.getMonth() + 1}` : `${date.getMonth() + 1}`;
+					const localDay = date.getDate() < 10 ? `0${date.getDate()}` : `${date.getDate()}`;
+					const localHours = date.getHours();
+					const localMinutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : `${date.getMinutes()}`;
+					return `${localHours}:${localMinutes}H ${localDay}/${localMonth}/${localYear}`
+				}
+				if (start) {
+					start = formatDate(new Date(start))
+				}
+				if (deadline) {
+					deadline = formatDate(new Date(deadline))
+				}
+				for (const attempt of attempts) {
+					if (attempt.submitted) {
+						attempt.submitted = formatDate(new Date(attempt.submitted));
+					}
+				}
+				return {deadline, start, attempts, ...testInfo};
 			}, 
 			{
 				pending: (state) => {

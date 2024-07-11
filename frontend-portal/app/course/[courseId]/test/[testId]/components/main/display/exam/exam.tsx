@@ -81,7 +81,7 @@ const ExamContentPage: React.FC<{}> = () => {
                         <div className='score-description'>Current score:</div>
                         <div className='score-number'>{renderCurrScore()}</div>
                     </div>
-                    <Image className="exam-score-image" alt='exam-2'/>
+                    <Image src='/exam 2.svg' className="exam-score-image" alt='exam-2'/>
                 </div>
                 <div className='other-info-exam'>
                     <div className='info-row-exam'>
@@ -116,7 +116,7 @@ const ExamContentPage: React.FC<{}> = () => {
                                 Validity period:
                             </div>
                             <div className='panel-content-exam'>
-                                {startDate} - {endDate}
+                                {startDate} - <br/>{endDate}
                             </div>
                         </div>
                     </div>
