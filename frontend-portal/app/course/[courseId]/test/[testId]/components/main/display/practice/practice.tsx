@@ -5,6 +5,7 @@ import TestHistory from '../history/history'
 import { useAppSelector } from '@/utils/redux/utils/hooks'
 import { selectAttemptHistory, selectMaxScore, selectTimeLimit } from '@/utils/redux/slicers/test.slicer';
 import './practice.scss';
+import { Image } from 'react-bootstrap';
 
 const PracticeContentPage: React.FC<{}> = () => {
     const selector = useAppSelector();
@@ -25,6 +26,9 @@ const PracticeContentPage: React.FC<{}> = () => {
                                 reduce((x,y) => y > x ? y : x, 0)}/${maxScore}`
                             : `--`
                         }
+                    </div>
+                    <div className='decoration'>
+                        <Image src='/score-deco.svg' alt='score-deco'/>
                     </div>
                 </div>
                 <div className='other-info-practice'>

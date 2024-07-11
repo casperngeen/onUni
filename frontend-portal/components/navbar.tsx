@@ -3,7 +3,6 @@
 import { useAppSelector } from "@/utils/redux/utils/hooks"
 import { useRouter } from "next/navigation"
 import { Image } from "react-bootstrap"
-import { Bell } from "react-bootstrap-icons"
 import '../utils/styles/components/navbar.scss';
 
 const NavBar: React.FC<{}> = () => {
@@ -29,12 +28,11 @@ const NavBar: React.FC<{}> = () => {
     }
     
     return (
-        <div className="navbar">
+        <div className="uni-navbar">
             <div className="navbar-left">
-                <Image src='/header-logo.svg' alt="logo"/>
-                <div className="nav-item">
-                    <a onClick={clickHome}>Home</a>
-                </div>
+                <a className='home' onClick={clickHome}>
+                    <Image src='/header-logo.svg' alt="logo"/>
+                </a>
             </div>
             <div className="navbar-right">
                 <div className="profile">

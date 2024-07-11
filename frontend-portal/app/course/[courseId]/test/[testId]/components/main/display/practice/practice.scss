@@ -24,6 +24,7 @@
     background-color: $gray-100;
     display: flex;
     justify-content: space-between;
+    position: relative;
 }
 
 .score-description-practice {
@@ -38,6 +39,12 @@
     font-size: $font-size-3XL;
     line-height: 50px;
     color: $body-color;
+}
+
+.decoration {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
 }
 
 .other-info-practice {
