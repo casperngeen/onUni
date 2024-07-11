@@ -52,7 +52,7 @@ const TestHistory: React.FC<{}> = () => {
         {attempts.length == 0 && 
           <div className='no-attempts'>
             <div>
-              <Image className='no-attempt-image' alt='no-content-1'/>
+              <Image src='/no-content 1.svg' className='no-attempt-image' alt='no-content-1'/>
             </div>
             <div className='no-attempt-message'>Not attempted</div>
           </div>

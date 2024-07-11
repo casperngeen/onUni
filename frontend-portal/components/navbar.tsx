@@ -31,7 +31,7 @@ const NavBar: React.FC<{}> = () => {
     return (
         <div className="navbar">
             <div className="navbar-left">
-                <Image alt="logo"/>
+                <Image src='/header-logo.svg' alt="logo"/>
                 <div className="nav-item">
                     <a onClick={clickHome}>Home</a>
                 </div>
@@ -39,7 +39,9 @@ const NavBar: React.FC<{}> = () => {
             <div className="navbar-right">
                 <div className="profile">
                     <div className="name">name</div>
-                    <div className="picture" style={{backgroundImage: `url(})`}}>Profile Pic</div>
+                    <div className="picture">
+                        <Image src='/profile.svg' alt="profile-pic"/>
+                    </div>
                 </div>
             </div>
         </div>

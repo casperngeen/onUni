@@ -5,6 +5,7 @@ import './header.scss';
 import { SubmitStatus, selectCourseTitle, selectSubmitStatus, selectTestTitle, selectTimeRemaining } from "@/utils/redux/slicers/attempt.slicer";
 import { Clock } from "react-bootstrap-icons";
 import Timer from "./timer";
+import { Image } from "react-bootstrap";
 
 const SidebarHeader: React.FC<{}> = () => {
     const selector = useAppSelector();
@@ -16,7 +17,9 @@ const SidebarHeader: React.FC<{}> = () => {
     return (
         <div className="sidebar-header-title">
             <div className="sidebar-course">
-                <div className="sidebar-course-logo">logo</div>
+                <div className="sidebar-course-logo">
+                    <Image src='/graduation-cap 1.svg' alt='course-logo'/>
+                </div>
                 <div className="sidebar-course-title">
                     {courseTitle}
                 </div>

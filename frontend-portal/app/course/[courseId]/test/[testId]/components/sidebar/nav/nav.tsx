@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
 import { Image } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import './nav.scss';
-import { MouseEvent, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 const SideBarNav: React.FC<{}> = () => {
@@ -52,14 +52,14 @@ const SideBarNav: React.FC<{}> = () => {
         <div className="sidebar-nav">
             <div className="hide">
                 <a onClick={closeSidebar}>
-                    <Image className="collapse-icon" alt="collapse-1"/>
+                    <Image src="/collapse 1.svg" className="collapse-icon" alt="collapse-1"/>
                 </a>
                 <div>Hide list</div>
             </div>
             <div className="nav-container">
                 <div className="course-info">
                     <div className="course-logo">
-                        <Image alt="graduation-hat"/>
+                        <Image src='/graduation-cap 1.svg' alt="graduation-hat"/>
                     </div>
                     <div className="course-title">
                         {courseTitle}

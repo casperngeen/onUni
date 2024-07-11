@@ -28,7 +28,7 @@ const QuizContentPage: React.FC<{}> = () => {
                     {testDescription}
                 </div>
                 <div>
-                    <Image className='quiz-image' alt='online-learning-1'/>
+                    <Image src='/online-learning 1.svg' className='quiz-image' alt='online-learning-1'/>
                 </div>
             </div>
             <div className='history-container'>

@@ -25,7 +25,7 @@ const TestDisplay: React.FC<{}> = () => {
             <div className="test-header">
                 {showExpand &&
                 <a onClick={expandSidebar}>
-                    <Image className="expand-icon" alt="expand-1" />
+                    <Image src="/expand 1.svg" className="expand-icon" alt="expand-1" />
                 </a>}
                 <div className="test-title">{testTitle}</div>
             </div>

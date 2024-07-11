@@ -26,6 +26,9 @@
     border-width: 1px;
     border-style: solid;
     border-color: $blue-200;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .sidebar-course-title {
