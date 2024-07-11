@@ -11,14 +11,13 @@
     background-color: $white;
 }
 
-.info-panel {
+.info-panel-exam {
     display: flex;
     gap: $gap-4;
 }
 
-.score-panel {
+.score-panel-exam {
     flex: 1;
-    padding: $p-4;
     border-radius: $rounded-4;
     border-style: hidden;
     background-color: $gray-100;
@@ -27,46 +26,46 @@
 
 .score {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: $p-4;
+    left: $p-4;
     display: flex;
     flex-direction: column;
 }
 
 .score-description {
     color: $gray-700;
-    font-weight: 400;
+    font-weight: 400px;
     font-size: $font-size-XS;
-    line-height: 21;  
+    line-height: 21px;  
 }
 
 .score-number {
     font-weight: 700;
     font-size: $font-size-3XL;
-    line-height: 50;
+    line-height: 50px;
     color: $body-color;
 }
 
-.image {
+.exam-score-image {
     position: absolute;
-    bottom: 0;
-    right: 12;
-    width: 160;
-    height: 128;
+    bottom: 0px;
+    right: $p-7;
+    width: 160px;
+    height: 128px;
 }
 
-.other-info {
+.other-info-exam {
     display: flex;
     flex-direction: column;
     gap: $gap-3;
 }
 
-.info-row {
+.info-row-exam {
     display: flex;
     gap: $gap-3;
 }
 
-.panel-item {
+.panel-item-exam {
     $border-radius: $rounded-2;
     background-color: $gray-100;
     display: flex;
@@ -75,30 +74,25 @@
     padding: $p-3 $p-4;
 }
 
-.panel-title {
-    width: 202;
+.panel-title-exam {
+    width: 202px;
     font-size: $font-size-XS;
-    line-height: 21;
+    line-height: 21px;
     color: $gray-700;
     font-weight: 400;
 }
 
-.panel-content {
-    width: 202;
+.panel-content-exam {
+    width: 202px;
     font-size: $font-size-XS;
-    line-height: 21;
+    line-height: 21px;
     color: $body-color;
     font-weight: 500;
-    white-space: normal;
+    white-space: pre-wrap; /* Allow wrapping and preserve whitespace */
+    word-wrap: break-word;
 }
 
 .instructions {
-    display: flex;
-    flex-direction: column;
-    gap: $gap-4;
-}
-
-.instruction-wrapper {
     display: flex;
     flex-direction: column;
     gap: $gap-1;
@@ -107,14 +101,14 @@
 .instruction-title {
     font-weight: 400;
     font-size: $font-size-XS;
-    line-height: 21;
+    line-height: 21px;
     color: $body-color;
 }
 
 .instruction-info {
     font-weight: 500;
     font-size: $font-size-XS;
-    line-height: 21;
+    line-height: 21px;
     color: $body-color;
     white-space: normal;
 }

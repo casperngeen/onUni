@@ -105,14 +105,18 @@ export class TestService extends BaseService<Test> {
     }
     this.log(`Test ${testIdObject.testId} found`, this.context);
     this.log(`Formatting test information...`, this.context);
-    const attempts: AttemptHistory[] = test.attempts.map((attempt) => {
-      return {
-        attemptId: attempt.attemptId,
-        status: attempt.status,
-        submitted: attempt.submitted,
-        score: attempt.score,
-      };
-    });
+
+    const attempts: AttemptHistory[] = test.attempts
+      .map((attempt) => {
+        return {
+          attemptId: attempt.attemptId,
+          status: attempt.status,
+          submitted: attempt.submitted,
+          score: attempt.score,
+        };
+      })
+      .sort((x, y) => Date.parse(x.submitted) - Date.parse(y.submitted));
+
     const testInfo: TestInfoWithHistoryDto = {
       testId: test.testId,
       courseTitle: test.course.title,
@@ -132,7 +136,12 @@ export class TestService extends BaseService<Test> {
   }
 
   public async createNewTest(newTestDetails: NewTestDto): Promise<TestIdDto> {
-    const { courseId, ...testInfo } = newTestDetails;
+    const {
+      courseId,
+      testDescription: description,
+      testTitle: title,
+      ...testInfo
+    } = newTestDetails;
     this.log(`Query to create new test`, this.context);
     this.log(`Checking DB for course...`, this.context);
     const course: Course = await this.courseRepository.findOne({
@@ -146,6 +155,8 @@ export class TestService extends BaseService<Test> {
     this.log(`Creating new test under course ${courseId}`, this.context);
     const newTest = {
       ...testInfo,
+      description: description,
+      title: title,
       course: course,
       questions: [],
       attempts: [],
