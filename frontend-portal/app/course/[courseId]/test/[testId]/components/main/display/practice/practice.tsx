@@ -13,12 +13,12 @@ const PracticeContentPage: React.FC<{}> = () => {
     const timeLimit = selector(selectTimeLimit);
     return (
         <div className='practice-content'>
-            <div className='info-panel'>
-                <div className='score-panel'>
-                    <div className='score-description'>
+            <div className='info-panel-practice'>
+                <div className='score-panel-practice'>
+                    <div className='score-description-practice'>
                         Highest score:
                     </div>
-                    <div className='score-number'>
+                    <div className='score-number-practice'>
                         {attempts.length
                             ? `${attempts.
                                 map(x => x.score as number).
@@ -27,20 +27,20 @@ const PracticeContentPage: React.FC<{}> = () => {
                         }
                     </div>
                 </div>
-                <div className='other-info'>
-                    <div className='panel-item'>
-                        <div className='panel-title'>
+                <div className='other-info-practice'>
+                    <div className='panel-item-practice'>
+                        <div className='panel-title-practice'>
                             Time limit:
                         </div>
-                        <div className='panel-content'>
+                        <div className='panel-content-practice'>
                             {timeLimit} minutes
                         </div>
                     </div>
-                    <div className='panel-item'>
-                        <div className='panel-title'>
+                    <div className='panel-item-practice'>
+                        <div className='panel-title-practice'>
                             Attempts allowed:
                         </div>
-                        <div className='panel-content'>
+                        <div className='panel-content-practice'>
                             Unlimited
                         </div>
                     </div>

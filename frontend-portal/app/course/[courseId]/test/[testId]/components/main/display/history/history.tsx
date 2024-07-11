@@ -25,6 +25,19 @@ const TestHistory: React.FC<{}> = () => {
     router.push(`/course/${courseId}/test/${testId}/attempt/${attemptId}/new`)
   }
 
+  const renderStatus = (status: Status) => {
+    switch(status) {
+      case Status.SUBMIT:
+        return `Submitted`
+      case Status.AUTOSUBMIT:
+        return `Auto-submitted`
+      case Status.CALCULATING:
+        return `Calculating...`
+      case Status.PROGRESS:
+        return `In-progress`
+    }
+  }
+
   return (
     <div className='history'>
       <div className='title'>Test history:</div>
@@ -37,25 +50,32 @@ const TestHistory: React.FC<{}> = () => {
           <div className='link'></div>
         </div>
         {attempts.length == 0 && 
-        <div className='no-attempts'>
-          <Image className='image' alt='no-content-1'/>
-          <div className='no-attempt-message'>Not attempted</div>
-        </div>
+          <div className='no-attempts'>
+            <div>
+              <Image className='no-attempt-image' alt='no-content-1'/>
+            </div>
+            <div className='no-attempt-message'>Not attempted</div>
+          </div>
         }
         {attempts.length > 0 && 
           attempts.map((attempt, index) => (
             <div key={index} className='history-row'>
               <div className='number-row'>{index+1}</div>
-              <div className='time-row'>{attempt.submitted}</div>
+              <div className='time-row'>
+                {attempt.submitted
+                  ? attempt.submitted
+                  : `In-progress`
+                }
+              </div>
               <div className='score-row'>
                 {attempt.score != null
                   ? `${attempt.score}/${maxScore}`
                   : `--`
                 }
               </div>
-              <div className='status-row'>{attempt.status}</div>
+              <div className='status-row'>{renderStatus(attempt.status)}</div>
               <div className='link-row'>
-              {attempt.status === Status.SUBMIT
+              {attempt.status === Status.SUBMIT || attempt.status === Status.AUTOSUBMIT
                   ? <a onClick={(event) => {
                     event.preventDefault();
                     clickReview(attempt.attemptId);

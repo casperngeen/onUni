@@ -11,12 +11,12 @@
     background-color: $white;
 }
 
-.info-panel {
+.info-panel-practice {
     display: flex;
     gap: $gap-4;
 }
 
-.score-panel {
+.score-panel-practice {
     flex: 1;
     padding: $p-3 $p-4;
     border-radius: $rounded-4;
@@ -26,27 +26,27 @@
     justify-content: space-between;
 }
 
-.score-description {
+.score-description-practice {
     color: $gray-700;
     font-weight: 400;
     font-size: $font-size-XS;
     line-height: 21px;  
 }
 
-.score-number {
+.score-number-practice {
     font-weight: 700;
     font-size: $font-size-3XL;
     line-height: 50px;
     color: $body-color;
 }
 
-.other-info {
+.other-info-practice {
     display: flex;
     flex-direction: row;
     gap: $gap-3;
 }
 
-.panel-item{
+.panel-item-practice {
     border-style: hidden;
     border-radius: $rounded-2;
     background-color: $gray-100;
@@ -56,16 +56,16 @@
     padding: $p-3 $p-4;
 }
 
-.panel-title {
-    width: 290px;
+.panel-title-practice {
+    width: 200px;
     font-size: $font-size-XS;
     line-height: 21px;
     color: $gray-700;
     font-weight: 400;
 }
 
-.panel-content {
-    width: 290px;
+.panel-content-practice {
+    width: 200px;
     font-size: $font-size-XS;
     line-height: 21px;
     color: $body-color;
