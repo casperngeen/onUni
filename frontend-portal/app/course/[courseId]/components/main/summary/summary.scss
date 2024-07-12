@@ -1,0 +1,108 @@
+@import '../../../../../../utils/styles/styles.scss';
+
+.course-summary {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-10;
+    padding: $p-8 $p-7;
+    background-image: url('/onUni/frontend-portal/public/course-summary-bg.png');
+    object-fit: contain;
+}
+
+.course-title {
+    color: $body-color;
+    font-weight: 700;
+    line-height: 40px;
+    font-size: $font-size-2XL;
+}
+
+.course-stats {
+    display: flex;
+    gap: $gap-5;
+}
+
+.next-test {
+    display: flex;
+    gap: $gap-6;
+    padding: $p-3;
+    border-radius: $rounded-4;
+    border-style: hidden;
+    background-color: $white;
+}
+
+.test-image {
+    width: 240px;
+    height: 135px;
+    border-style: hidden;
+    border-radius: 9.6px;
+}
+
+.summary-test-container {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-3;
+}
+
+.summary-test-info {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-2;
+}
+
+.summary-test-title {
+    width: 350px;
+    color: $gray-700;
+    line-height: 24px;
+    font-weight: 500;
+    font-size: $font-size-S;
+    text-overflow: ellipsis;
+}
+
+.summary-test-description {
+    width: 350px;
+    color: $gray-700;
+    line-height: 21px;
+    font-weight: 400;
+    font-size: $font-size-XS;
+    text-overflow: ellipsis;
+}
+
+.course-progress {
+    background-color: $white;
+    border-radius: $rounded-4;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: $p-3;
+}
+
+.course-progress-description {
+    width: 200px;
+    color: $body-color;
+    line-height: 21px;
+    font-weight: 400;
+    font-size: $font-size-XS;
+}
+
+.course-progress-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.course-progress-number-container {
+    display: flex;
+}
+
+.course-progress-number {
+    color: $--Theme-Success;
+    font-weight: 700;
+    font-size: $font-size-4XL;
+    line-height: 60px;
+}
+
+.course-progress-percent {
+    color: $gray-600;
+    font-weight: 600;
+    font-size: $font-size-XL;
+    line-height: 35px;
+}

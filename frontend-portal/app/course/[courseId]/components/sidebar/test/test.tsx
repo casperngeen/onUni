@@ -8,14 +8,25 @@ const SidebarTestTab: React.FC<{}> = () => {
         <div className='test-status'>
             {
                 true
-                ? <Image src='' alt='completed'/>
-                : <Image src='' alt='uncompleted'/>
+                ? <Image src='' alt='exam'/>
+                : true
+                    ? <Image src='' alt='completed'/>
+                    : <Image src='' alt='uncompleted'/>
             }
         </div>
-        <div className='sidebar-test-title'>
-            Test title
-            {/* if test is exam -> style thet title differently and add deadline */}
-        </div>
+        {true
+            ? <div className='sidebar-exam-info'>
+                <div className='sidebar-exam-title'>
+                    Test title
+                </div>
+                <div className='sidebar-exam-deadline'>
+                    Deadline
+                </div>
+            </div>
+            : <div className='sidebar-test-title'>
+                Test title
+            </div>
+        }
     </div>
   )
 }
