@@ -1,7 +1,7 @@
 'use client'
 
 import { selectQuestions, selectScore, selectTimeTaken } from "@/utils/redux/slicers/attempt.slicer";
-import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { Alarm, CheckCircle } from "react-bootstrap-icons";
 import './summary.scss';
 

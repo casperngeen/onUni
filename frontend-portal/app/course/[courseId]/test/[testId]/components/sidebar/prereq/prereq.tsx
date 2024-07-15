@@ -2,7 +2,7 @@
 
 import { Image } from 'react-bootstrap';
 import './prereq.scss';
-import { useAppSelector } from '@/utils/redux/utils/hooks';
+import { useAppSelector } from '@/utils/redux/hooks';
 import { selectTestTitle } from '@/utils/redux/slicers/test.slicer';
 
 const PreReqTab: React.FC<{}> = () => {

@@ -3,10 +3,11 @@
 import React from 'react'
 import TestHistory from '../history/history'
 import { Image } from 'react-bootstrap'
-import { useAppSelector } from '@/utils/redux/utils/hooks'
+import { useAppSelector } from '@/utils/redux/hooks'
 import { selectAttemptHistory, selectDeadline, selectMaxAttempt, selectMaxScore, selectScoringFormat, selectStartTime, selectTimeLimit } from '@/utils/redux/slicers/test.slicer'
 import { ScoringFormats } from '@/utils/request/types/test.types'
 import './exam.scss'
+import { renderScoringFormat } from '@/utils/format'
 
 const ExamContentPage: React.FC<{}> = () => {
     const selector = useAppSelector();
@@ -18,17 +19,6 @@ const ExamContentPage: React.FC<{}> = () => {
     const endDate = selector(selectDeadline);
     const scores = selector(selectAttemptHistory).map((attempt) => attempt.score);
     const maxScore = selector(selectMaxScore);
-
-    const renderScoringFormat = () => {
-        switch(scoringFormat) {
-            case ScoringFormats.AVERAGE:
-                return 'Average score';
-            case ScoringFormats.HIGHEST:
-                return 'Highest score';
-            case ScoringFormats.LATEST:
-                return 'Latest score';
-        }
-    }
 
     const renderCurrScore = () => {
         switch(scoringFormat) {
@@ -108,7 +98,7 @@ const ExamContentPage: React.FC<{}> = () => {
                                 Scoring format:
                             </div>
                             <div className='panel-content-exam'>
-                                {renderScoringFormat()}
+                                {renderScoringFormat(scoringFormat as ScoringFormats)}
                             </div>
                         </div>  
                         <div className='panel-item-exam'>  

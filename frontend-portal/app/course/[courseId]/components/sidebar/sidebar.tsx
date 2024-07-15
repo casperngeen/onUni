@@ -1,7 +1,7 @@
 import React from 'react';
 import './sidebar.scss';
 import CourseSidebarHeader from './header/header';
-import { useAppSelector } from '@/utils/redux/utils/hooks';
+import { useAppSelector } from '@/utils/redux/hooks';
 import { selectTests } from '@/utils/redux/slicers/course.slicer';
 import SidebarTestTab from './test/test';
 

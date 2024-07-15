@@ -1,39 +1,49 @@
+'use client'
+
 import UniButton from '@/components/overwrite/uni.button'
 import React from 'react'
 import { Image } from 'react-bootstrap'
 import './summary.scss';
 import UniProgressBar from '@/components/overwrite/uni.progress';
-import { useAppSelector } from '@/utils/redux/utils/hooks';
-import { selectCourseTitle } from '@/utils/redux/slicers/course.slicer';
+import { useAppSelector } from '@/utils/redux/hooks';
+import { selectCourseTitle, selectTests } from '@/utils/redux/slicers/course.slicer';
+import { useParams, useRouter } from 'next/navigation';
 
 const CourseSummary: React.FC<{}> = () => {
   const selector = useAppSelector();
   const courseTitle = selector(selectCourseTitle);
-  
-  const clickAttempt = () => {
+  const tests = selector(selectTests);
+  const { courseId: courseIdString } = useParams();
+  const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
+  const router = useRouter();
+  const nextTestIndex = tests.map((test) => test.currScore).indexOf(null)
+  const nextTest = nextTestIndex === -1 ? tests[tests.length-1] : tests[nextTestIndex];
+  const progress = nextTestIndex === -1 ? 100 : (nextTestIndex/tests.length) * 100;
 
+  const clickView = () => {
+    router.push(`/course/${courseId}/test/${nextTest.testId}`);
   }
 
   return (
     <div className='course-summary'>
       <div className='course-title'>
-        Course title
+        {courseTitle}
       </div>
       <div className='course-stats'>
         <div className='next-test'>
           <div className='test-image'>
-            <Image src='some url' alt='test' />
+            <Image src='/next-test.svg' alt='test' />
           </div>
           <div className='summary-test-container'>
             <div className='summary-test-info'>
               <div className='summary-test-title'>
-                Test title
+                {nextTest.testTitle}
               </div>
               <div className='summary-test-description'>
-                Test description
+                {nextTest.testDescription}
               </div>
             </div>
-            <UniButton custombutton='confirm' onClick={clickAttempt}>Attempt</UniButton>
+            <UniButton custombutton='confirm' onClick={clickView}>View</UniButton>
           </div>
         </div>
         <div className='course-progress'>
@@ -43,13 +53,13 @@ const CourseSummary: React.FC<{}> = () => {
           <div className='course-progress-container'>
             <div className='course-progress-number-container'>
               <div className='course-progress-number'>
-                25 {/* number of tests completed out of all (rounded to nearest int) */}
+                {Math.round(progress)}
               </div>
               <div className='course-progress-percent'>
                 %
               </div>
             </div>
-            <UniProgressBar customprogress='attempt' now={25}/>
+            <UniProgressBar customprogress='attempt' now={progress}/>
           </div>
         </div>
       </div>

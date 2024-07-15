@@ -1,7 +1,7 @@
 'use client'
 
 import { UniCol, UniContainer, UniRow } from "@/components/overwrite/uni.components";
-import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import SidebarHeader from "./sidebar/header/header";

@@ -3,8 +3,8 @@ import TestRequest from "@/utils/request/test.request";
 import { AttemptHistoryResponse } from "@/utils/request/types/attempt.types";
 import { IGetAllTests, IGetTest, ScoringFormats, TestTypes } from "@/utils/request/types/test.types";
 import { PayloadAction } from "@reduxjs/toolkit";
-import { createAppSlice } from "../utils/hooks";
-import { formatDateTime } from "../utils/format.date";
+import { createAppSlice } from "../hooks";
+import { formatDateTime } from "../../format";
 
 interface IInitialState {
 	attemptHistory: AttemptHistoryResponse[],

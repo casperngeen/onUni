@@ -2,7 +2,7 @@
 
 import UniProgressBar from "@/components/overwrite/uni.progress";
 import { selectQuestions, selectQuestionsAnswers } from "@/utils/redux/slicers/attempt.slicer";
-import { useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppSelector } from "@/utils/redux/hooks";
 import './progress.scss';
 
 const SidebarProgressBar: React.FC<{}> = () => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppSelector } from "@/utils/redux/hooks";
 import './header.scss';
 import { SubmitStatus, selectCourseTitle, selectSubmitStatus, selectTestTitle, selectTimeRemaining } from "@/utils/redux/slicers/attempt.slicer";
 import { Clock } from "react-bootstrap-icons";

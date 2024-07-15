@@ -2,7 +2,7 @@ import { AttemptRequest } from "@/utils/request/attempt.request";
 import { AnswerStatus, IDeleteAttempt, IGetAttempt, IGetCurrentAttempt, INewAttempt, ISaveAttempt, ISaveQuestionAttemptBody, QuestionInfo } from "@/utils/request/types/attempt.types";
 import { TestTypes } from "@/utils/request/types/test.types";
 import { PayloadAction } from "@reduxjs/toolkit";
-import { createAppSlice } from "../utils/hooks";
+import { createAppSlice } from "../hooks";
 
 export enum SubmitStatus {
   SUCCESS = 'success',

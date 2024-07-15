@@ -1,7 +1,7 @@
 'use client'
 
 import { selectAnswers, selectBookmarked, selectQuestions, selectQuestionsAnswers, selectSubmitStatus, selectViewStatus } from "@/utils/redux/slicers/attempt.slicer";
-import { useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppSelector } from "@/utils/redux/hooks";
 import { Bookmark, BookmarkFill, CheckCircleFill, XCircleFill } from "react-bootstrap-icons";
 import './sidebar.questions.scss'
 

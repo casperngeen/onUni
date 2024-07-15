@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import './content.scss';
 import CourseSidebar from '../sidebar/sidebar';
 import CourseMainContent from '../main/main';
-import { useAppDispatch } from '@/utils/redux/utils/hooks';
+import { useAppDispatch } from '@/utils/redux/hooks';
 import { fetchCourseInfo } from '@/utils/redux/slicers/course.slicer';
 import { useParams } from 'next/navigation';
 

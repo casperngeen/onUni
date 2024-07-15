@@ -4,7 +4,7 @@ import SideBarNav from "./nav/nav";
 import PreReqTab from "./prereq/prereq";
 import './sidebar.scss';
 import { selectViewSidebar } from "@/utils/redux/slicers/test.slicer";
-import { useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppSelector } from "@/utils/redux/hooks";
 
 const SideBar: React.FC<{}> = () => {
     const selector = useAppSelector();

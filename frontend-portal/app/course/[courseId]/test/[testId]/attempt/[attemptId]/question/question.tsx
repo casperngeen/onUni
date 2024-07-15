@@ -1,6 +1,6 @@
 'use client'
 
-import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { AnswerStatus, QuestionInfo } from "@/utils/request/types/attempt.types";
 import SingleOption from "../option/option";
 import Container from "react-bootstrap/Container";

@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import MainContent from "../main/main";
 import SideBar from "../sidebar/sidebar";
-import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { fetchTestInfo, getAllTests, selectTestOrder, setCurrIndex } from "@/utils/redux/slicers/test.slicer";
 import { useEffect } from "react";
 import './content.scss';

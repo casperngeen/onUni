@@ -2,7 +2,7 @@
 
 import { OptionInfo } from "@/utils/request/types/attempt.types";
 import { updateQuestionAnswer, selectQuestionsAnswers, selectAnswers, SubmitStatus, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
-import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { AttemptRequest } from "@/utils/request/attempt.request";
 import UniForm from "@/components/overwrite/uni.form";
 import './option.scss';

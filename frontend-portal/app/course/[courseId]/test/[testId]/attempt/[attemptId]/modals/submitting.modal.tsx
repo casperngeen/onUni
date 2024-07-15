@@ -1,7 +1,7 @@
 'use client'
 
 import UniModal from "@/components/overwrite/uni.modal";
-import { useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppSelector } from "@/utils/redux/hooks";
 import React, { useEffect } from "react";
 import { Image, Spinner } from "react-bootstrap";
 import './modal.scss';

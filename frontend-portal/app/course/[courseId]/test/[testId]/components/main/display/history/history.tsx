@@ -1,7 +1,7 @@
 'use client'
 
 import { selectAttemptHistory, selectMaxScore } from '@/utils/redux/slicers/test.slicer';
-import { useAppSelector } from '@/utils/redux/utils/hooks';
+import { useAppSelector } from '@/utils/redux/hooks';
 import { Status } from '@/utils/request/types/attempt.types';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';

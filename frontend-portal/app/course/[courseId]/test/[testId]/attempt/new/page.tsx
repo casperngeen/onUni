@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { selectLoading } from "@/utils/redux/slicers/attempt.slicer";
 import './modal.scss';
 import { useParams, useRouter } from "next/navigation";

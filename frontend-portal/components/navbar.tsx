@@ -1,6 +1,6 @@
 'use client'
 
-import { useAppSelector } from "@/utils/redux/utils/hooks"
+import { useAppSelector } from "@/utils/redux/hooks"
 import { useRouter } from "next/navigation"
 import { Image } from "react-bootstrap"
 import '../utils/styles/components/navbar.scss';

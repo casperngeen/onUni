@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import './header.scss';
-import { useAppDispatch } from "@/utils/redux/utils/hooks";
+import { useAppDispatch } from "@/utils/redux/hooks";
 import { submitAttempt } from "@/utils/redux/slicers/attempt.slicer";
 import { useParams } from "next/navigation";
 

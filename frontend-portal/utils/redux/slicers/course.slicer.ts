@@ -1,10 +1,9 @@
 import CourseRequest from "@/utils/request/course.request";
-import { createAppSlice } from "../utils/hooks"
+import { createAppSlice } from "../hooks"
 import { IGetCourse, SingleCourseResponse } from "@/utils/request/types/course.types";
-import { ITestInfoForAttemptResponse } from "@/utils/request/types/attempt.types";
 import { ITestResponseWithAttemptInfo } from "@/utils/request/types/test.types";
 import RequestError from "@/utils/request/request.error";
-import { formatDate } from "../utils/format.date";
+import { formatDate } from "../../format";
 
 interface IInitialState {
     courseTitle: string,
@@ -36,7 +35,6 @@ const courseSlice = createAppSlice({
             async (params: IGetCourse, thunkAPI) => {
                 try {
                     let { startDate, endDate, title, description, tests } = await CourseRequest.viewCourse(params);
-                    
                     startDate = formatDate(new Date(startDate));
                     endDate = formatDate(new Date(endDate));
                     return {startDate, endDate, title, description, tests};

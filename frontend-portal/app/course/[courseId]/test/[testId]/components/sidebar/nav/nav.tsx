@@ -1,7 +1,7 @@
 'use client'
 
 import { navigateBack, navigateForward, selectCourseTitle, selectCurrIndex, selectTestOrder, selectTestTitle, toggleSidebar } from "@/utils/redux/slicers/test.slicer";
-import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { Image } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import './nav.scss';

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import SingleQuestion from "../question/question";
-import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { fetchAttempt, selectError, selectLoading, selectQuestions, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
 import { UniCol, UniContainer, UniRow } from "@/components/overwrite/uni.components";
 import '../attempt.scss';

@@ -4,7 +4,7 @@ import React from 'react'
 import TestHistory from '../history/history'
 import { Image } from 'react-bootstrap'
 import './quiz.scss';
-import { useAppSelector } from '@/utils/redux/utils/hooks';
+import { useAppSelector } from '@/utils/redux/hooks';
 import { selectMaxScore, selectTestDescription, selectTestTitle } from '@/utils/redux/slicers/test.slicer';
 
 const QuizContentPage: React.FC<{}> = () => {

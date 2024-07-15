@@ -2,7 +2,7 @@
 
 import React from 'react'
 import TestHistory from '../history/history'
-import { useAppSelector } from '@/utils/redux/utils/hooks'
+import { useAppSelector } from '@/utils/redux/hooks'
 import { selectAttemptHistory, selectMaxScore, selectTimeLimit } from '@/utils/redux/slicers/test.slicer';
 import './practice.scss';
 import { Image } from 'react-bootstrap';

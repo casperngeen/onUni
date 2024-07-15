@@ -4,7 +4,7 @@ import { Image } from "react-bootstrap";
 import ExamContentPage from "./exam/exam";
 import PracticeContentPage from "./practice/practice";
 import QuizContentPage from "./quiz/quiz";
-import { useAppDispatch, useAppSelector } from "@/utils/redux/utils/hooks";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { selectTestTitle, selectTestType, selectViewSidebar, toggleSidebar } from "@/utils/redux/slicers/test.slicer";
 import './display.scss';
 import { TestTypes } from "@/utils/request/types/test.types";

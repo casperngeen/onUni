@@ -1,28 +1,58 @@
 import UniButton from '@/components/overwrite/uni.button'
-import { TestTypes } from '@/utils/request/types/test.types'
+import { ITestResponseWithAttemptInfo, ScoringFormats, TestTypes } from '@/utils/request/types/test.types'
 import React from 'react'
 import { ChevronRight } from 'react-bootstrap-icons'
 import './test.scss'
+import { useAppSelector } from '@/utils/redux/hooks'
+import { selectTests } from '@/utils/redux/slicers/course.slicer'
+import { formatDateTime, renderScoringFormat } from '@/utils/format'
+import { useParams, useRouter } from 'next/navigation'
 
-const SingleTest: React.FC<{}> = () => {
-    if (TestTypes.QUIZ) {
+interface ISingleTestProps {
+    test: ITestResponseWithAttemptInfo,
+    index: number
+}
+
+const SingleTest: React.FC<ISingleTestProps> = ({test, index}) => {
+    const selector = useAppSelector();
+    const tests = selector(selectTests);
+    const { testId, testTitle, testDescription, 
+        numOfAttempts, currScore, maxScore,
+        scoringFormat, maxAttempt, timeLimit, 
+        testType, start, deadline } = test;
+    const router = useRouter();
+    const isEligible = start 
+        ? Date.parse(start) > Date.now() && (index === 0 || tests[index-1].numOfAttempts > 0)
+        : index === 0 || tests[index-1].numOfAttempts > 0;
+    const { courseId: courseIdString } = useParams();
+    const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
+    
+    const clickLinkOrButton = () => {
+        router.push(`/course/${courseId}/test/${testId}`);
+    }
+
+    if (testType === TestTypes.QUIZ) {
         return (
             <div className='single-test'>
                 <div className='test-title'>
-                    Test title
+                    {testTitle}
                 </div>
                 <div className='quiz-status-with-button'>
                     <div className='quiz-status'>
-                        Completed/Not completed
+                        {
+                            numOfAttempts === 0
+                            ? `Not completed`
+                            : `Completed`
+                        }
                     </div>            
                     {
-                        true  // check if previous test has been attempted or not or if this is the first test
-                        ? <UniButton custombutton='confirm'>Attempt</UniButton>
+                        isEligible
+                        ? <UniButton custombutton='confirm' onClick={clickLinkOrButton}>Attempt</UniButton>
                         : <div className='not-eligible-container'>
                             <div className='not-eligible'>
                                 Not eligible
                             </div>
-                            <a href='redirect to test page'>
+                            <a onClick={clickLinkOrButton}>
                                 <div className='test-detail-link'>
                                     <div className='test-detail'>
                                         See details
@@ -40,10 +70,10 @@ const SingleTest: React.FC<{}> = () => {
             <div className='single-test'>
                 <div className='test-title-deadline-container'>
                     <div className='test-title'>
-                        Test title
+                        {testTitle}
                     </div>
                     <div className='test-deadline'>
-                        Test deadline
+                        {deadline && `Deadline: ${formatDateTime(new Date(deadline))}`}
                     </div>
                 </div>
                 <div className='test-info-container'>
@@ -51,10 +81,18 @@ const SingleTest: React.FC<{}> = () => {
                     ? <div className='test-info'>
                         <div className='test-info-item'>
                             <div className='item-description'>
-                                No. of attempts
+                                Scoring format:
                             </div>
                             <div className='item-value'>
-                                0/3
+                               {renderScoringFormat(scoringFormat as ScoringFormats)}
+                            </div>
+                        </div>
+                        <div className='test-info-item'>
+                            <div className='item-description'>
+                                No. of attempts:
+                            </div>
+                            <div className='item-value'>
+                                {numOfAttempts}/{maxAttempt}
                             </div>
                         </div>
                         <div className='test-info-item'>
@@ -62,7 +100,11 @@ const SingleTest: React.FC<{}> = () => {
                                 Current score:
                             </div>
                             <div className='item-value'>
-                                -- or 10/20
+                                {
+                                    currScore
+                                    ? `${currScore}/${maxScore}`
+                                    : `--`
+                                }
                             </div>
                         </div>
                     </div>
@@ -71,17 +113,21 @@ const SingleTest: React.FC<{}> = () => {
                             Highest score:
                         </div>
                         <div className='item-value'>
-                            -- or 10/20
+                            {
+                                currScore
+                                ? `${currScore}/${maxScore}`
+                                : `--`
+                            }
                         </div>
                     </div>
                     }
                     {
-                        true  // check if previous test has been attempted or not or if this is the first test
-                        ? <UniButton custombutton='confirm'>Attempt</UniButton>
+                        isEligible
+                        ? <UniButton custombutton='confirm' onClick={clickLinkOrButton}>Attempt</UniButton>
                         : <div className='not-eligible-container'>
                             <div className='not-eligible'>
                             </div>
-                            <a href='redirect to test-page'>
+                            <a onClick={clickLinkOrButton}>
                                 <div className='test-detail-link'>
                                     <div className='test-detail'>
                                         See details
