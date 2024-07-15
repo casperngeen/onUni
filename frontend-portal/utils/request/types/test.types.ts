@@ -25,6 +25,10 @@ export interface ITestResponse {
     timeLimit: number | null,
 }
 
+export interface IAllTestResponse extends ITestResponse {
+    completed: boolean,
+}
+
 export interface ITestResponseWithAttemptInfo extends ITestResponse {
     numOfAttempts: number,
     currScore: number | null,
@@ -60,4 +64,10 @@ export interface IGetTest extends IDeleteTest {}
 
 export interface IUpdateTest extends INewTest {
     testId: number,
+}
+
+export interface ITestInfoForPreReq {
+    testId: number,
+    title: string,
+    completed: boolean,
 }

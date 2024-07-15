@@ -1,7 +1,7 @@
 import RequestError from "@/utils/request/request.error";
 import TestRequest from "@/utils/request/test.request";
 import { AttemptHistoryResponse } from "@/utils/request/types/attempt.types";
-import { IGetAllTests, IGetTest, ScoringFormats, TestTypes } from "@/utils/request/types/test.types";
+import { IGetAllTests, IGetTest, ITestInfoForPreReq, ScoringFormats, TestTypes } from "@/utils/request/types/test.types";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice } from "../hooks";
 import { formatDateTime } from "../../format";
@@ -22,7 +22,7 @@ interface IInitialState {
 	loading: boolean,
 	errorCode: number | null,
 	error: string | null,
-	testOrder: number[],
+	testOrder: ITestInfoForPreReq[],
 	currIndex: number,
 }
 
@@ -54,7 +54,7 @@ const testSlice = createAppSlice({
 			state.viewSidebar = !state.viewSidebar;
 		}),
 		setCurrIndex: create.reducer((state, action: PayloadAction<number>) => {
-			state.currIndex = state.testOrder.indexOf(action.payload);
+			state.currIndex = state.testOrder.findIndex((test) => test.testId === action.payload);
 		}),
 		navigateBack: create.reducer((state) => {
 			state.currIndex--;
@@ -66,7 +66,13 @@ const testSlice = createAppSlice({
 		getAllTests: create.asyncThunk(
 			async (params: IGetAllTests, thunkAPI) => {
 				const response = await TestRequest.getAllTests(params);
-				const testIds = response.map((test) => test.testId);
+				const testIds = response.map((test) => {
+					return {
+						testId: test.testId,
+						title: test.testTitle,
+						completed: test.completed,
+					}
+				});
 				return testIds;
 			},
 			{

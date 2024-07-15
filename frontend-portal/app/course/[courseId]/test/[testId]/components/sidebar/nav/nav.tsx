@@ -19,7 +19,6 @@ const SideBarNav: React.FC<{}> = () => {
 
     const { courseId: courseIdString, testId: testIdString } = useParams();
     const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
-    const testId = Array.isArray(testIdString) ? parseInt(testIdString[0]) : parseInt(testIdString);
     const isFirstRender = useRef(true);
     
     useEffect(() => {
@@ -27,8 +26,10 @@ const SideBarNav: React.FC<{}> = () => {
             isFirstRender.current = false;
             return;
         }
-        const newTestId = testOrder[currIndex];
-        router.push(`/course/${courseId}/test/${newTestId}`);
+        if (testOrder.length !== 0) {
+            const newTestId = testOrder[currIndex].testId;
+            router.push(`/course/${courseId}/test/${newTestId}`);
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currIndex])
     
@@ -48,6 +49,10 @@ const SideBarNav: React.FC<{}> = () => {
         }
     }
 
+    const backToCourse = () => {
+        router.push(`/course/${courseId}`)
+    }
+
     return (
         <div className="sidebar-nav">
             <div className="hide">
@@ -57,14 +62,16 @@ const SideBarNav: React.FC<{}> = () => {
                 <div>Hide list</div>
             </div>
             <div className="nav-container">
-                <div className="course-info">
-                    <div className="course-logo">
-                        <Image src='/graduation-cap 1.svg' alt="graduation-hat"/>
+                <a onClick={backToCourse}>
+                    <div className="test-sidebar-course-info">
+                        <div className="test-sidebar-course-logo">
+                            <Image src='/graduation-cap 1.svg' alt="graduation-hat"/>
+                        </div>
+                        <div className="test-sidebar-course-title">
+                            {courseTitle}
+                        </div>
                     </div>
-                    <div className="course-title">
-                        {courseTitle}
-                    </div>
-                </div>
+                </a>
                 <div className="test-toggle">
                     <a style={{ cursor: 'pointer' }} onClick={clickBack}>
                         <ChevronLeft size={20}/>

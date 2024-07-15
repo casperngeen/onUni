@@ -1,9 +1,8 @@
 @import '../../../../../../../../utils/styles/styles.scss';
 
-.test-tab {
+.prereq-fulfilled,
+.prereq-unfulfilled {
     padding: $p-4 $p-6;
-    background-color: $blue-100;
-    border-color: $primary;
     border-width: 0px 0px 0px 8px;
     border-style: solid;
     display: flex;
@@ -11,7 +10,17 @@
     align-items: center;
 }
 
-.test-title {
+.prereq-fulfilled {
+    background-color: $blue-100;
+    border-color: $primary;
+}
+
+.prereq-unfulfilled {
+    background-color: $red-100;
+    border-color: $danger;
+}
+
+.prereq-test-title {
     color: $body-color;
     font-weight: 600;
     font-size: $font-size-S;

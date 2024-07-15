@@ -26,8 +26,8 @@ const TestPageContent: React.FC<{}> = () => {
             // only retrieve all tests the first time
             if (testOrder.length == 0) {
                 await dispatch(getAllTests({ courseId: courseId })).unwrap()
-                dispatch(setCurrIndex(testId));
             }
+            dispatch(setCurrIndex(testId));
         }
         initialise();
         // eslint-disable-next-line react-hooks/exhaustive-deps
