@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './tests.scss';
 import { useAppSelector } from '@/utils/redux/hooks';
 import { selectCourseDescription, selectEndDate, selectStartDate, selectTests } from '@/utils/redux/slicers/course.slicer';
@@ -10,6 +10,23 @@ const TestListContainer: React.FC<{}> = () => {
   const courseStart = selector(selectStartDate);
   const courseEnd = selector(selectEndDate);
   const tests = selector(selectTests);
+
+  useEffect(() => {
+    const handleScroll = () => {
+    const hash =  window.location.hash;
+    if (hash) {
+      const elementId = hash.replace('#', '');
+      setTimeout(() => {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }
+
+    handleScroll();
+  }, []);
 
   return (
     <div className='test-list-container'>
@@ -53,7 +70,9 @@ const TestListContainer: React.FC<{}> = () => {
         <div className='test-list'>
           {
             tests.map((test, index) => (
-              <SingleTest key={test.testId} test={test} index={index}/>
+              <div key={test.testId} id={`test-${index+1}`}>
+                <SingleTest test={test} index={index}/>
+              </div>
             ))
           }
         </div>

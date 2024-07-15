@@ -11,6 +11,10 @@
 }
 
 .sidebar-logo {
+    border-style: hidden;
+    height: 48px;
+    width: 48px;
+    border-radius: 50%;
     display: flex;
     background-color: $white;
     justify-content: center;

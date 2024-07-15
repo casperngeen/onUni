@@ -16,24 +16,23 @@ interface ISingleTestProps {
 const SingleTest: React.FC<ISingleTestProps> = ({test, index}) => {
     const selector = useAppSelector();
     const tests = selector(selectTests);
-    const { testId, testTitle, testDescription, 
-        numOfAttempts, currScore, maxScore,
-        scoringFormat, maxAttempt, timeLimit, 
-        testType, start, deadline } = test;
+    const { testId, testTitle, numOfAttempts, 
+        currScore, maxScore, scoringFormat, 
+        maxAttempt, testType, start, 
+        deadline } = test;
     const router = useRouter();
     const isEligible = start 
-        ? Date.parse(start) > Date.now() && (index === 0 || tests[index-1].numOfAttempts > 0)
+        ? Date.parse(start) < Date.now() && (index === 0 || tests[index-1].numOfAttempts > 0)
         : index === 0 || tests[index-1].numOfAttempts > 0;
     const { courseId: courseIdString } = useParams();
     const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
-    
     const clickLinkOrButton = () => {
         router.push(`/course/${courseId}/test/${testId}`);
     }
 
     if (testType === TestTypes.QUIZ) {
         return (
-            <div className='single-test'>
+            <div className='single-test-quiz'>
                 <div className='test-title'>
                     {testTitle}
                 </div>
@@ -57,7 +56,7 @@ const SingleTest: React.FC<ISingleTestProps> = ({test, index}) => {
                                     <div className='test-detail'>
                                         See details
                                     </div>
-                                    <ChevronRight size={16}/>
+                                    <ChevronRight color='#0D6EFD' size={16}/>
                                 </div>     
                             </a>
                         </div>
@@ -77,7 +76,7 @@ const SingleTest: React.FC<ISingleTestProps> = ({test, index}) => {
                     </div>
                 </div>
                 <div className='test-info-container'>
-                    {TestTypes.EXAM
+                    {testType === TestTypes.EXAM
                     ? <div className='test-info'>
                         <div className='test-info-item'>
                             <div className='item-description'>
@@ -132,7 +131,7 @@ const SingleTest: React.FC<ISingleTestProps> = ({test, index}) => {
                                     <div className='test-detail'>
                                         See details
                                     </div>
-                                    <ChevronRight size={16}/>
+                                    <ChevronRight color='#0D6EFD' size={16}/>
                                 </div>
                             </a>
                         </div>

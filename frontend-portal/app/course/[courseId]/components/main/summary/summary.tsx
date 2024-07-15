@@ -8,6 +8,7 @@ import UniProgressBar from '@/components/overwrite/uni.progress';
 import { useAppSelector } from '@/utils/redux/hooks';
 import { selectCourseTitle, selectTests } from '@/utils/redux/slicers/course.slicer';
 import { useParams, useRouter } from 'next/navigation';
+import { TestTypes } from '@/utils/request/types/test.types';
 
 const CourseSummary: React.FC<{}> = () => {
   const selector = useAppSelector();
@@ -17,11 +18,20 @@ const CourseSummary: React.FC<{}> = () => {
   const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
   const router = useRouter();
   const nextTestIndex = tests.map((test) => test.currScore).indexOf(null)
-  const nextTest = nextTestIndex === -1 ? tests[tests.length-1] : tests[nextTestIndex];
-  const progress = nextTestIndex === -1 ? 100 : (nextTestIndex/tests.length) * 100;
+  const nextTest = tests.length !== 0 
+    ? nextTestIndex === -1 
+      ? tests[tests.length-1] 
+      : tests[nextTestIndex]
+    : null
+  const progress = nextTest 
+  ? nextTestIndex === -1 
+    ? 100 : (nextTestIndex/tests.length) * 100
+  : 0;
 
   const clickView = () => {
-    router.push(`/course/${courseId}/test/${nextTest.testId}`);
+    if (nextTest) {
+      router.push(`/course/${courseId}/test/${nextTest.testId}`);
+    }
   }
 
   return (
@@ -32,15 +42,18 @@ const CourseSummary: React.FC<{}> = () => {
       <div className='course-stats'>
         <div className='next-test'>
           <div className='test-image'>
-            <Image src='/next-test.svg' alt='test' />
+            {nextTest && nextTest.testType === TestTypes.EXAM
+              ? <Image className='exam-image' src='/next-exam.svg' alt='test' />
+              : <Image src='/next-test.svg' alt='test' />
+            }
           </div>
           <div className='summary-test-container'>
             <div className='summary-test-info'>
               <div className='summary-test-title'>
-                {nextTest.testTitle}
+                {nextTest && nextTest.testTitle}
               </div>
               <div className='summary-test-description'>
-                {nextTest.testDescription}
+                {nextTest && nextTest.testDescription}
               </div>
             </div>
             <UniButton custombutton='confirm' onClick={clickView}>View</UniButton>

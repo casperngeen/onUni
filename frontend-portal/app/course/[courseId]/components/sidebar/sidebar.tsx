@@ -13,7 +13,7 @@ const CourseSidebar: React.FC<{}> = () => {
     <div className='course-sidebar'>
         <CourseSidebarHeader />
         {tests.map((test, index) => (
-          <SidebarTestTab key={index} test={test}/>
+          <SidebarTestTab key={index} test={test} index={index}/>
         ))}
     </div>
   )
