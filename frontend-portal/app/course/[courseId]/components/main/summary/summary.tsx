@@ -3,8 +3,13 @@ import React from 'react'
 import { Image } from 'react-bootstrap'
 import './summary.scss';
 import UniProgressBar from '@/components/overwrite/uni.progress';
+import { useAppSelector } from '@/utils/redux/utils/hooks';
+import { selectCourseTitle } from '@/utils/redux/slicers/course.slicer';
 
 const CourseSummary: React.FC<{}> = () => {
+  const selector = useAppSelector();
+  const courseTitle = selector(selectCourseTitle);
+  
   const clickAttempt = () => {
 
   }

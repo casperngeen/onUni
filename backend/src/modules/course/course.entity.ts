@@ -1,4 +1,4 @@
-import { Test } from 'src/modules/test/test.entity';
+import { ITestInfoWithAttemptInfo, Test } from 'src/modules/test/test.entity';
 import { User } from '../user/user.entity';
 import {
   Entity,
@@ -7,7 +7,15 @@ import {
   OneToMany,
   ManyToMany,
 } from 'typeorm';
-import { IsISO8601, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsISO8601,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 @Entity()
 export class Course {
@@ -39,12 +47,6 @@ export class CourseIdDto {
   @IsInt()
   @IsNotEmpty()
   courseId: number;
-}
-
-export class ViewCourseDto extends CourseIdDto {
-  @IsInt()
-  @IsNotEmpty()
-  userId: number;
 }
 
 export class NewCourseDetailsDto {
@@ -101,4 +103,11 @@ export class CourseInfoDto {
   @IsNotEmpty()
   @IsInt()
   courseId: number;
+}
+
+export class CourseInfoWithTestsDto extends CourseInfoDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ITestInfoWithAttemptInfo)
+  tests: ITestInfoWithAttemptInfo[];
 }

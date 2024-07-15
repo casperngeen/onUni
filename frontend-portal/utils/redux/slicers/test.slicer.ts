@@ -2,11 +2,9 @@ import RequestError from "@/utils/request/request.error";
 import TestRequest from "@/utils/request/test.request";
 import { AttemptHistoryResponse } from "@/utils/request/types/attempt.types";
 import { IGetAllTests, IGetTest, ScoringFormats, TestTypes } from "@/utils/request/types/test.types";
-import { buildCreateSlice, asyncThunkCreator, PayloadAction } from "@reduxjs/toolkit";
-
-export const createAppSlice = buildCreateSlice({
-	creators: { asyncThunk: asyncThunkCreator },
-})
+import { PayloadAction } from "@reduxjs/toolkit";
+import { createAppSlice } from "../utils/hooks";
+import { formatDateTime } from "../utils/format.date";
 
 interface IInitialState {
 	attemptHistory: AttemptHistoryResponse[],
@@ -94,23 +92,15 @@ const testSlice = createAppSlice({
 		fetchTestInfo: create.asyncThunk(
 			async (params: IGetTest, thunkAPI) => {
 				let {deadline, start, attempts, ...testInfo} = await TestRequest.getTest(params);
-				const formatDate = (date: Date) => {
-					const localYear = date.getFullYear();
-					const localMonth = date.getMonth() < 9 ? `0${date.getMonth() + 1}` : `${date.getMonth() + 1}`;
-					const localDay = date.getDate() < 10 ? `0${date.getDate()}` : `${date.getDate()}`;
-					const localHours = date.getHours();
-					const localMinutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : `${date.getMinutes()}`;
-					return `${localHours}:${localMinutes}H ${localDay}/${localMonth}/${localYear}`
-				}
 				if (start) {
-					start = formatDate(new Date(start))
+					start = formatDateTime(new Date(start))
 				}
 				if (deadline) {
-					deadline = formatDate(new Date(deadline))
+					deadline = formatDateTime(new Date(deadline))
 				}
 				for (const attempt of attempts) {
 					if (attempt.submitted) {
-						attempt.submitted = formatDate(new Date(attempt.submitted));
+						attempt.submitted = formatDateTime(new Date(attempt.submitted));
 					}
 				}
 				return {deadline, start, attempts, ...testInfo};

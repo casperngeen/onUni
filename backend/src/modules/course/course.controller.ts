@@ -15,6 +15,7 @@ import {
   AddUserToCourseDto,
   CourseIdDto,
   CourseInfoDto,
+  CourseInfoWithTestsDto,
   NewCourseDetailsDto,
   UpdateCourseDto,
 } from './course.entity';
@@ -43,17 +44,12 @@ export class CourseController {
   @Get('/:courseId')
   async viewCourseInformation(
     @Param('courseId') courseId: number,
-    @Req() request: Request,
     @Res() response: Response,
   ) {
-    const { userId } = request['user'];
-    const course: CourseInfoDto = await this.courseService.viewCourseInfo(
-      {
+    const course: CourseInfoWithTestsDto =
+      await this.courseService.viewCourseInfo({
         courseId: courseId,
-        userId: userId,
-      },
-      true,
-    );
+      });
     response.status(200).json(ResponseHandler.success(course));
   }
 

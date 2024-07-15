@@ -137,6 +137,11 @@ export class UpdateTestDto extends TestDetailsDto {
 
 export class TestInfoDto extends UpdateTestDto {}
 
+export class ITestInfoWithAttemptInfo extends TestInfoDto {
+  currScore: number | null;
+  numOfAttempts: number;
+}
+
 export class TestInfoWithHistoryDto extends TestInfoDto {
   @IsArray()
   @ValidateNested({ each: true })

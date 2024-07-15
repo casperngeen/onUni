@@ -1,34 +1,40 @@
 import React from 'react';
 import './test.scss';
 import { Image } from 'react-bootstrap';
+import { ITestResponseWithAttemptInfo, TestTypes } from '@/utils/request/types/test.types';
+import { formatDateTime } from '@/utils/redux/utils/format.date';
 
-const SidebarTestTab: React.FC<{}> = () => {
-  return (
-    <div className='sidebar-test'>
-        <div className='test-status'>
+interface ITestTabProps {
+    test: ITestResponseWithAttemptInfo,
+}
+
+const SidebarTestTab: React.FC<ITestTabProps> = ({test}) => {
+    const { currScore, testTitle, deadline, testType } = test;
+
+    return (
+        <div className='sidebar-test'>
             {
-                true
-                ? <Image src='' alt='exam'/>
-                : true
-                    ? <Image src='' alt='completed'/>
-                    : <Image src='' alt='uncompleted'/>
+                testType === TestTypes.EXAM
+                ? <Image src='/exam 1.svg' alt='exam'/>
+                : currScore
+                    ? <Image src='/completed.svg' alt='completed'/>
+                    : <Image src='/uncompleted.svg' alt='uncompleted'/>
+            }
+            {testType === TestTypes.EXAM
+                ? <div className='sidebar-exam-info'>
+                    <div className='sidebar-exam-title'>
+                        {testTitle}
+                    </div>
+                    <div className='sidebar-exam-deadline'>
+                        Deadline: {formatDateTime(new Date(deadline as string))}
+                    </div>
+                </div>
+                : <div className='sidebar-test-title'>
+                    {testTitle}
+                </div>
             }
         </div>
-        {true
-            ? <div className='sidebar-exam-info'>
-                <div className='sidebar-exam-title'>
-                    Test title
-                </div>
-                <div className='sidebar-exam-deadline'>
-                    Deadline
-                </div>
-            </div>
-            : <div className='sidebar-test-title'>
-                Test title
-            </div>
-        }
-    </div>
-  )
+    )
 }
 
 export default SidebarTestTab

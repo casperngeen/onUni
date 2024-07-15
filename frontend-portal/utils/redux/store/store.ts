@@ -2,8 +2,9 @@ import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import attemptSlice from "../slicers/attempt.slicer";
 import testSlice from "../slicers/test.slicer";
+import courseSlice from "../slicers/course.slicer";
 
-const rootReducer = combineSlices(attemptSlice, testSlice);
+const rootReducer = combineSlices(attemptSlice, testSlice, courseSlice);
 export type RootState = ReturnType<typeof rootReducer>;
 
 // `makeStore` encapsulates the store configuration to allow

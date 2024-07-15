@@ -11,7 +11,6 @@ export enum TestTypes {
     EXAM = 'exam',
     QUIZ = 'quiz',
 }
-  
 
 export interface ITestResponse {
     testId: number,
@@ -24,6 +23,11 @@ export interface ITestResponse {
     scoringFormat: ScoringFormats | null,
     maxAttempt: number | null,
     timeLimit: number | null,
+}
+
+export interface ITestResponseWithAttemptInfo extends ITestResponse {
+    numOfAttempts: number,
+    currScore: number | null,
 }
 
 export interface ISingleTestResponse extends ITestResponse {

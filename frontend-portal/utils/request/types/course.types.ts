@@ -1,12 +1,14 @@
-export interface NewCourseBody extends Record<string, unknown> {
-    "title": string,
-    "description": string,
-    "startDate": string,
-    "endDate": string,
+import { ITestResponseWithAttemptInfo } from "./test.types";
+
+export interface NewCourseBody {
+    title: string,
+    description: string,
+    startDate: string,
+    endDate: string,
 }
 
 export interface NewUserBody {
-    "userId": number,
+    userId: number,
 }
 
 export interface CourseResponse {
@@ -17,6 +19,14 @@ export interface CourseResponse {
     endDate: string,
 }
 
+export interface SingleCourseResponse extends CourseResponse {
+    tests: ITestResponseWithAttemptInfo[],
+}
+
 export interface NewCourseResponse {
     courseId: number, 
+}
+
+export interface IGetCourse {
+    courseId: number,
 }

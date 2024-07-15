@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './main.scss';
 import CourseSummary from './summary/summary';
 import TestListContainer from './tests/tests';

@@ -5,9 +5,9 @@ import {
   Course,
   CourseIdDto,
   CourseInfoDto,
+  CourseInfoWithTestsDto,
   NewCourseDetailsDto,
   UpdateCourseDto,
-  ViewCourseDto,
 } from './course.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,6 +23,8 @@ import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
 import { DatabaseException } from 'src/base/base.exception';
 import { Roles } from '../user/user.enum';
+import { ScoringFormats, TestTypes } from '../test/test.enum';
+import { Status } from '../attempt/attempt.enum';
 
 @Injectable()
 export class CourseService extends BaseService<Course> {
@@ -69,21 +71,15 @@ export class CourseService extends BaseService<Course> {
     return courseInfo;
   }
 
-  public async viewCourseInfo(
-    viewCourseObject: ViewCourseDto,
-    viewUsers: boolean,
-  ) {
-    const { courseId } = viewCourseObject;
+  public async viewCourseInfo(courseIdObject: CourseIdDto) {
+    const { courseId } = courseIdObject;
     this.log(`Course info query for course ${courseId}`, this.context);
     const course: Course = await this.isCourseInRepo(courseId);
     this.log(
       `Formatting course information for course ${courseId}...`,
       this.context,
     );
-    const courseInfo: CourseInfoDto = this.formatCourseInfo(course);
-    if (viewUsers) {
-      courseInfo['users'] = course.users;
-    }
+    const courseInfo = this.formatCourseInfoWithTests(course);
     this.log(
       `Course information for course ${courseId} formatted`,
       this.context,
@@ -217,7 +213,7 @@ export class CourseService extends BaseService<Course> {
   public async isCourseInRepo(courseId: number) {
     this.log(`Checking if course ${courseId} is in DB...`, this.context);
     const course: Course = await this.findOne({
-      relations: ['users'],
+      relations: ['tests', 'tests.attempts'],
       where: { courseId: courseId },
     });
     if (!course) {
@@ -255,6 +251,80 @@ export class CourseService extends BaseService<Course> {
       description: course.description,
       startDate: course.startDate,
       endDate: course.endDate,
+    };
+  }
+
+  private formatCourseInfoWithTests(course: Course): CourseInfoWithTestsDto {
+    const tests = course.tests.map((test) => {
+      let currScore = null;
+      if (
+        test.testType === TestTypes.EXAM &&
+        test.scoringFormat !== ScoringFormats.HIGHEST
+      ) {
+        switch (test.scoringFormat) {
+          case ScoringFormats.AVERAGE:
+            let sum = 0;
+            let numCompleted = 0;
+            for (const attempt of test.attempts) {
+              if (
+                attempt &&
+                (attempt.status === Status.SUBMIT ||
+                  attempt.status === Status.AUTOSUBMIT)
+              ) {
+                sum += attempt.score;
+                numCompleted++;
+              }
+            }
+            if (numCompleted > 0) {
+              currScore = Math.round((sum / numCompleted) * 100) / 100;
+            }
+          case ScoringFormats.LATEST:
+            test.attempts.sort(
+              (a, b) => Date.parse(b.submitted) - Date.parse(a.submitted),
+            );
+            for (const attempt of test.attempts) {
+              if (
+                attempt.status === Status.SUBMIT ||
+                attempt.status === Status.AUTOSUBMIT
+              ) {
+                currScore = attempt.score;
+                break;
+              }
+            }
+        }
+      } else {
+        for (const attempt of test.attempts) {
+          if (
+            attempt &&
+            (attempt.status === Status.SUBMIT ||
+              attempt.status === Status.AUTOSUBMIT)
+          ) {
+            currScore = Math.max(currScore, attempt.score);
+          }
+        }
+      }
+      return {
+        testId: test.testId,
+        testTitle: test.title,
+        testDescription: test.description,
+        testType: test.testType,
+        maxScore: test.maxScore,
+        start: test.start,
+        deadline: test.deadline,
+        scoringFormat: test.scoringFormat,
+        maxAttempt: test.maxAttempt,
+        timeLimit: test.timeLimit,
+        currScore: currScore,
+        numOfAttempts: test.attempts.length,
+      };
+    });
+    return {
+      courseId: course.courseId,
+      title: course.title,
+      description: course.description,
+      startDate: course.startDate,
+      endDate: course.endDate,
+      tests: tests,
     };
   }
 }
