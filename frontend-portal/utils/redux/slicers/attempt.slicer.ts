@@ -196,7 +196,7 @@ const attemptSlice = createAppSlice({
             const isCorrect = qAttempt.answerStatus === AnswerStatus.CORRECT;
             state.answers[qAttempt.questionId] = {optionId: qAttempt.selectedOptionId, isCorrect: isCorrect};
           }
-          if (action.payload.score) {
+          if (action.payload.score !== null) {
             state.score = action.payload.score;
           }
           if (action.payload.timeTaken) {
