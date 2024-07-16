@@ -29,9 +29,11 @@ import {
   AttemptNotFoundException,
   AttemptTimeLimitExceededException,
   CalculatingScoreOfAttemptException,
+  NotAcceptingAttemptException,
   OptionNotInQuestionException,
   ReachedAttemptLimitException,
   TestNotAttemptedException,
+  TestPrerequisiteNotSatisfiedException,
 } from './attempt.exception';
 import { UserNotFoundException } from '../user/user.exception';
 import { TestNotFoundException } from '../test/test.exception';
@@ -90,6 +92,23 @@ export class AttemptService extends BaseService<Attempt> {
       throw new TestNotFoundException();
     }
     this.log(`Test ${testId} found`, this.context);
+    this.log(
+      `Checking if test ${testId} is open for attempts...`,
+      this.context,
+    );
+    if (
+      Date.parse(test.course.startDate) > Date.now() ||
+      Date.parse(test.course.endDate) < Date.now() ||
+      (test.deadline && Date.parse(test.deadline) < Date.now())
+    ) {
+      this.error(
+        `Test ${testId} is not accepting new attempts currently`,
+        this.context,
+        this.getTrace(),
+      );
+      throw new NotAcceptingAttemptException();
+    }
+    this.log(`Test ${testId} is open for attempts`, this.context);
     const user: User = await this.getUserFromRepo(userId);
     this.log(
       `Checking if user ${userId} has reached attempt limit for test ${testId}`,
@@ -103,16 +122,13 @@ export class AttemptService extends BaseService<Attempt> {
       ).toISOString();
     }
     if (test.maxAttempt) {
-      // check this again
-      const numOfAttempts: number = await this.attemptRepository
-        .createQueryBuilder('attempt')
-        .where('userId = :userId', {
-          userId: userId,
-        })
-        .where('testId = :testId', {
-          testId: testId,
-        })
-        .getCount();
+      const numOfAttempts: number = await this.attemptRepository.count({
+        where: {
+          test: {
+            testId: testId,
+          },
+        },
+      });
       if (numOfAttempts >= test.maxAttempt) {
         this.error(
           `User ${userId} has already reached attempt limit for test ${testId}`,
@@ -124,6 +140,40 @@ export class AttemptService extends BaseService<Attempt> {
     }
     this.log(
       `User ${userId} has not reached attempt limit for test ${testId}`,
+      this.context,
+    );
+    this.log(
+      `Checking if user ${user.userId} has satsified the prerequisites for test ${testId}`,
+      this.context,
+    );
+    const courseTests = await this.testRepository.find({
+      relations: ['attempts'],
+      where: {
+        course: {
+          courseId: test.course.courseId,
+        },
+      },
+      order: {
+        testId: 'ASC',
+      },
+    });
+    const index = courseTests.findIndex((test) => test.testId === testId);
+    if (index > 0) {
+      const notSatisfied =
+        courseTests[index - 1].attempts.filter(
+          (attempt) => attempt.submitted !== null,
+        ).length === 0;
+      if (notSatisfied) {
+        this.error(
+          `Test ${testId}'s prerequisite has not been satisfied`,
+          this.context,
+          this.getTrace(),
+        );
+        throw new TestPrerequisiteNotSatisfiedException();
+      }
+    }
+    this.log(
+      `User ${user.userId} has satsified the prerequisites for test ${testId}`,
       this.context,
     );
     this.log(

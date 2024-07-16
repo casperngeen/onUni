@@ -85,3 +85,23 @@ export class AttemptIdNotFoundException extends BaseException {
     super(`Attempt ID was not provided`, 400, AttemptException.NO_ATTEMPT_ID);
   }
 }
+
+export class NotAcceptingAttemptException extends BaseException {
+  constructor() {
+    super(
+      `Test currently does not allow new attempts`,
+      400,
+      AttemptException.NOT_ACCEPTING_ATTEMPT,
+    );
+  }
+}
+
+export class TestPrerequisiteNotSatisfiedException extends BaseException {
+  constructor() {
+    super(
+      `Prerequisites of test has not been satisfied`,
+      400,
+      AttemptException.PREREQ_NOT_SATISFIED,
+    );
+  }
+}

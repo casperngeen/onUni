@@ -46,6 +46,11 @@ export class TestService extends BaseService<Test> {
     this.log(`Querying DB...`, this.context);
     const course: Course = await this.courseRepository.findOne({
       relations: ['tests', 'tests.attempts'],
+      order: {
+        tests: {
+          testId: 'ASC',
+        },
+      },
       where: courseIdObject,
     });
     if (!course) {
@@ -120,7 +125,7 @@ export class TestService extends BaseService<Test> {
           score: attempt.score,
         };
       })
-      .sort((x, y) => Date.parse(x.submitted) - Date.parse(y.submitted));
+      .sort((x, y) => Date.parse(y.submitted) - Date.parse(x.submitted));
 
     const testInfo: TestInfoWithHistoryDto = {
       testId: test.testId,

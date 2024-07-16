@@ -252,6 +252,11 @@ export class CourseService extends BaseService<Course> {
     const course: Course = await this.findOne({
       relations: ['tests', 'tests.attempts'],
       where: { courseId: courseId },
+      order: {
+        tests: {
+          testId: 'ASC',
+        },
+      },
     });
     if (!course) {
       this.error(`Course ${courseId} not found`, this.context, this.getTrace());
