@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import BaseService from 'src/base/base.service';
 import {
+  AllTestInfoDto,
   NewTestDto,
   Test,
   TestIdDto,
-  TestInfoDto,
   TestInfoWithHistoryDto,
   UpdateTestDto,
 } from './test.entity';
@@ -45,7 +45,7 @@ export class TestService extends BaseService<Test> {
     );
     this.log(`Querying DB...`, this.context);
     const course: Course = await this.courseRepository.findOne({
-      relations: ['tests'],
+      relations: ['tests', 'tests.attempts'],
       where: courseIdObject,
     });
     if (!course) {
@@ -62,8 +62,12 @@ export class TestService extends BaseService<Test> {
       this.context,
     );
     this.log(`Formatting tests...`, this.context);
-    const testsObject: TestInfoDto[] = tests
+    const testsObject: AllTestInfoDto[] = tests
       .map((test) => {
+        const index = test.attempts.findIndex(
+          (test) => test.submitted !== null,
+        );
+        const completed = index !== -1;
         return {
           testId: test.testId,
           testTitle: test.title,
@@ -75,6 +79,7 @@ export class TestService extends BaseService<Test> {
           scoringFormat: test.scoringFormat,
           maxAttempt: test.maxAttempt,
           timeLimit: test.timeLimit,
+          completed: completed,
         };
       })
       .sort((a, b) => a.testId - b.testId);

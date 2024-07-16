@@ -1,0 +1,75 @@
+@import '../../../utils/styles/styles.scss';
+
+.course-display-container {
+    display: flex;
+    flex-direction: column;
+    border-style: hidden;
+    border-radius: $rounded-4;
+    background-color: $white;
+    overflow: hidden;
+}
+
+.course-display-title-container,
+.course-display-info-with-progress {
+    min-height: 100px;
+    padding: $p-4 $p-6;
+    display: flex;
+    flex-direction: column;
+    gap: $gap-4;
+}
+
+.course-display-title-container {
+    background-image: url('/course-summary-bg.png');
+    background-size: cover;
+}
+
+
+.course-display-title {
+    font-size: $font-size-M;
+    line-height: 25px;
+    font-weight: 600;
+    color: $body-color;
+}
+
+.progress-bar-container {
+    display: flex;
+    gap: $gap-2;
+    align-items: center;
+}
+
+.progress-bar-value {
+    font-size: $font-size-S;
+    line-height: 24px;
+    font-weight: 600;
+    color: $gray-600;
+}
+
+.course-display-info-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.course-display-info {
+    display: flex;
+    gap: $gap-8;
+}
+
+.date-container {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-1;
+}
+
+.date-description {
+    font-size: $font-size-XS;
+    line-height: 21px;
+    font-weight: 400;
+    color: $gray-700;
+}
+
+.date-value {
+    font-size: $font-size-S;
+    line-height: 24px;
+    font-weight: 500;
+    color: $body-color;
+}

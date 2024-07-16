@@ -1,0 +1,44 @@
+@import '../../../utils/styles/styles.scss';
+
+.dashboard-content {
+    position: relative;
+    top: 0;
+    overflow: auto;
+    padding: 0px 160px $p-12 160px;
+    display: flex;
+    flex-direction: column;
+    gap: $gap-10;
+    z-index: 1;
+    width: 100%;
+    background-color: $gray-100;
+    flex: 1;
+}
+
+.dashboard-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 240px;
+    z-index: 0;
+}
+
+.dashboard-no-content {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-4;
+    padding: $p-12 0;
+    align-items: center;
+}
+
+.dashboard-no-content-image {
+    height: 120px;
+    width: 120px;
+}
+
+.dashboard-no-content-text {
+    color: $body-color;
+    font-weight: 500;
+    font-size: $font-size-S;
+    line-height: 24px;
+}

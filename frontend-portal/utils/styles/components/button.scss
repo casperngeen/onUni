@@ -1,7 +1,8 @@
 @import '../styles.scss';
 
 .button-confirm,
-.button-exit {
+.button-exit,
+.button-view {
     border-radius: $rounded-2;
     font-size: $font-size-S;
     font-weight: 600;
@@ -22,4 +23,11 @@
     color: $primary;
     border-style: solid;
     border-color: $primary;
+}
+
+.button-view {
+    background-color: $blue-100;
+    color: $primary;
+    border-style: hidden;
+    min-width: 90px;
 }

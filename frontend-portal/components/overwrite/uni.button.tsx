@@ -4,7 +4,7 @@ import '../../utils/styles/components/button.scss';
 
 type BButtonPros = React.PropsWithChildren<ReplaceProps<'button', BsPrefixProps<'button'> & ButtonProps>>;
 type UniButtonProps = {
-  custombutton?: 'confirm' | 'exit' | 'type-3' | 'type-4' | 'type-5'
+  custombutton?: 'confirm' | 'exit' | 'view' | 'type-4' | 'type-5'
 };
 const UniButton = (props: BButtonPros & UniButtonProps) => {
   if (props.custombutton == 'confirm') {
@@ -13,8 +13,8 @@ const UniButton = (props: BButtonPros & UniButtonProps) => {
   if (props.custombutton == 'exit') {
     return <Button {...props} bsPrefix="button-exit" ></Button >
   }
-  if (props.custombutton == 'type-3') {
-    return <Button {...props} className="uni-btn-type-3" ></Button >
+  if (props.custombutton == 'view') {
+    return <Button {...props} bsPrefix="button-view" ></Button >
   }
   if (props.custombutton == 'type-4') {
     return <Button {...props} className="uni-btn-type-4" ></Button >

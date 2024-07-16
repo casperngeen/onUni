@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import BaseService from 'src/base/base.service';
 import {
   AddUserToCourseDto,
+  AllCourseInfoDto,
   Course,
   CourseIdDto,
-  CourseInfoDto,
   CourseInfoWithTestsDto,
   NewCourseDetailsDto,
   UpdateCourseDto,
@@ -25,6 +25,7 @@ import { DatabaseException } from 'src/base/base.exception';
 import { Roles } from '../user/user.enum';
 import { ScoringFormats, TestTypes } from '../test/test.enum';
 import { Status } from '../attempt/attempt.enum';
+import { NextTestDto } from '../test/test.entity';
 
 @Injectable()
 export class CourseService extends BaseService<Course> {
@@ -48,14 +49,15 @@ export class CourseService extends BaseService<Course> {
     this.log(`Querying DB...`, this.context);
     let courses: Course[];
     if (role === Roles.TEACHER) {
-      courses = await this.findAll();
+      courses = await this.courseRepository.find({
+        relations: ['tests', 'tests.attempts'],
+      });
     } else {
-      courses = await this.userRepository
-        .findOne({
-          where: { userId: userId },
-          relations: ['courses'],
-        })
-        .then((user) => user.courses);
+      const user = await this.userRepository.findOne({
+        where: { userId: userId },
+        relations: ['courses', 'courses.tests', 'courses.tests.attempts'],
+      });
+      courses = user ? user.courses : null;
     }
 
     this.log(`All courses found for user ${userId}`, this.context);
@@ -63,12 +65,47 @@ export class CourseService extends BaseService<Course> {
       `Formatting course information for user ${userId}...`,
       this.context,
     );
-    const courseInfo: CourseInfoDto[] = courses.map((course) =>
+    const courseInfo: AllCourseInfoDto[] = courses.map((course) =>
       this.formatCourseInfo(course),
     );
+    const sortedCourses = courseInfo.sort((x, y) => x.courseId - y.courseId);
     this.log(`Course information for user ${userId} formatted`, this.context);
+    this.log(
+      `Finding next uncompleted test for user ${userId}...`,
+      this.context,
+    );
+    const index = sortedCourses.findIndex(
+      (course) =>
+        course.progress < 100 &&
+        Date.parse(course.startDate) < Date.now() &&
+        Date.parse(course.endDate) > Date.now(),
+    );
+    const suggestedTest =
+      index === -1
+        ? null
+        : courses
+            .find((course) => course.courseId === sortedCourses[index].courseId)
+            .tests.find(
+              (test) =>
+                test.attempts.findIndex(
+                  (attempt) => attempt.submitted !== null,
+                ) === -1,
+            );
+    const formatTest: NextTestDto = suggestedTest
+      ? {
+          courseId: sortedCourses[index].courseId,
+          testId: suggestedTest.testId,
+          testType: suggestedTest.testType,
+          testTitle: suggestedTest.title,
+          courseTitle: sortedCourses[index].title,
+        }
+      : null;
+    this.log(`Found next uncompleted test for user ${userId}`, this.context);
     this.log(`Query all courses for user ${userId} completed`, this.context);
-    return courseInfo;
+    return {
+      courses: sortedCourses,
+      nextTest: formatTest,
+    };
   }
 
   public async viewCourseInfo(courseIdObject: CourseIdDto) {
@@ -244,13 +281,21 @@ export class CourseService extends BaseService<Course> {
     return user;
   }
 
-  private formatCourseInfo(course: Course): CourseInfoDto {
+  private formatCourseInfo(course: Course): AllCourseInfoDto {
+    const completed = course.tests.filter(
+      (test) =>
+        test.attempts.findIndex((attempt) => attempt.submitted !== null) !== -1,
+    ).length;
+    const progress =
+      course.tests.length === 0
+        ? 0
+        : Math.round((completed / course.tests.length) * 100);
     return {
       courseId: course.courseId,
       title: course.title,
-      description: course.description,
       startDate: course.startDate,
       endDate: course.endDate,
+      progress: progress,
     };
   }
 

@@ -142,11 +142,37 @@ export class ITestInfoWithAttemptInfo extends TestInfoDto {
   numOfAttempts: number;
 }
 
+export class AllTestInfoDto extends TestInfoDto {
+  completed: boolean;
+}
+
 export class TestInfoWithHistoryDto extends TestInfoDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => AttemptHistory)
   attempts: AttemptHistory[];
+
+  @IsNotEmpty()
+  @IsString()
+  courseTitle: string;
+}
+
+export class NextTestDto {
+  @IsNotEmpty()
+  @IsInt()
+  courseId: number;
+
+  @IsNotEmpty()
+  @IsInt()
+  testId: number;
+
+  @IsNotEmpty()
+  @IsEnum(TestTypes)
+  testType: TestTypes;
+
+  @IsNotEmpty()
+  @IsString()
+  testTitle: string;
 
   @IsNotEmpty()
   @IsString()

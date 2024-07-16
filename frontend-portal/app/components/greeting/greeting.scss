@@ -1,0 +1,49 @@
+@import '../../../utils/styles/styles.scss';
+
+.greeting {
+    display: flex;
+    align-items: flex-end;
+    min-height: 320px;
+    max-height: 320px;
+    z-index: 1;
+}
+
+.greeting-container {
+    display: flex;
+    gap: $gap-6;
+    align-items: flex-end;
+}
+
+.greeting-photo-wrapper {
+    height: 160px;
+    width: 160px;
+    border-radius: 50%;
+    border-color: $white;
+    border-style: solid;
+    border-width: 4px;
+}
+
+.greeting-photo {
+    height: 100%;
+    width: 100%;
+}
+
+.greeting-text {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-1;
+}
+
+.greeting-first-line {
+    font-size: $font-size-S;
+    line-height: 24px;
+    font-weight: 600;
+    $body-color: $body-color;
+}
+
+.greeting-second-line {
+    font-size: $font-size-2XL;
+    line-height: 40px;
+    font-weight: 700;
+    $body-color: $body-color;
+}

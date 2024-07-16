@@ -1,10 +1,10 @@
 import { RequestTypes } from "./types/base.types";
-import { CourseResponse, IGetCourse, NewCourseBody, NewCourseResponse, NewUserBody, SingleCourseResponse } from "./types/course.types";
+import { AllCourseResponseObject, IGetCourse, NewCourseBody, NewCourseResponse, NewUserBody, SingleCourseResponse } from "./types/course.types";
 import BaseRequest from "./base.request";
 
 export default class CourseRequest extends BaseRequest {
     public static async viewAllCourses() {
-        return await BaseRequest.request<CourseResponse[]>('course', RequestTypes.GET, {});
+        return await BaseRequest.request<AllCourseResponseObject>('course', RequestTypes.GET, {});
     }
 
     public static async viewCourse(params: IGetCourse) {

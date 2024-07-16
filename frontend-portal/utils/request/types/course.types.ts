@@ -1,4 +1,4 @@
-import { ITestResponseWithAttemptInfo } from "./test.types";
+import { ITestResponseWithAttemptInfo, TestTypes } from "./test.types";
 
 export interface NewCourseBody {
     title: string,
@@ -11,15 +11,32 @@ export interface NewUserBody {
     userId: number,
 }
 
-export interface CourseResponse {
+interface CourseResponse {
     courseId: number, 
     title: string,
-    description: string,
     startDate: string,
     endDate: string,
 }
 
+export interface INextTest {
+    courseId: number,
+    testId: number,
+    testType: TestTypes,
+    testTitle: string,
+    courseTitle: string,
+}
+
+export interface AllCourseResponse extends CourseResponse {
+    progress: number,
+}
+
+export interface AllCourseResponseObject {
+    courses: AllCourseResponse[],
+    nextTest: INextTest | null,
+}
+
 export interface SingleCourseResponse extends CourseResponse {
+    description: string,
     tests: ITestResponseWithAttemptInfo[],
 }
 

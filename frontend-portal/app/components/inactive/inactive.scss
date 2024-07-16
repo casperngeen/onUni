@@ -1,0 +1,20 @@
+@import '../../../utils/styles/styles.scss';
+
+.inactive-courses-with-header {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-4;
+}
+
+.inactive-courses-header {
+    font-weight: 600;
+    color: $body-color;
+    line-height: 24px;
+    font-size: $font-size-S;
+}
+
+.inactive-courses-container {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-6;
+}

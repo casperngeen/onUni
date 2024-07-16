@@ -1,4 +1,8 @@
-import { ITestInfoWithAttemptInfo, Test } from 'src/modules/test/test.entity';
+import {
+  ITestInfoWithAttemptInfo,
+  NextTestDto,
+  Test,
+} from 'src/modules/test/test.entity';
 import { User } from '../user/user.entity';
 import {
   Entity,
@@ -12,6 +16,7 @@ import {
   IsISO8601,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -83,14 +88,10 @@ export class UpdateCourseDto extends NewCourseDetailsDto {
   courseId: number;
 }
 
-export class CourseInfoDto {
+class CourseInfoWithoutDescriptionDto {
   @IsNotEmpty()
   @IsString()
   title: string;
-
-  @IsNotEmpty()
-  @IsString()
-  description: string;
 
   @IsNotEmpty()
   @IsISO8601({ strict: true })
@@ -105,9 +106,26 @@ export class CourseInfoDto {
   courseId: number;
 }
 
-export class CourseInfoWithTestsDto extends CourseInfoDto {
+export class AllCourseInfoDto extends CourseInfoWithoutDescriptionDto {
+  @IsNotEmpty()
+  @IsInt()
+  progress: number;
+}
+
+export class CourseInfoWithTestsDto extends UpdateCourseDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ITestInfoWithAttemptInfo)
   tests: ITestInfoWithAttemptInfo[];
+}
+
+export class ViewAllCourseResponseDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AllCourseInfoDto)
+  courses: AllCourseInfoDto[];
+
+  @IsOptional()
+  @Type(() => NextTestDto)
+  nextTest: NextTestDto | null;
 }
