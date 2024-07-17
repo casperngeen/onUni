@@ -32,6 +32,10 @@ export class CourseUserGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
     const { role, userId } = request['user'] as PayloadDto;
+    this.loggerService.log(
+      `Authenticating if user ${userId} is allowed to access course`,
+      this.context,
+    );
     if (!request.query.courseId && !request.params.courseId) {
       this.loggerService.error(
         `Course ID not provided`,
@@ -53,8 +57,17 @@ export class CourseUserGuard implements CanActivate {
       const course: Course = await this.courseService.isCourseInRepo(courseId);
       const userInCourse = this.courseService.isUserInCourse(userId, course);
       if (!userInCourse) {
+        this.loggerService.error(
+          `User ${userId} is not allowed to access course`,
+          this.context,
+          this.getTrace(),
+        );
         throw new UserNotInCourseException();
       }
+      this.loggerService.log(
+        `User ${userId} is allowed to access course`,
+        this.context,
+      );
       return userInCourse;
     }
   }

@@ -250,7 +250,7 @@ export class CourseService extends BaseService<Course> {
   public async isCourseInRepo(courseId: number) {
     this.log(`Checking if course ${courseId} is in DB...`, this.context);
     const course: Course = await this.findOne({
-      relations: ['tests', 'tests.attempts'],
+      relations: ['tests', 'tests.attempts', 'users'],
       where: { courseId: courseId },
       order: {
         tests: {
