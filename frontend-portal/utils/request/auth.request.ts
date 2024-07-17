@@ -4,34 +4,31 @@ import BaseRequest from "./base.request";
 
 export default class AuthRequest extends BaseRequest {
 
-    public async login(body: LoginBody ) {
+    public static async login(body: LoginBody ) {
         const response = await BaseRequest.request<LoginResponse>('auth/login', RequestTypes.POST, body);
         const { accessToken, refreshToken } = response;
-        // BaseRequest.cookie.set('accessToken', accessToken);
-        // BaseRequest.cookie.set('refreshToken', refreshToken);
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
         return response.profilePic;
     }
 
-    public async signUp(body: SignUpBody) {
+    public static async signUp(body: SignUpBody) {
         await BaseRequest.request('auth/signup', RequestTypes.POST, body);
     }
 
-    public async forget(body: ForgetPasswordBody ) {
+    public static async forget(body: ForgetPasswordBody ) {
         const response = await BaseRequest.request<ForgetPasswordResponse>('auth/forget', RequestTypes.POST, body);
         return response.url;
     }
 
-    public async changePassword(body: ChangePasswordBody, token: number) {
+    public static async changePassword(body: ChangePasswordBody, token: number) {
         await BaseRequest.request(`auth/changePassword/${token}`, RequestTypes.PUT, body);
     }
 
-    public async logout() {
+    public static async logout() {
         await BaseRequest.request(`auth/refresh}`, RequestTypes.PUT, {});
         // BaseRequest.cookie.delete('accessToken');
         // BaseRequest.cookie.delete('refreshToken');
     }
     
 }
-
-const auth = new AuthRequest();
-auth.login({email: "test@yahoo.com", password: "Helloworld!"})

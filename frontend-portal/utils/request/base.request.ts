@@ -1,4 +1,3 @@
-import { json } from "stream/consumers";
 import { ApiResponse, RequestTypes } from "./types/base.types";
 import RequestError from "./request.error";
 import { AuthException } from "./status.code";
@@ -8,7 +7,11 @@ export default class BaseRequest {
   private static readonly baseRoute = `http://localhost:3000`;
 
   protected static getAccessToken() {
-    return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzIwNjU5ODg1LCJleHAiOjE3MjA2OTU4ODV9.Np_ZqAsAtFHqwR9ohHli4EgWwi30QP7LzeCY2sIF2iw';
+    return localStorage.getItem('accessToken');
+  }
+  
+  protected static getRefreshToken() {
+    return localStorage.getItem('refreshToken');
   }
 
   protected static async request<T>(
@@ -18,7 +21,6 @@ export default class BaseRequest {
   ): Promise<T> {
     try {
       let token = BaseRequest.getAccessToken();
-      token = token === undefined ? "" : token;
       let jsonResponse: ApiResponse<T> = await fetch(`${BaseRequest.baseRoute}/${path}`, {
         method: method,
         headers: {
@@ -31,22 +33,21 @@ export default class BaseRequest {
       
       // handle access token expiry
       if (jsonResponse.code == AuthException.EXPIRED_TOKEN) {
-        const refresh = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzE5ODgyOTYzLCJleHAiOjE3MjA0ODc3NjN9.2gZK9zvmE7Vx4fgqNzbt8d3UkqYEHGSSkP5pR_mediQ';
+        const refresh = BaseRequest.getRefreshToken();
         const refreshResponse: ApiResponse<RefreshResponse> = await fetch(`${this.baseRoute}/auth/refresh`, {
-          method: method,
+          method: RequestTypes.POST,
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Authorization": `Bearer ${refresh}`,
           },
-          body: JSON.stringify(bodyData),
         }).then((response) => response.json());
 
         // if the refresh was successful -> set cookies and fetch original request again
         if (refreshResponse.code === 0) {
           const { accessToken, refreshToken } = refreshResponse.data;
-          // this.cookie.set('accessToken', accessToken);
-          // this.cookie.set('refreshToken', refreshToken);
+          localStorage.set('accessToken', accessToken);
+          localStorage.set('refreshToken', refreshToken);
           jsonResponse = await fetch(`${this.baseRoute}/${path}`, {
             method: method,
             headers: {
@@ -62,6 +63,7 @@ export default class BaseRequest {
       }
       
       if (jsonResponse.code != 0) {
+        console.log(jsonResponse);
         throw new RequestError(jsonResponse.code, jsonResponse.message);
       }
       console.log(jsonResponse);

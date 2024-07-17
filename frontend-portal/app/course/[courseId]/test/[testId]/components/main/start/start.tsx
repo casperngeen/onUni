@@ -20,21 +20,12 @@ const StartButton: React.FC<{}> = () => {
         router.push(`/course/${courseId}/test/${testId}/attempt/new`);
     }
 
-    const buttonStyle = disabled
-        ? {
-            opacity: 0.6,
-            width: 120,
-          }
-        : {
-            width: 120,
-        }
-
     return (
         <div className="start">
             <UniButton 
                 custombutton="confirm" 
                 onClick={startTest} 
-                style={buttonStyle}
+                style={{width: '120px'}}
                 disabled={disabled}
             >Start</UniButton>
         </div>
