@@ -2,8 +2,8 @@
 
 import UniButton from '@/components/overwrite/uni.button'
 import UniForm from '@/components/overwrite/uni.form'
-import React, { useState } from 'react'
-import { Image, InputGroup } from 'react-bootstrap'
+import React, { useEffect, useState } from 'react'
+import { Image } from 'react-bootstrap'
 import './login.scss'
 import { EyeFill, EyeSlashFill } from 'react-bootstrap-icons'
 import AuthRequest from '@/utils/request/auth.request'
@@ -19,6 +19,13 @@ const LoginPage: React.FC<{}> = () => {
     const disabled = email === '' || password === '';
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const router = useRouter();
+    
+    useEffect(() => {
+        if (localStorage.getItem(`username`)) {
+            router.push(`/`);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -70,23 +77,19 @@ const LoginPage: React.FC<{}> = () => {
                         {error}
                     </div>
                     <div className='login-form-fields'>
-                        <div className='login-form-field-container'>
-                            <UniForm.Group controlId="formBasicEmail">
-                                <UniForm.Label>Email address</UniForm.Label>
-                                <UniForm.Control type="email" value={email} onChange={enterEmail} placeholder="Enter email" className='email-input-field'/>
-                            </UniForm.Group>
-                        </div>
-                        <div className='login-form-field-container'>
-                            <UniForm.Group className="mb-3" controlId="formPassword">
-                                <UniForm.Label>Password</UniForm.Label>
-                                <div className='password-input-group'>
-                                    <UniForm.Control className='password-input-field' value={password} onChange={enterPassword} type={showPassword ? 'text': "password"} placeholder="Enter password" />
-                                    <a onClick={togglePasswordVisibility}>
-                                        {showPassword ? <EyeSlashFill color='#212529' /> : <EyeFill color='#212529'/>}
-                                    </a>
-                                </div>
-                            </UniForm.Group>
-                        </div>
+                        <UniForm.Group className='login-form-field-container'>
+                            <UniForm.Label>Email address</UniForm.Label>
+                            <UniForm.Control type="email" value={email} onChange={enterEmail} placeholder="Enter email" className='email-input-field'/>
+                        </UniForm.Group>
+                        <UniForm.Group className='login-form-field-container'>
+                            <UniForm.Label>Password</UniForm.Label>
+                            <div className='password-input-group'>
+                                <UniForm.Control className='password-input-field' value={password} onChange={enterPassword} type={showPassword ? 'text': "password"} placeholder="Enter password" />
+                                <a onClick={togglePasswordVisibility}>
+                                    {showPassword ? <EyeSlashFill color='#212529' /> : <EyeFill color='#212529'/>}
+                                </a>
+                            </div>
+                        </UniForm.Group>
                         <UniButton disabled={disabled} custombutton='confirm' onClick={submitLogin}>Login</UniButton>
                     </div>
                 </div>

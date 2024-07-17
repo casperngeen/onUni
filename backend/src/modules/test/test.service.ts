@@ -2,14 +2,16 @@ import { Injectable } from '@nestjs/common';
 import BaseService from 'src/base/base.service';
 import {
   AllTestInfoDto,
+  AllTestQueryDto,
   NewTestDto,
   Test,
   TestIdDto,
+  TestInfoQueryDto,
   TestInfoWithHistoryDto,
   UpdateTestDto,
 } from './test.entity';
 import { Repository } from 'typeorm';
-import { Course, CourseIdDto } from '../course/course.entity';
+import { Course } from '../course/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoggerService } from '../logger/logger.service';
 import * as StackTrace from 'stacktrace-js';
@@ -37,42 +39,41 @@ export class TestService extends BaseService<Test> {
     )[0];
   }
 
-  public async viewAllTests(courseIdObject: CourseIdDto) {
-    const { courseId } = courseIdObject;
-    this.log(
-      `Query all tests for course ${courseIdObject.courseId}`,
-      this.context,
-    );
+  public async viewAllTests(viewAllTestQuery: AllTestQueryDto) {
+    const { courseId, userId } = viewAllTestQuery;
+    this.log(`Query all tests for course ${courseId}`, this.context);
     this.log(`Querying DB...`, this.context);
-    const course: Course = await this.courseRepository.findOne({
-      relations: ['tests', 'tests.attempts'],
+    const tests: Test[] = await this.testRepository.find({
+      relations: ['attempts', 'attempts.user'],
       order: {
-        tests: {
-          testId: 'ASC',
+        testId: 'ASC',
+      },
+      where: {
+        course: {
+          courseId: courseId,
         },
       },
-      where: courseIdObject,
     });
-    if (!course) {
+    if (!tests) {
       this.error(
-        `Course ${courseId} cannot be found`,
+        `Tests in course ${courseId} cannot be found`,
         this.context,
         this.getTrace(),
       );
       throw new CourseNotFoundException();
     }
-    const tests: Test[] = course.tests;
-    this.log(
-      `Found all tests for course: ${courseIdObject.courseId}`,
-      this.context,
-    );
+    this.log(`Found all tests for course: ${courseId}`, this.context);
     this.log(`Formatting tests...`, this.context);
     const testsObject: AllTestInfoDto[] = tests
       .map((test) => {
-        const index = test.attempts.findIndex(
-          (test) => test.submitted !== null,
-        );
+        const index = test.attempts
+          .filter((attempt) => attempt.user.userId === userId)
+          .findIndex((attempt) => attempt.submitted !== null);
         const completed = index !== -1;
+        this.log(
+          `Test ${test.testId} user ${userId} Completed:${completed}`,
+          this.context,
+        );
         return {
           testId: test.testId,
           testTitle: test.title,
@@ -88,35 +89,34 @@ export class TestService extends BaseService<Test> {
         };
       })
       .sort((a, b) => a.testId - b.testId);
-    this.log(
-      `Tests for course: ${courseIdObject.courseId} formatted`,
-      this.context,
-    );
-    this.log(
-      `Query all tests for course ${courseIdObject.courseId} completed`,
-      this.context,
-    );
+    this.log(`Tests for course: ${courseId} formatted`, this.context);
+    this.log(`Query all tests for course ${courseId} completed`, this.context);
     return testsObject;
   }
 
-  public async viewTestInfo(testIdObject: TestIdDto) {
-    this.log(`Query for test ${testIdObject.testId}`, this.context);
+  public async viewTestInfoForUser(testInfoQuery: TestInfoQueryDto) {
+    const { testId, userId } = testInfoQuery;
+    this.log(`Query for test ${testId} for user ${userId}`, this.context);
     this.log(`Querying DB...`, this.context);
     const test: Test = await this.findOne({
-      relations: ['attempts', 'course'],
-      where: testIdObject,
+      relations: ['attempts', 'course', 'attempts.user'],
+      where: {
+        testId: testId,
+      },
     });
     if (!test) {
       this.error(
-        `Test ${testIdObject.testId} could not be found`,
+        `Test ${testId} could not be found`,
         this.context,
         this.getTrace(),
       );
+      throw new TestNotFoundException();
     }
-    this.log(`Test ${testIdObject.testId} found`, this.context);
-    this.log(`Formatting test information...`, this.context);
+    this.log(`Test ${testId} found`, this.context);
+    this.log(`Formatting test information for user ${userId}...`, this.context);
 
     const attempts: AttemptHistory[] = test.attempts
+      .filter((attempt) => attempt.user.userId === userId)
       .map((attempt) => {
         return {
           attemptId: attempt.attemptId,
@@ -141,7 +141,11 @@ export class TestService extends BaseService<Test> {
       timeLimit: test.timeLimit,
       attempts: attempts,
     };
-    this.log(`Test information formatted`, this.context);
+    this.log(`Test information formatted for user ${userId}`, this.context);
+    this.log(
+      `Query for test ${testId} for user ${userId} completed`,
+      this.context,
+    );
     return testInfo;
   }
 

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector, useStore } from "react-redux";
-import type { AppDispatch, AppStore, RootState } from "../store/store"
+import type { AppDispatch, AppStore, RootState } from "./store/store"
 import { buildCreateSlice, asyncThunkCreator } from "@reduxjs/toolkit";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`

@@ -6,10 +6,11 @@ export default class AuthRequest extends BaseRequest {
 
     public static async login(body: LoginBody ) {
         const response = await BaseRequest.request<LoginResponse>('auth/login', RequestTypes.POST, body);
-        const { accessToken, refreshToken } = response;
+        const { accessToken, refreshToken, name, profilePic } = response;
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
-        return response.profilePic;
+        localStorage.setItem('username', name);
+        return { profilePic: profilePic };
     }
 
     public static async signUp(body: SignUpBody) {
@@ -26,9 +27,10 @@ export default class AuthRequest extends BaseRequest {
     }
 
     public static async logout() {
-        await BaseRequest.request(`auth/refresh}`, RequestTypes.PUT, {});
-        // BaseRequest.cookie.delete('accessToken');
-        // BaseRequest.cookie.delete('refreshToken');
+        await BaseRequest.request(`auth/logout`, RequestTypes.POST, {});
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem(`username`);
     }
     
 }

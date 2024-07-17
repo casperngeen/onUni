@@ -8,6 +8,7 @@ import {
   CourseInfoWithTestsDto,
   NewCourseDetailsDto,
   UpdateCourseDto,
+  ViewCourseInfoQueryDto,
 } from './course.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -50,12 +51,17 @@ export class CourseService extends BaseService<Course> {
     let courses: Course[];
     if (role === Roles.TEACHER) {
       courses = await this.courseRepository.find({
-        relations: ['tests', 'tests.attempts'],
+        relations: ['tests', 'tests.attempts', 'tests.attempts.user'],
       });
     } else {
       const user = await this.userRepository.findOne({
         where: { userId: userId },
-        relations: ['courses', 'courses.tests', 'courses.tests.attempts'],
+        relations: [
+          'courses',
+          'courses.tests',
+          'courses.tests.attempts',
+          'courses.tests.attempts.user',
+        ],
       });
       courses = user ? user.courses : null;
     }
@@ -66,7 +72,7 @@ export class CourseService extends BaseService<Course> {
       this.context,
     );
     const courseInfo: AllCourseInfoDto[] = courses.map((course) =>
-      this.formatCourseInfo(course),
+      this.formatCourseInfo(course, userId),
     );
     const sortedCourses = courseInfo.sort((x, y) => x.courseId - y.courseId);
     this.log(`Course information for user ${userId} formatted`, this.context);
@@ -87,9 +93,9 @@ export class CourseService extends BaseService<Course> {
             .find((course) => course.courseId === sortedCourses[index].courseId)
             .tests.find(
               (test) =>
-                test.attempts.findIndex(
-                  (attempt) => attempt.submitted !== null,
-                ) === -1,
+                test.attempts
+                  .filter((attempt) => attempt.user.userId === userId)
+                  .findIndex((attempt) => attempt.submitted !== null) === -1,
             );
     const formatTest: NextTestDto = suggestedTest
       ? {
@@ -108,15 +114,15 @@ export class CourseService extends BaseService<Course> {
     };
   }
 
-  public async viewCourseInfo(courseIdObject: CourseIdDto) {
-    const { courseId } = courseIdObject;
+  public async viewCourseInfoForUser(viewCourseInfo: ViewCourseInfoQueryDto) {
+    const { courseId, userId } = viewCourseInfo;
     this.log(`Course info query for course ${courseId}`, this.context);
     const course: Course = await this.isCourseInRepo(courseId);
     this.log(
       `Formatting course information for course ${courseId}...`,
       this.context,
     );
-    const courseInfo = this.formatCourseInfoWithTests(course);
+    const courseInfo = this.formatCourseInfoWithTests(course, userId);
     this.log(
       `Course information for course ${courseId} formatted`,
       this.context,
@@ -250,7 +256,7 @@ export class CourseService extends BaseService<Course> {
   public async isCourseInRepo(courseId: number) {
     this.log(`Checking if course ${courseId} is in DB...`, this.context);
     const course: Course = await this.findOne({
-      relations: ['tests', 'tests.attempts', 'users'],
+      relations: ['tests', 'tests.attempts', 'tests.attempts.user', 'users'],
       where: { courseId: courseId },
       order: {
         tests: {
@@ -286,10 +292,12 @@ export class CourseService extends BaseService<Course> {
     return user;
   }
 
-  private formatCourseInfo(course: Course): AllCourseInfoDto {
+  private formatCourseInfo(course: Course, userId: number): AllCourseInfoDto {
     const completed = course.tests.filter(
       (test) =>
-        test.attempts.findIndex((attempt) => attempt.submitted !== null) !== -1,
+        test.attempts
+          .filter((attempt) => attempt.user.userId == userId)
+          .findIndex((attempt) => attempt.submitted !== null) !== -1,
     ).length;
     const progress =
       course.tests.length === 0
@@ -304,9 +312,13 @@ export class CourseService extends BaseService<Course> {
     };
   }
 
-  private formatCourseInfoWithTests(course: Course): CourseInfoWithTestsDto {
+  private formatCourseInfoWithTests(
+    course: Course,
+    userId: number,
+  ): CourseInfoWithTestsDto {
     const tests = course.tests.map((test) => {
       let currScore = null;
+      let numOfAttempts = 0;
       if (
         test.testType === TestTypes.EXAM &&
         test.scoringFormat !== ScoringFormats.HIGHEST
@@ -343,7 +355,11 @@ export class CourseService extends BaseService<Course> {
             }
         }
       } else {
-        for (const attempt of test.attempts) {
+        const userAttempts = test.attempts.filter(
+          (attempt) => attempt.user.userId == userId,
+        );
+        numOfAttempts = userAttempts.length;
+        for (const attempt of userAttempts) {
           if (
             attempt &&
             (attempt.status === Status.SUBMIT ||
@@ -365,7 +381,7 @@ export class CourseService extends BaseService<Course> {
         maxAttempt: test.maxAttempt,
         timeLimit: test.timeLimit,
         currScore: currScore,
-        numOfAttempts: test.attempts.length,
+        numOfAttempts: numOfAttempts,
       };
     });
     return {

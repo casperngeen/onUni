@@ -79,6 +79,22 @@ export class TestIdDto {
   testId: number;
 }
 
+export class TestInfoQueryDto extends TestIdDto {
+  @IsInt()
+  @IsNotEmpty()
+  userId: number;
+}
+
+export class AllTestQueryDto {
+  @IsInt()
+  @IsNotEmpty()
+  userId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  courseId: number;
+}
+
 export class AttemptTestIdDto extends TestIdDto {
   @IsInt()
   @IsNotEmpty()

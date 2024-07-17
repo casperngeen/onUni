@@ -54,6 +54,12 @@ export class CourseIdDto {
   courseId: number;
 }
 
+export class ViewCourseInfoQueryDto extends CourseIdDto {
+  @IsInt()
+  @IsNotEmpty()
+  userId: number;
+}
+
 export class NewCourseDetailsDto {
   @IsNotEmpty()
   @IsString()

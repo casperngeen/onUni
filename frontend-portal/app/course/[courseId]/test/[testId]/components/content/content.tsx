@@ -24,9 +24,7 @@ const TestPageContent: React.FC<{}> = () => {
             }))
 
             // only retrieve all tests the first time
-            if (testOrder.length == 0) {
-                await dispatch(getAllTests({ courseId: courseId })).unwrap()
-            }
+            await dispatch(getAllTests({ courseId: courseId })).unwrap()
             dispatch(setCurrIndex(testId));
         }
         initialise();

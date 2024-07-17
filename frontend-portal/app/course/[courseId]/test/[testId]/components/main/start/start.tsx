@@ -14,7 +14,9 @@ const StartButton: React.FC<{}> = () => {
     const testId = Array.isArray(testIdString) ? parseInt(testIdString[0]) : parseInt(testIdString);
     const currIndex = selector(selectCurrIndex);
     const tests = selector(selectTestOrder);
-    const disabled = currIndex !== 0 && !tests[currIndex-1].completed;
+    const disabled = currIndex !== 0 && tests && !tests[currIndex-1].completed;
+
+
 
     const startTest = () => {
         router.push(`/course/${courseId}/test/${testId}/attempt/new`);

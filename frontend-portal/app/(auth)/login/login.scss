@@ -66,6 +66,10 @@
     gap: $gap-4;
 }
 
+.login-form-field-container {
+    padding-bottom: $p-4;
+}
+
 .email-input-field {
     border-radius: $rounded-3;
     border-style: solid;
@@ -92,8 +96,8 @@
 }
 
 .password-input-field {
-    border-width: 0px;
-    padding: 0px;
+    border-width: 0px !important;
+    padding: 0px !important;
     &:focus {
         box-shadow: 0px 0px 0px 0px;
         border-width: 0px !important;

@@ -28,6 +28,7 @@ export interface LoginResponse {
     accessToken: string,
     refreshToken: string,
     profilePic: string | null,
+    name: string,
 }
 
 export interface ForgetPasswordResponse {

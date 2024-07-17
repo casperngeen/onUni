@@ -6,11 +6,12 @@ import {
   Param,
   Post,
   Put,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { ResponseHandler } from 'src/base/base.response';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { TestService } from './test.service';
 import {
   NewTestDto,
@@ -20,6 +21,7 @@ import {
 } from './test.entity';
 import { TeacherGuard } from '../user/teacher.guard';
 import { CourseUserGuard } from '../course/course.user.guard';
+import { PayloadDto } from '../user/user.entity';
 
 @Controller()
 export class TestController {
@@ -29,10 +31,13 @@ export class TestController {
   @Get('course/:courseId/tests')
   async viewAllTests(
     @Param('courseId') courseId: number,
+    @Req() request: Request,
     @Res() response: Response,
   ) {
+    const { userId } = request['user'] as PayloadDto;
     const tests = await this.testService.viewAllTests({
       courseId: courseId,
+      userId: userId,
     });
     response.status(200).json(ResponseHandler.success(tests));
   }
@@ -41,10 +46,13 @@ export class TestController {
   @Get('test/:testId')
   async viewTestInformation(
     @Param('testId') testId: number,
+    @Req() request: Request,
     @Res() response: Response,
   ) {
-    const test = await this.testService.viewTestInfo({
+    const { userId } = request['user'] as PayloadDto;
+    const test = await this.testService.viewTestInfoForUser({
       testId: testId,
+      userId: userId,
     });
     response.status(200).json(ResponseHandler.success(test));
   }

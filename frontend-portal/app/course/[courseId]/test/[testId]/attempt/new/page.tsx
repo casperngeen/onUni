@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
-import { selectLoading } from "@/utils/redux/slicers/attempt.slicer";
+import { useAppSelector } from "@/utils/redux/hooks";
 import './modal.scss';
 import { useParams, useRouter } from "next/navigation";
 import UniModal from "@/components/overwrite/uni.modal";
@@ -18,17 +17,20 @@ const CreateAttempt: React.FC<{}> = () => {
     const router = useRouter();
     
     useEffect(() => {
-        setToggleModal(true)
-        
-        const createAttempt = async () => {
-            const { attemptId } = await AttemptRequest.createNewAttempt({
-                testId: testId, 
-                courseId: courseId
-            });
-            router.push(`/course/${courseId}/test/${testId}/attempt/${attemptId}/new`);
-        }
+        if (localStorage.getItem(`username`) === null) {
+            router.push(`/login`);
+        } else {
+            setToggleModal(true)
+            const createAttempt = async () => {
+                const { attemptId } = await AttemptRequest.createNewAttempt({
+                    testId: testId, 
+                    courseId: courseId
+                });
+                router.push(`/course/${courseId}/test/${testId}/attempt/${attemptId}/new`);
+            }
 
-        createAttempt();
+            createAttempt();
+        }
      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

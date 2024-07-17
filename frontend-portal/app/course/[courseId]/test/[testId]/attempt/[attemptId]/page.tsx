@@ -30,22 +30,28 @@ const AttemptSummary: React.FC<{}> = () => {
     }
     
     useEffect(() => {
-        dispatch(getAttemptSummary({attemptId: attemptId}));
+        if (localStorage.getItem(`username`) === null) {
+            router.push(`/login`);
+        } else {
+            dispatch(getAttemptSummary({attemptId: attemptId}));
 
-        const handleScroll = () => {
-            const hash =  window.location.hash;
-            if (hash) {
-                const elementId = hash.replace('#', '');
-                setTimeout(() => {
-                    const element = document.getElementById(elementId);
-                    if (element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }, 100);
+            const handleScroll = () => {
+                const hash =  window.location.hash;
+                if (hash) {
+                    const elementId = hash.replace('#', '');
+                    setTimeout(() => {
+                        const element = document.getElementById(elementId);
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }, 100);
+                }
             }
-        }
 
-        handleScroll();
+            handleScroll();
+        }
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [attemptId, dispatch]);
 
 

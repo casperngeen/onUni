@@ -11,7 +11,7 @@ import SidebarProgressBar from "../sidebar/progress/progress.bar";
 import SidebarHeader from "../sidebar/header/header";
 import SideBarButtons from "../sidebar/button/button";
 import WarningModal, { ModalType } from "../modals/warning.modal";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import SubmttingModal from "../modals/submitting.modal";
 
 const TestAttempt: React.FC<{}> = () => {
@@ -25,14 +25,19 @@ const TestAttempt: React.FC<{}> = () => {
     const questions = selector(selectQuestions);
     const error = selector(selectError);
     const loading = selector(selectLoading);
-
+    const router = useRouter();
     
     useEffect(() => {
-        dispatch(fetchAttempt({
-            testId: testId, 
-            courseId: courseId, 
-            attemptId: attemptId
-        }));
+        if (localStorage.getItem(`username`) === null) {
+            router.push(`/login`);
+        } else {
+            dispatch(fetchAttempt({
+                testId: testId, 
+                courseId: courseId, 
+                attemptId: attemptId
+            }));
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [attemptId, courseId, dispatch, testId])
 
     useEffect(() => {

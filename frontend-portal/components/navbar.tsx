@@ -1,32 +1,31 @@
 'use client'
 
-import { useAppSelector } from "@/utils/redux/hooks"
 import { useRouter } from "next/navigation"
-import { Image } from "react-bootstrap"
+import { Dropdown, Image } from "react-bootstrap"
 import '../utils/styles/components/navbar.scss';
+import AuthRequest from "@/utils/request/auth.request";
+import { useEffect, useState } from "react";
 
 const NavBar: React.FC<{}> = () => {
-    const selector = useAppSelector();
     const router = useRouter();
-    // need to get profile pic and name
+    const [name, setName] = useState('');
 
+    useEffect(()=> {
+        const username = localStorage.getItem(`username`);
+        if (username) {
+            setName(username);
+        }
+    }, [])
 
     const clickHome = () => {
         router.push('/');
     }
 
-    const clickEvent = () => {
-        // do something
+    const clickLogout = async () => {
+        await AuthRequest.logout();
+        router.push(`/login`);
     }
 
-    const clickTranscript = () => {
-        // do something
-    }
-    
-    const clickNotification = () => {
-        // do something
-    }
-    
     return (
         <div className="uni-navbar">
             <div className="navbar-left">
@@ -36,10 +35,16 @@ const NavBar: React.FC<{}> = () => {
             </div>
             <div className="navbar-right">
                 <div className="profile">
-                    <div className="name">name</div>
-                    <div className="picture">
-                        <Image src='/profile.svg' alt="profile-pic"/>
-                    </div>
+                    <div className="name">{name}</div>
+                    <Dropdown>
+                        <Dropdown.Toggle as="div" className="picture">
+                            <Image src='/profile.svg' alt="profile-pic"/>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={clickLogout}>Logout</Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
                 </div>
             </div>
         </div>

@@ -44,6 +44,7 @@ export class AttemptTeacherGuard implements CanActivate {
     const attemptId: number = parseInt(request.params.attemptId);
     const attempt: Attempt =
       await this.attemptService.getAttemptFromRepo(attemptId);
+    this.loggerService.log((attempt.user.userId === userId) + '', this.context);
     return attempt.user.userId === userId;
   }
 }

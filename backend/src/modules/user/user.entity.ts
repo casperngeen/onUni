@@ -38,6 +38,9 @@ export class User {
   @Column('text', { nullable: true })
   profilePic: string;
 
+  @Column('text', { default: 'Person' })
+  name: string;
+
   @Column({
     type: 'enum',
     enum: Roles,
@@ -90,6 +93,10 @@ export class SignUpDto extends LoginDto {
   @IsEnum(Roles)
   role: Roles;
 
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
   @IsOptional()
   @IsString()
   profilePic: string;
@@ -112,9 +119,13 @@ export class AuthTokenDto {
 }
 
 export class LoginResponseDto extends AuthTokenDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   profilePic: string;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 }
 
 export class PayloadDto {

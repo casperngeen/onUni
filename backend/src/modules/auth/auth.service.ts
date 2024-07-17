@@ -103,6 +103,7 @@ export class AuthService extends BaseService<User> {
         accessToken: accessToken,
         refreshToken: refreshToken,
         profilePic: user.profilePic,
+        name: user.name,
       };
     }
   }
@@ -167,7 +168,7 @@ export class AuthService extends BaseService<User> {
    * @param signUpDetails Object containing role, password, email
    */
   public async signUp(signUpDetails: SignUpDto): Promise<void> {
-    const { email, password, profilePic, role } = signUpDetails;
+    const { email, password, profilePic, role, name } = signUpDetails;
     this.log(`Sign up query: ${signUpDetails.email}`, this.context);
     this.log('Checking for duplicates...', this.context);
     const user: User = await this.findOne({
@@ -205,6 +206,7 @@ export class AuthService extends BaseService<User> {
       passwordHash: hash,
       role: role,
       email: email,
+      name: name,
       profilePic: profilePic,
       courses: [],
       attempts: [],
