@@ -143,11 +143,11 @@ export class AttemptService extends BaseService<Attempt> {
       this.context,
     );
     this.log(
-      `Checking if user ${user.userId} has satsified the prerequisites for test ${testId}`,
+      `Checking if user ${userId} has satsified the prerequisites for test ${testId}`,
       this.context,
     );
     const courseTests = await this.testRepository.find({
-      relations: ['attempts'],
+      relations: ['attempts', 'attempts.user'],
       where: {
         course: {
           courseId: test.course.courseId,
@@ -160,9 +160,9 @@ export class AttemptService extends BaseService<Attempt> {
     const index = courseTests.findIndex((test) => test.testId === testId);
     if (index > 0) {
       const notSatisfied =
-        courseTests[index - 1].attempts.filter(
-          (attempt) => attempt.submitted !== null,
-        ).length === 0;
+        courseTests[index - 1].attempts
+          .filter((attempt) => attempt.user.userId === userId)
+          .filter((attempt) => attempt.submitted !== null).length === 0;
       if (notSatisfied) {
         this.error(
           `Test ${testId}'s prerequisite has not been satisfied`,

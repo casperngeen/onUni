@@ -31,7 +31,7 @@ const AttemptSummary: React.FC<{}> = () => {
     
     useEffect(() => {
         if (localStorage.getItem(`username`) === null) {
-            router.push(`/login`);
+            router.replace(`/login`);
         } else {
             dispatch(getAttemptSummary({attemptId: attemptId}));
 

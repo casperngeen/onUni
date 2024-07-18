@@ -26,10 +26,10 @@ const TestAttempt: React.FC<{}> = () => {
     const error = selector(selectError);
     const loading = selector(selectLoading);
     const router = useRouter();
-    
+
     useEffect(() => {
         if (localStorage.getItem(`username`) === null) {
-            router.push(`/login`);
+            router.replace(`/login`);
         } else {
             dispatch(fetchAttempt({
                 testId: testId, 

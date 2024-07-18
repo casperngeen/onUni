@@ -12,6 +12,10 @@ interface ICourseDashboardDisplayProps {
 const CourseDashboardDisplay: React.FC<ICourseDashboardDisplayProps> = ({ course }) => {
     const { title, courseId, startDate, endDate, progress } = course;
     const router = useRouter();
+    const startDateParts = startDate.split("/");
+    const year = startDateParts[2];
+    const month = startDateParts[1];
+    const day = startDateParts[0];
 
     const viewCourse = () => {
         router.push(`/course/${courseId}`);
@@ -52,7 +56,7 @@ const CourseDashboardDisplay: React.FC<ICourseDashboardDisplayProps> = ({ course
                     </div>
                     <UniButton custombutton='view' onClick={viewCourse}>
                         {
-                            Date.parse(startDate) > Date.now() || progress === 100
+                            Date.parse(`${year}-${month}-${day}`) > Date.now() || progress === 100
                             ? `View course`
                             : progress === 0
                             ? `Start`

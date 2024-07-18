@@ -4,7 +4,7 @@ import UniButton from "@/components/overwrite/uni.button";
 import './start.scss';
 import { useParams, useRouter } from "next/navigation";
 import { useAppSelector } from "@/utils/redux/hooks";
-import { selectCurrIndex, selectTestOrder } from "@/utils/redux/slicers/test.slicer";
+import { selectCourseInactive, selectCurrIndex, selectTestOrder } from "@/utils/redux/slicers/test.slicer";
 
 const StartButton: React.FC<{}> = () => {    
     const router = useRouter();
@@ -14,7 +14,8 @@ const StartButton: React.FC<{}> = () => {
     const testId = Array.isArray(testIdString) ? parseInt(testIdString[0]) : parseInt(testIdString);
     const currIndex = selector(selectCurrIndex);
     const tests = selector(selectTestOrder);
-    const disabled = currIndex !== 0 && tests && !tests[currIndex-1].completed;
+    const courseInactive = selector(selectCourseInactive);
+    const disabled = courseInactive || (currIndex !== 0 && tests && !tests[currIndex-1].completed);
 
 
 

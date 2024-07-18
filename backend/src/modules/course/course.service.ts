@@ -91,7 +91,8 @@ export class CourseService extends BaseService<Course> {
         ? null
         : courses
             .find((course) => course.courseId === sortedCourses[index].courseId)
-            .tests.find(
+            .tests.sort((x, y) => x.testId - y.testId)
+            .find(
               (test) =>
                 test.attempts
                   .filter((attempt) => attempt.user.userId === userId)
@@ -243,11 +244,11 @@ export class CourseService extends BaseService<Course> {
     }
     userInCourse
       ? this.log(
-          `User ${userId} is not part of course ${course.courseId}`,
+          `User ${userId} is part of course ${course.courseId}`,
           this.context,
         )
       : this.log(
-          `User ${userId} is part of course ${course.courseId}`,
+          `User ${userId} is not part of course ${course.courseId}`,
           this.context,
         );
     return userInCourse;

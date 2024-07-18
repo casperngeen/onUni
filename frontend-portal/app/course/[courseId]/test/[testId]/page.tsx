@@ -8,12 +8,11 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const TestPage: React.FC<{}> = () => {
-    const selector = useAppSelector();
     const router = useRouter();
 
     useEffect(() => {
         if (localStorage.getItem(`username`) === null) {
-            router.push(`/login`);
+            router.replace(`/login`);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])

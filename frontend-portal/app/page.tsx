@@ -11,7 +11,7 @@ const Dashboard: React.FC<{}> = () => {
 
   useEffect(() => {
     if (!localStorage.getItem(`username`)) {
-      router.push(`/login`);
+      router.replace(`/login`);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])

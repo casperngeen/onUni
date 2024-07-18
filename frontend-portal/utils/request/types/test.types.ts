@@ -37,6 +37,7 @@ export interface ITestResponseWithAttemptInfo extends ITestResponse {
 export interface ISingleTestResponse extends ITestResponse {
     attempts: AttemptHistoryResponse[],
     courseTitle: string,
+    courseInactive: boolean,
 }
 
 export interface INewTest {

@@ -10,6 +10,7 @@ import {
 import { Attempt, AttemptHistory } from '../attempt/attempt.entity';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsISO8601,
   IsInt,
@@ -171,6 +172,10 @@ export class TestInfoWithHistoryDto extends TestInfoDto {
   @IsNotEmpty()
   @IsString()
   courseTitle: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  courseInactive: boolean;
 }
 
 export class NextTestDto {

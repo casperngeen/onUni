@@ -70,10 +70,6 @@ export class TestService extends BaseService<Test> {
           .filter((attempt) => attempt.user.userId === userId)
           .findIndex((attempt) => attempt.submitted !== null);
         const completed = index !== -1;
-        this.log(
-          `Test ${test.testId} user ${userId} Completed:${completed}`,
-          this.context,
-        );
         return {
           testId: test.testId,
           testTitle: test.title,
@@ -127,6 +123,10 @@ export class TestService extends BaseService<Test> {
       })
       .sort((x, y) => Date.parse(y.submitted) - Date.parse(x.submitted));
 
+    const courseInactive =
+      Date.parse(test.course.startDate) > Date.now() ||
+      Date.parse(test.course.endDate) < Date.now();
+
     const testInfo: TestInfoWithHistoryDto = {
       testId: test.testId,
       courseTitle: test.course.title,
@@ -140,6 +140,7 @@ export class TestService extends BaseService<Test> {
       maxAttempt: test.maxAttempt,
       timeLimit: test.timeLimit,
       attempts: attempts,
+      courseInactive: courseInactive,
     };
     this.log(`Test information formatted for user ${userId}`, this.context);
     this.log(

@@ -24,6 +24,7 @@ interface IInitialState {
 	error: string | null,
 	testOrder: ITestInfoForPreReq[],
 	currIndex: number,
+	courseInactive: boolean,
 }
 
 const initialState: IInitialState = {
@@ -44,6 +45,7 @@ const initialState: IInitialState = {
 	error: null,
 	testOrder: [],
 	currIndex: 0,
+	courseInactive: false,
 }
 
 const testSlice = createAppSlice({
@@ -127,7 +129,7 @@ const testSlice = createAppSlice({
 					const { attempts, timeLimit, testType, 
 						maxAttempt, maxScore, testTitle, 
 						testDescription, courseTitle, start, 
-						deadline, scoringFormat } = action.payload;
+						deadline, scoringFormat, courseInactive } = action.payload;
 					state.attemptHistory = attempts;
 					state.timeLimit = timeLimit;
 					state.start = start,
@@ -139,6 +141,7 @@ const testSlice = createAppSlice({
 					state.testDescription = testDescription;
 					state.courseTitle = courseTitle;
 					state.scoringFormat = scoringFormat;
+					state.courseInactive = courseInactive;
 				},
 				settled: (state) => {
 					state.loading = false;
@@ -161,6 +164,7 @@ const testSlice = createAppSlice({
 		selectCourseTitle: (state) => state.courseTitle,
 		selectTestOrder: (state) => state.testOrder,
 		selectCurrIndex: (state) => state.currIndex,
+		selectCourseInactive: (state) => state.courseInactive,
 	}
 })
 
@@ -172,7 +176,7 @@ export const { selectAttemptHistory, selectTimeLimit, selectTestType,
 	selectMaxScore, selectMaxAttempt, selectTestTitle,
 	selectTestDescription, selectStartTime, selectDeadline,
 	selectScoringFormat, selectCourseTitle, selectViewSidebar,
-	selectCurrIndex, selectTestOrder,
+	selectCurrIndex, selectTestOrder, selectCourseInactive,
 } = testSlice.selectors;
 
 export default testSlice;
