@@ -43,7 +43,8 @@ const ExamContentPage: React.FC<{}> = () => {
                 let highest = 0;
                 let isNullHighest = true;
                 for (const score of scores) {
-                    if (score) {
+                    // 0 evaluates to false
+                    if (score !== null) {
                         isNullHighest = false;
                         highest = Math.max(score, highest);
                     }
