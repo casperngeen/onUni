@@ -13,6 +13,7 @@
 
 .single-test-quiz {
     padding: $p-3 $p-4;
+    gap: $gap-2;
 }
 
 .test-title-deadline-container {
@@ -70,6 +71,7 @@
 
 .not-eligible-container {
     align-items: start;
+    justify-content: center;
 }
 
 .test-detail-link {
@@ -91,5 +93,4 @@
 .quiz-status-with-button {
     display: flex;
     justify-content: space-between;
-    align-items: center;
 }

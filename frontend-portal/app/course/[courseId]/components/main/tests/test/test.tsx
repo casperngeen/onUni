@@ -7,6 +7,7 @@ import { useAppSelector } from '@/utils/redux/hooks'
 import { selectTests } from '@/utils/redux/slicers/course.slicer'
 import { formatDateTime, renderScoringFormat } from '@/utils/format'
 import { useParams, useRouter } from 'next/navigation'
+import { selectCourseInactive } from '@/utils/redux/slicers/course.slicer'
 
 interface ISingleTestProps {
     test: ITestResponseWithAttemptInfo,
@@ -16,14 +17,17 @@ interface ISingleTestProps {
 const SingleTest: React.FC<ISingleTestProps> = ({test, index}) => {
     const selector = useAppSelector();
     const tests = selector(selectTests);
+    const courseInactive = selector(selectCourseInactive);
     const { testId, testTitle, numOfAttempts, 
         currScore, maxScore, scoringFormat, 
         maxAttempt, testType, start, 
         deadline } = test;
     const router = useRouter();
-    const isEligible = start 
-        ? Date.parse(start) < Date.now() && (index === 0 || tests[index-1].numOfAttempts > 0)
-        : index === 0 || tests[index-1].numOfAttempts > 0;
+    const isEligible = courseInactive
+        ? false
+        : start 
+            ? Date.parse(start) < Date.now() && (index === 0 || tests[index-1].numOfAttempts > 0)
+            : index === 0 || tests[index-1].numOfAttempts > 0;
     const { courseId: courseIdString } = useParams();
     const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
     const clickLinkOrButton = () => {
@@ -48,9 +52,6 @@ const SingleTest: React.FC<ISingleTestProps> = ({test, index}) => {
                         isEligible
                         ? <UniButton custombutton='confirm' onClick={clickLinkOrButton}>Attempt</UniButton>
                         : <div className='not-eligible-container'>
-                            <div className='not-eligible'>
-                                Not eligible
-                            </div>
                             <a onClick={clickLinkOrButton}>
                                 <div className='test-detail-link'>
                                     <div className='test-detail'>
@@ -124,8 +125,6 @@ const SingleTest: React.FC<ISingleTestProps> = ({test, index}) => {
                         isEligible
                         ? <UniButton custombutton='confirm' onClick={clickLinkOrButton}>Attempt</UniButton>
                         : <div className='not-eligible-container'>
-                            <div className='not-eligible'>
-                            </div>
                             <a onClick={clickLinkOrButton}>
                                 <div className='test-detail-link'>
                                     <div className='test-detail'>
