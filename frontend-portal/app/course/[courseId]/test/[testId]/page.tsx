@@ -3,7 +3,6 @@
 import NavBar from "@/components/navbar";
 import TestPageContent from "./components/content/content";
 import './test.scss';
-import { useAppSelector } from "@/utils/redux/hooks";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
