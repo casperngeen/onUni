@@ -81,7 +81,7 @@ export class AuthGuard implements CanActivate {
     } catch (error) {
       if (error instanceof TokenExpiredError) {
         this.loggerService.error(
-          `Error verifying token ${error.toString()}`,
+          `JWT has expired`,
           this.context,
           StackTrace.getSync()
             .map((frame) => frame.toString())

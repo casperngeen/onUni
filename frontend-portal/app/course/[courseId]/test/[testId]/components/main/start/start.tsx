@@ -17,8 +17,6 @@ const StartButton: React.FC<{}> = () => {
     const courseInactive = selector(selectCourseInactive);
     const disabled = courseInactive || (currIndex !== 0 && tests && !tests[currIndex-1].completed);
 
-
-
     const startTest = () => {
         router.push(`/course/${courseId}/test/${testId}/attempt/new`);
     }

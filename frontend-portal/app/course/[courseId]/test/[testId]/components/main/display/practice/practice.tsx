@@ -37,7 +37,10 @@ const PracticeContentPage: React.FC<{}> = () => {
                             Time limit:
                         </div>
                         <div className='panel-content-practice'>
-                            {timeLimit} minutes
+                            {timeLimit === 1
+                                ? `1 minute`
+                                : `${timeLimit} minutes`
+                            } 
                         </div>
                     </div>
                     <div className='panel-item-practice'>

@@ -3,6 +3,7 @@
 .dashboard-content {
     position: relative;
     top: 0;
+    overflow-x: hidden;
     overflow-y: auto;
     padding: 0px 160px $p-12 160px;
     display: flex;

@@ -1,5 +1,5 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
-import { combineSlices, configureStore } from "@reduxjs/toolkit";
+import { combineSlices, configureStore, createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
 import attemptSlice from "../slicers/attempt.slicer";
 import testSlice from "../slicers/test.slicer";
 import courseSlice from "../slicers/course.slicer";
@@ -7,6 +7,9 @@ import dashboardSlice from "../slicers/dashboard.slicer";
 
 const rootReducer = combineSlices(attemptSlice, testSlice, courseSlice, dashboardSlice);
 export type RootState = ReturnType<typeof rootReducer>;
+
+
+// const listenerMiddleware = createListenerMiddleware();
 
 // `makeStore` encapsulates the store configuration to allow
 // creating unique store instances, which is particularly important for

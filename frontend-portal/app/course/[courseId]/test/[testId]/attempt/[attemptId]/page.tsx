@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import SidebarHeader from "./sidebar/header/header";
-import { exitSummary, getAttemptSummary, selectQuestions, setSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
+import { exitSummary, getAttemptSummary, resetError, selectErrorCode, selectQuestions, setSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
 import SideBarButtons from "./sidebar/button/button";
 import SidebarQuestions from "./sidebar/question/sidebar.question";
 import SingleQuestion from "./question/question";
@@ -30,29 +30,24 @@ const AttemptSummary: React.FC<{}> = () => {
     }
     
     useEffect(() => {
-        if (localStorage.getItem(`username`) === null) {
-            router.replace(`/login`);
-        } else {
-            dispatch(getAttemptSummary({attemptId: attemptId}));
+        dispatch(getAttemptSummary({attemptId: attemptId}));
 
-            const handleScroll = () => {
-                const hash =  window.location.hash;
-                if (hash) {
-                    const elementId = hash.replace('#', '');
-                    setTimeout(() => {
-                        const element = document.getElementById(elementId);
-                        if (element) {
-                            element.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    }, 100);
-                }
+        const handleScroll = () => {
+            const hash =  window.location.hash;
+            if (hash) {
+                const elementId = hash.replace('#', '');
+                setTimeout(() => {
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 100);
             }
-
-            handleScroll();
         }
-        
+
+        handleScroll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [attemptId, dispatch]);
+    }, [attemptId]);
 
 
     return (

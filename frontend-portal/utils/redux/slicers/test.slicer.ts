@@ -21,7 +21,7 @@ interface IInitialState {
 	viewSidebar: boolean,
 	loading: boolean,
 	errorCode: number | null,
-	error: string | null,
+	errorMessage: string | null,
 	testOrder: ITestInfoForPreReq[],
 	currIndex: number,
 	courseInactive: boolean,
@@ -42,7 +42,7 @@ const initialState: IInitialState = {
 	viewSidebar: true,
 	loading: false,
 	errorCode: null,
-	error: null,
+	errorMessage: null,
 	testOrder: [],
 	currIndex: 0,
 	courseInactive: false,
@@ -64,84 +64,104 @@ const testSlice = createAppSlice({
 		navigateForward: create.reducer((state) => {
 			state.currIndex++;
 		}),
+		resetError: create.reducer((state) => {
+			state.errorMessage = null;
+			state.errorCode = null;
+		}),
 		// call before calling fetchTestInfo
-		getAllTests: create.asyncThunk(
+		getAllTests: create.asyncThunk.withTypes<{rejectValue: {message: string, errorCode: number}}>()(
 			async (params: IGetAllTests, thunkAPI) => {
-				const response = await TestRequest.getAllTests(params);
-				const testIds = response.map((test) => {
-					return {
-						testId: test.testId,
-						title: test.testTitle,
-						completed: test.completed,
+				try {
+					const response = await TestRequest.getAllTests(params);
+					const testIds = response.map((test) => {
+						return {
+							testId: test.testId,
+							title: test.testTitle,
+							completed: test.completed,
+						}
+					});
+					return testIds;
+				} catch (error) {
+					if (error instanceof RequestError) {
+						return thunkAPI.rejectWithValue({message: error.message, errorCode: error.getErrorCode()})
 					}
-				});
-				return testIds;
+				}
 			},
 			{
 				pending: (state) => {
 					state.loading = true;
-					state.error = null;
+					state.errorMessage = null;
 					state.errorCode = null;
 				},
 				rejected: (state, action) => {
-					if (action.payload instanceof RequestError) {
-						state.error = action.payload.message;
-						state.errorCode = action.payload.getErrorCode();
+					if (action.payload) {
+						state.errorMessage = action.payload.message;
+						state.errorCode = action.payload.errorCode;
 					}
 				},
 				fulfilled: (state, action) => {
-					state.testOrder = action.payload;
+					if (action.payload) {
+						state.testOrder = action.payload;
+					}
 				},
 				settled: (state) => {
 					state.loading = false
 				}
 			}
 		),
-		fetchTestInfo: create.asyncThunk(
+		fetchTestInfo: create.asyncThunk.withTypes<{rejectValue: {message: string, errorCode: number}}>()(
 			async (params: IGetTest, thunkAPI) => {
-				let {deadline, start, attempts, ...testInfo} = await TestRequest.getTest(params);
-				if (start) {
-					start = formatDateTime(new Date(start))
-				}
-				if (deadline) {
-					deadline = formatDateTime(new Date(deadline))
-				}
-				for (const attempt of attempts) {
-					if (attempt.submitted) {
-						attempt.submitted = formatDateTime(new Date(attempt.submitted));
+				try {
+					let {deadline, start, attempts, ...testInfo} = await TestRequest.getTest(params);
+					if (start) {
+						start = formatDateTime(new Date(start))
 					}
+					if (deadline) {
+						deadline = formatDateTime(new Date(deadline))
+					}
+					for (const attempt of attempts) {
+						if (attempt.submitted) {
+							attempt.submitted = formatDateTime(new Date(attempt.submitted));
+						}
+					}
+					return {deadline, start, attempts, ...testInfo};
+				} catch (error) {
+					if (error instanceof RequestError) {
+                        return thunkAPI.rejectWithValue({message: error.message, errorCode: error.getErrorCode()})
+                    }
 				}
-				return {deadline, start, attempts, ...testInfo};
 			}, 
 			{
 				pending: (state) => {
 					state.loading = true;
-					state.error = null;
+					state.errorMessage = null;
 					state.errorCode = null;
 				},
 				rejected: (state, action) => {
-					if (action.payload instanceof RequestError) {
-						state.error = action.payload.message;
-						state.errorCode = action.payload.getErrorCode();
+					if (action.payload) {
+						state.errorMessage = action.payload.message;
+						state.errorCode = action.payload.errorCode;
 					}
 				},
 				fulfilled: (state, action) => {
-					const { attempts, timeLimit, testType, 
+					if (action.payload) {
+						const { attempts, timeLimit, testType, 
 						maxAttempt, maxScore, testTitle, 
 						testDescription, courseTitle, start, 
 						deadline, scoringFormat, courseInactive } = action.payload;
-					state.attemptHistory = attempts;
-					state.timeLimit = timeLimit;
-					state.start = start,
-					state.deadline = deadline;
-					state.testType = testType;
-					state.maxAttempt = maxAttempt;
-					state.maxScore = maxScore;
-					state.testTitle = testTitle;
-					state.testDescription = testDescription;
-					state.courseTitle = courseTitle;
-					state.scoringFormat = scoringFormat;
-					state.courseInactive = courseInactive;
+						state.attemptHistory = attempts;
+						state.timeLimit = timeLimit;
+						state.start = start,
+						state.deadline = deadline;
+						state.testType = testType;
+						state.maxAttempt = maxAttempt;
+						state.maxScore = maxScore;
+						state.testTitle = testTitle;
+						state.testDescription = testDescription;
+						state.courseTitle = courseTitle;
+						state.scoringFormat = scoringFormat;
+						state.courseInactive = courseInactive;
+					}
 				},
 				settled: (state) => {
 					state.loading = false;
@@ -165,11 +185,14 @@ const testSlice = createAppSlice({
 		selectTestOrder: (state) => state.testOrder,
 		selectCurrIndex: (state) => state.currIndex,
 		selectCourseInactive: (state) => state.courseInactive,
+		selectErrorMessage: (state) => state.errorMessage,
+		selectErrorCode: (state) => state.errorCode,
 	}
 })
 
 export const { toggleSidebar, fetchTestInfo, getAllTests,
 	navigateBack, navigateForward, setCurrIndex,
+	resetError,
 } = testSlice.actions;
 
 export const { selectAttemptHistory, selectTimeLimit, selectTestType,
@@ -177,6 +200,7 @@ export const { selectAttemptHistory, selectTimeLimit, selectTestType,
 	selectTestDescription, selectStartTime, selectDeadline,
 	selectScoringFormat, selectCourseTitle, selectViewSidebar,
 	selectCurrIndex, selectTestOrder, selectCourseInactive,
+	selectErrorMessage, selectErrorCode
 } = testSlice.selectors;
 
 export default testSlice;

@@ -89,7 +89,10 @@ const ExamContentPage: React.FC<{}> = () => {
                                 Time limit:
                             </div>
                             <div className='panel-content-exam'>
-                                {timeLimit} minutes
+                                {timeLimit === 1
+                                    ? `1 minute`
+                                    : `${timeLimit} minutes`
+                                }
                             </div>
                         </div>
                     </div>

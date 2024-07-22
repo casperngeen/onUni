@@ -120,7 +120,7 @@ export class AuthService extends BaseService<User> {
     };
 
     // change back to shorter time later
-    const options = { expiresIn: '10h' };
+    const options = { expiresIn: '10s' };
     this.log('Generating access token...', this.context);
     try {
       const result = await this.jwtService.signAsync(payload, options);
@@ -147,7 +147,7 @@ export class AuthService extends BaseService<User> {
       role: user.role,
     };
 
-    const options = { expiresIn: '7d' };
+    const options = { expiresIn: '5s' };
     this.log('Generating refresh token...', this.context);
     try {
       const result = await this.jwtService.signAsync(payload, options);
@@ -361,6 +361,7 @@ export class AuthService extends BaseService<User> {
     // to compare against the token with reduced length
     const sha256 = crypto.createHash('sha256');
     const digest = sha256.update(refreshToken).digest('hex');
+    console.log(digest);
     const result: boolean = await bcrypt.compare(digest, user.refreshToken);
 
     if (!result) {
@@ -394,6 +395,7 @@ export class AuthService extends BaseService<User> {
     // to reduce the length of the item to be hashed
     const sha256 = crypto.createHash('sha256');
     const digest = sha256.update(item).digest('hex');
+    console.log(digest);
     const hash: string = await bcrypt.hash(digest, 10);
     if (!hash) {
       this.error(

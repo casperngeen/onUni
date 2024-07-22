@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import SingleQuestion from "../question/question";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
-import { fetchAttempt, selectError, selectLoading, selectQuestions } from "@/utils/redux/slicers/attempt.slicer";
+import { fetchAttempt, selectQuestions } from "@/utils/redux/slicers/attempt.slicer";
 import { UniCol, UniContainer, UniRow } from "@/components/overwrite/uni.components";
 import '../attempt.scss';
 import SidebarQuestions from "../sidebar/question/sidebar.question";
@@ -11,7 +11,7 @@ import SidebarProgressBar from "../sidebar/progress/progress.bar";
 import SidebarHeader from "../sidebar/header/header";
 import SideBarButtons from "../sidebar/button/button";
 import WarningModal, { ModalType } from "../modals/warning.modal";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import SubmttingModal from "../modals/submitting.modal";
 
 const TestAttempt: React.FC<{}> = () => {
@@ -23,22 +23,15 @@ const TestAttempt: React.FC<{}> = () => {
     const selector = useAppSelector();
     const dispatch = useAppDispatch()();
     const questions = selector(selectQuestions);
-    const error = selector(selectError);
-    const loading = selector(selectLoading);
-    const router = useRouter();
 
-    useEffect(() => {
-        if (localStorage.getItem(`username`) === null) {
-            router.replace(`/login`);
-        } else {
-            dispatch(fetchAttempt({
-                testId: testId, 
-                courseId: courseId, 
-                attemptId: attemptId
-            }));
-        }
+    useEffect(() => { 
+        dispatch(fetchAttempt({
+            testId: testId, 
+            courseId: courseId, 
+            attemptId: attemptId
+        }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [attemptId, courseId, dispatch, testId])
+    }, [attemptId, courseId, testId])
 
     useEffect(() => {
         const handleScroll = () => {

@@ -1,6 +1,6 @@
 import CourseRequest from "@/utils/request/course.request";
 import { createAppSlice } from "../hooks"
-import { IGetCourse, SingleCourseResponse } from "@/utils/request/types/course.types";
+import { IGetCourse } from "@/utils/request/types/course.types";
 import { ITestResponseWithAttemptInfo } from "@/utils/request/types/test.types";
 import RequestError from "@/utils/request/request.error";
 import { formatDate } from "../../format";
@@ -12,7 +12,7 @@ interface IInitialState {
     startDate: string,
     endDate: string,
     loading: boolean,
-    error: string | null,
+    errorMessage: string | null,
     errorCode: number | null,
     courseInactive: boolean,
 }
@@ -24,7 +24,7 @@ const initialState: IInitialState = {
     startDate: '',
     endDate: '',
     loading: false,
-    error: null,
+    errorMessage: null,
     errorCode: null,
     courseInactive: false,
 }
@@ -33,7 +33,11 @@ const courseSlice = createAppSlice({
     name: 'course',
     initialState,
     reducers: (create) => ({
-        fetchCourseInfo: create.asyncThunk(
+        resetError: create.reducer((state) => {
+            state.errorCode = null;
+            state.errorMessage = null;
+        }),
+        fetchCourseInfo: create.asyncThunk.withTypes<{rejectValue: {message: string, errorCode: number}}>()(
             async (params: IGetCourse, thunkAPI) => {
                 try {
                     let { startDate, endDate, title, description, tests } = await CourseRequest.viewCourse(params);
@@ -43,21 +47,19 @@ const courseSlice = createAppSlice({
                     return {startDate, endDate, title, description, tests, courseInactive};
                 } catch (error) {
                     if (error instanceof RequestError) {
-                        return thunkAPI.rejectWithValue({message: error.message, code: error.getErrorCode()})
-                    } else if (error instanceof Error) {
-                        return thunkAPI.rejectWithValue(error.message);
+                        return thunkAPI.rejectWithValue({message: error.message, errorCode: error.getErrorCode()})
                     }
                 }
             },
             {
                 pending: (state) => {
                     state.loading = true;
-                    state.error = null;
-                    state.errorCode = null;
                 },
                 rejected: (state, action) => {
-                    state.error = action.error.message ? action.error.message : "Unknown error";
-                    state.errorCode = action.error.code ? parseInt(action.error.code) : null;
+                    if (action.payload) {
+                        state.errorMessage = action.payload.message;
+                        state.errorCode = action.payload.errorCode;
+                    }
                 },
                 fulfilled: (state, action) => {
                     const { startDate, endDate, title, description, tests, courseInactive } = action.payload as { startDate: string; endDate: string; title: string; description: string; tests: ITestResponseWithAttemptInfo[]; courseInactive: boolean; };
@@ -80,14 +82,16 @@ const courseSlice = createAppSlice({
         selectTests: (state) => state.tests,
         selectStartDate: (state) => state.startDate,
         selectEndDate: (state) => state.endDate,
-        selectErrorMessage: (state) => state.error,
+        selectErrorMessage: (state) => state.errorMessage,
         selectErrorCode: (state) => state.errorCode,
         selectLoading: (state) => state.loading,
         selectCourseInactive: (state) => state.courseInactive,
     }
 })
 
-export const {fetchCourseInfo} = courseSlice.actions;
+export const {
+    fetchCourseInfo, resetError,
+} = courseSlice.actions;
 
 export const {
     selectCourseDescription, selectCourseTitle, selectTests,

@@ -8,7 +8,7 @@ import Greeting from '../greeting/greeting'
 import InactiveCourses from '../inactive/inactive'
 import SuggestedTest from '../suggested/suggested'
 import { useAppDispatch, useAppSelector } from '@/utils/redux/hooks'
-import { fetchAllCourses, selectActiveCourses, selectInactiveCourses, selectNextTest } from '@/utils/redux/slicers/dashboard.slicer'
+import { fetchAllCourses, resetError, selectActiveCourses, selectErrorCode, selectErrorMessage, selectInactiveCourses, selectNextTest } from '@/utils/redux/slicers/dashboard.slicer'
 
 const DashboardContent: React.FC<{}> = () => {
     const dispatch = useAppDispatch()();
@@ -17,7 +17,9 @@ const DashboardContent: React.FC<{}> = () => {
     const hasActive = selector(selectActiveCourses).length > 0;
     const hasInactive = selector(selectInactiveCourses).length > 0;
     
+    
     useEffect(() => {
+        dispatch(resetError());
         dispatch(fetchAllCourses());
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
