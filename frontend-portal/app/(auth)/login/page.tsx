@@ -13,8 +13,8 @@ import { AuthException, UserException } from '@/utils/request/status.code'
 
 const LoginPage: React.FC<{}> = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     const [error, setError] = useState('')
     const disabled = email === '' || password === '';
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -79,7 +79,7 @@ const LoginPage: React.FC<{}> = () => {
                     <div className='login-form-fields'>
                         <UniForm.Group className='login-form-field-container'>
                             <UniForm.Label>Email address</UniForm.Label>
-                            <UniForm.Control type="email" value={email} onChange={enterEmail} placeholder="Enter email" className='email-input-field'/>
+                            <UniForm.Control type="text" value={email} onChange={enterEmail} placeholder="Enter email" className='email-input-field'/>
                         </UniForm.Group>
                         <UniForm.Group className='login-form-field-container'>
                             <UniForm.Label>Password</UniForm.Label>
