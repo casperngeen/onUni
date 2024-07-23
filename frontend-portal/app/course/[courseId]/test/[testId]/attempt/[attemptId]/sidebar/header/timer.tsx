@@ -9,7 +9,7 @@ import { useParams } from "next/navigation";
 const Timer: React.FC<{minutes: number, seconds: number}> = ({minutes, seconds}) => {
 
     const [minutesLeft, setMinutesLeft] = useState(minutes);
-    const [secondsLeft, setSecondsLeft] = useState(seconds);
+    const [secondsLeft, setSecondsLeft] = useState(seconds > 0 ? seconds : 0);
     const dispatch = useAppDispatch()();
 
     const { attemptId: attemptIdString } = useParams();
@@ -23,7 +23,7 @@ const Timer: React.FC<{minutes: number, seconds: number}> = ({minutes, seconds})
     
         // every second the timer will set
         const timerId = setInterval(() => {
-          if (secondsLeft == 0) {
+          if (secondsLeft <= 0) {
             setSecondsLeft(59);
             setMinutesLeft((prev) => prev-1);
           } else {

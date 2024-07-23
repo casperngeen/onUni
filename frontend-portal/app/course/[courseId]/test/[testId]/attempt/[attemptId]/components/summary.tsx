@@ -11,7 +11,7 @@ import SidebarQuestions from '../sidebar/question/sidebar.question';
 import SummaryTitle from '../summary/summary';
 import { useAppDispatch, useAppSelector } from '@/utils/redux/hooks';
 import { selectQuestions, exitSummary } from '@/utils/redux/slicers/attempt.slicer';
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 
 const AttemptSummary: React.FC<{}> = () => {
@@ -21,6 +21,7 @@ const AttemptSummary: React.FC<{}> = () => {
     const { courseId: courseIdString, testId: testIdString } = useParams();
     const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
     const testId = Array.isArray(testIdString) ? parseInt(testIdString[0]) : parseInt(testIdString);
+    const router = useRouter();
 
 
     const reAttempt = () => {

@@ -81,11 +81,13 @@ const attemptSlice = createAppSlice({
     }),
     exitSummary: create.reducer((state) => {
       state.readyForView = false;
-      state.submitStatus = SubmitStatus.UNSUBMITTED;
     }),
     resetError: create.reducer((state) => {
       state.errorCode = null;
       state.errorMessage = null;
+    }),
+    resetState: create.reducer((state) => {
+      state = initialState;
     }),
     submitAttempt: create.asyncThunk.withTypes<{rejectValue: {message: string, errorCode: number}}>()(
       async (params: ISaveAttempt, thunkAPI) => {
@@ -112,6 +114,10 @@ const attemptSlice = createAppSlice({
         fulfilled: (state) => {
           state.submitStatus = SubmitStatus.SUCCESS;
         },
+        settled: (state) => {
+          state.bookmarked = [];
+          state.timeRemaining = null;
+        }
       }
     ),
     deleteAttempt: create.asyncThunk.withTypes<{rejectValue: {message: string, errorCode: number}}>()(
@@ -137,6 +143,7 @@ const attemptSlice = createAppSlice({
         fulfilled: (state) => {},
         settled: (state) => {
           state.loading = false;
+          state.bookmarked = [];
         }
       }
     ),
@@ -154,6 +161,7 @@ const attemptSlice = createAppSlice({
           state.loading = true;
           state.answers = {};
           state.questionsAnswers = {};
+          state.bookmarked = [];
         },
         rejected: (state, action) => {
           if (action.payload) {
@@ -167,7 +175,9 @@ const attemptSlice = createAppSlice({
             state.testTitle = action.payload.testTitle;
             state.courseTitle = action.payload.courseTitle;
             state.testType = action.payload.testType;
-            state.timeRemaining = action.payload.timeRemaining;
+            if (action.payload.timeRemaining) {
+              state.timeRemaining = Math.floor(action.payload.timeRemaining/1000) + 1
+            }
             if (action.payload.status === Status.SUBMIT || action.payload.status === Status.AUTOSUBMIT) {
               state.submitStatus = SubmitStatus.SUCCESS;
               for (let i = 0; i < action.payload.questionAttempts.length; i++) {
@@ -190,7 +200,6 @@ const attemptSlice = createAppSlice({
               } else {
                 state.bookmarked = [];
               }
-              console.log(action.payload.questionAttempts)
               for (const qAttempt of action.payload.questionAttempts) {
                 state.questionsAnswers[qAttempt.questionId] = qAttempt.selectedOptionId;
               }
@@ -227,7 +236,7 @@ const attemptSlice = createAppSlice({
 export const { updateQuestionAnswer, bookmarkQuestion, unbookmarkQuestion, 
   flipShowSubmit, getAttempt, exitSummary,
   flipShowExit, submitAttempt, deleteAttempt,
-  setSubmitStatus, resetError,
+  setSubmitStatus, resetError, resetState,
 } = attemptSlice.actions;
 
 export const { selectQuestionsAnswers, selectViewStatus, selectErrorCode,

@@ -7,8 +7,11 @@ import UniModal from "@/components/overwrite/uni.modal";
 import { Image, Spinner } from "react-bootstrap";
 import { AttemptRequest } from "@/utils/request/attempt.request";
 import RequestError from "@/utils/request/request.error";
+import { useAppDispatch } from "@/utils/redux/hooks";
+import { resetState, setSubmitStatus, SubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
 
 const CreateAttempt: React.FC<{}> = () => {
+    const dispatch = useAppDispatch()();
     const [toggleModal, setToggleModal] = useState(false);
     const { courseId: courseIdString, testId: testIdString } = useParams();
     const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
@@ -19,6 +22,7 @@ const CreateAttempt: React.FC<{}> = () => {
     
     useEffect(() => {
         setToggleModal(true)
+        dispatch(resetState());
         const createAttempt = async () => {
             try {
                 const { attemptId } = await AttemptRequest.createNewAttempt({
