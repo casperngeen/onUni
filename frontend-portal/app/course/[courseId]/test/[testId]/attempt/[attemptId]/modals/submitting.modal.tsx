@@ -1,11 +1,11 @@
 'use client'
 
 import UniModal from "@/components/overwrite/uni.modal";
-import { useAppSelector } from "@/utils/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import React, { useEffect } from "react";
 import { Image, Spinner } from "react-bootstrap";
 import './modal.scss';
-import { SubmitStatus, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
+import { SubmitStatus, getAttempt, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
 import { useParams, useRouter } from "next/navigation";
 
 const SubmttingModal: React.FC<{}> = () => {
@@ -18,12 +18,6 @@ const SubmttingModal: React.FC<{}> = () => {
     const selector = useAppSelector();
     const submitting = selector(selectSubmitStatus);
     const show = submitting === SubmitStatus.SUBMITTING;
-
-    useEffect(() => {
-        if (submitting === SubmitStatus.SUCCESS) {
-            router.push(`/course/${courseId}/test/${testId}/attempt/${attemptId}`)
-        }
-    }, [attemptId, courseId, router, submitting, testId]);
 
     return (
         <UniModal.Modal custommodal="loading" show={show} backdrop="static">

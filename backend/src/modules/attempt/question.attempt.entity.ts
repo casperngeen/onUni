@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Question } from '../question/question.entity.js';
 import { Attempt } from './attempt.entity.js';
-import { IsEnum, IsInt, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 import { AnswerStatus } from './attempt.enum.js';
 
 @Entity()
@@ -63,9 +63,9 @@ export class QuestionAttemptIdDto {
 }
 
 export class QuestionAttemptResponseDto extends QuestionAttemptInfoDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(AnswerStatus)
-  answerStatus: AnswerStatus;
+  answerStatus: AnswerStatus | null;
 }
 
 export class UpdateQuestionAttemptDto extends QuestionAttemptInfoDto {

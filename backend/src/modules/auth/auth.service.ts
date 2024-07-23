@@ -119,8 +119,7 @@ export class AuthService extends BaseService<User> {
       role: user.role,
     };
 
-    // change back to shorter time later
-    const options = { expiresIn: '10s' };
+    const options = { expiresIn: '5m' };
     this.log('Generating access token...', this.context);
     try {
       const result = await this.jwtService.signAsync(payload, options);
@@ -147,7 +146,7 @@ export class AuthService extends BaseService<User> {
       role: user.role,
     };
 
-    const options = { expiresIn: '5s' };
+    const options = { expiresIn: '10m' };
     this.log('Generating refresh token...', this.context);
     try {
       const result = await this.jwtService.signAsync(payload, options);

@@ -17,12 +17,8 @@ const TestHistory: React.FC<{}> = () => {
   const attempts = selector(selectAttemptHistory);
   const maxScore = selector(selectMaxScore);
 
-  const clickReview = (attemptId: number) => {
+  const handleClick = (attemptId: number) => {
     router.push(`/course/${courseId}/test/${testId}/attempt/${attemptId}`)
-  }
-
-  const clickContinue = (attemptId: number) => {
-    router.push(`/course/${courseId}/test/${testId}/attempt/${attemptId}/new`)
   }
 
   const renderStatus = (status: Status) => {
@@ -78,11 +74,11 @@ const TestHistory: React.FC<{}> = () => {
               {attempt.status === Status.SUBMIT || attempt.status === Status.AUTOSUBMIT
                   ? <a onClick={(event) => {
                     event.preventDefault();
-                    clickReview(attempt.attemptId);
+                    handleClick(attempt.attemptId);
                   }}>Review</a> 
                   : <a onClick={(event) => {
                     event.preventDefault();
-                    clickContinue(attempt.attemptId);
+                    handleClick(attempt.attemptId);
                   }}>Continue</a>
               }
               </div>

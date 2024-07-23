@@ -4,11 +4,12 @@ import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
 import { AnswerStatus, QuestionInfo } from "@/utils/request/types/attempt.types";
 import SingleOption from "../option/option";
 import Container from "react-bootstrap/Container";
-import { bookmarkQuestion, selectBookmarked, selectTestId, unbookmarkQuestion, selectAnswers, selectViewStatus } from "@/utils/redux/slicers/attempt.slicer";
+import { bookmarkQuestion, selectBookmarked, unbookmarkQuestion, selectAnswers, selectViewStatus } from "@/utils/redux/slicers/attempt.slicer";
 import './question.scss';
 import { Bookmark, BookmarkFill, CheckCircleFill, ExclamationCircleFill, Flag } from "react-bootstrap-icons";
 import { useEffect } from "react";
 import UniAlert from "@/components/overwrite/uni.alert";
+import { useParams } from "next/navigation";
 
 interface SingleQuestionProps {
     questionInfo: QuestionInfo,
@@ -20,7 +21,8 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
     const dispatch = useAppDispatch()();
     const selector = useAppSelector();
     const bookmarked = selector(selectBookmarked);
-    const testId = selector(selectTestId);
+    const { attemptId: attemptIdString } = useParams();
+    const attemptId = Array.isArray(attemptIdString) ? parseInt(attemptIdString[0]) : parseInt(attemptIdString);
     const isSelected = bookmarked.includes(questionId);
     const answers = selector(selectAnswers);
     const viewOnly = selector(selectViewStatus);
@@ -32,9 +34,9 @@ const SingleQuestion: React.FC<SingleQuestionProps> = ({questionInfo, questionNu
 
     useEffect(() => {
         if (!viewOnly) {
-            localStorage.setItem(`bookmark-${testId}`, JSON.stringify(bookmarked));
+            localStorage.setItem(`bookmark-${attemptId}`, JSON.stringify(bookmarked));
         }
-    }, [testId, bookmarked, viewOnly]);
+    }, [attemptId, bookmarked, viewOnly]);
 
     const clickBookmark = () => {
         if (isSelected) {

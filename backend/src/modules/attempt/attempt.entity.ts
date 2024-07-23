@@ -113,14 +113,6 @@ export class AttemptInfoDto {
   @IsEnum(Status)
   status: Status;
 
-  @IsInt()
-  @IsNotEmpty()
-  timeTaken: number;
-
-  @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
-  score: number | null;
-
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => QuestionAttemptResponseDto)
@@ -142,6 +134,18 @@ export class AttemptInfoDto {
   @IsEnum(TestTypes)
   @IsNotEmpty()
   testType: TestTypes;
+
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  score: number | null;
+
+  @IsOptional()
+  @IsInt()
+  timeTaken: number | null;
+
+  @IsOptional()
+  @IsInt()
+  timeRemaining: number | null;
 }
 
 export class TestInfoForAttemptDto {

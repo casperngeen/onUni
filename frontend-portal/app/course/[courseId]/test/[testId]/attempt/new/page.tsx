@@ -25,7 +25,7 @@ const CreateAttempt: React.FC<{}> = () => {
                     testId: testId, 
                     courseId: courseId
                 });
-                router.replace(`/course/${courseId}/test/${testId}/attempt/${attemptId}/new`);
+                router.replace(`/course/${courseId}/test/${testId}/attempt/${attemptId}`);
             } catch (error) {
                 if (error instanceof RequestError) {
                     setError(`Error: ${error.message}`);

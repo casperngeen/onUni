@@ -253,9 +253,55 @@ export class AttemptService extends BaseService<Attempt> {
     const { attemptId } = attemptIdObject;
     this.log(`Query to get attempt ${attemptId}`, this.context);
     const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
-    const attemptInfo: AttemptInfoDto = this.formatAttemptInfo(attempt);
-    this.log(`Query to get attempt ${attemptId} completed`, this.context);
-    return attemptInfo;
+    if (
+      attempt.status === Status.SUBMIT ||
+      attempt.status === Status.AUTOSUBMIT
+    ) {
+      const attemptInfo: AttemptInfoDto = this.formatAttemptInfo(attempt);
+      this.log(`Query to get attempt ${attemptId} completed`, this.context);
+      return attemptInfo;
+    } else {
+      this.log(
+        `Retrieving shuffled questions for attempt ${attemptId}...`,
+        this.context,
+      );
+      const questions: Question[] = await this.getQuestionFromRedis(attemptId);
+      const timeRemaining = attempt.test.timeLimit
+        ? new Date().getTime() - Date.parse(attempt.start) <
+          attempt.test.timeLimit * 1000 * 60
+          ? attempt.test.timeLimit * 1000 * 60 -
+            (new Date().getTime() - Date.parse(attempt.start))
+          : 0
+        : null;
+      const savedAttempts: Map<number, RedisOptionDto> = new Map();
+      this.log(
+        `Query to fetch existing question attempts of attempt ${attemptId}`,
+        this.context,
+      );
+      await this.getQuestionAttemptsFromRedis(attemptId, savedAttempts);
+      const questionAttempts: QuestionAttemptResponseDto[] = [];
+      for (const attempt of savedAttempts) {
+        questionAttempts.push({
+          questionId: attempt[0],
+          selectedOptionId: attempt[1].selectedOptionId,
+          answerStatus: null,
+        });
+      }
+      const attemptInfo: AttemptInfoDto = {
+        attemptId: attempt.attemptId,
+        testTitle: attempt.test.title,
+        courseTitle: attempt.test.course.title,
+        timeRemaining: timeRemaining,
+        questions: questions,
+        questionAttempts: questionAttempts,
+        testType: attempt.test.testType,
+        status: attempt.status,
+        score: null,
+        timeTaken: null,
+      };
+      this.log(`Query to get attempt ${attemptId} completed`, this.context);
+      return attemptInfo;
+    }
   }
 
   public async getQuestionAttempts(attemptIdObject: AttemptIdDto) {
@@ -476,17 +522,10 @@ export class AttemptService extends BaseService<Attempt> {
     );
     const questions: Question[] = await this.getQuestionFromRedis(attemptId);
     this.log(`Formatting test information for attempt...`, this.context);
-    const timeRemaining = attempt.test.timeLimit
-      ? new Date().getTime() - Date.parse(attempt.start) <
-        attempt.test.timeLimit * 1000 * 60
-        ? attempt.test.timeLimit * 1000 * 60 -
-          (new Date().getTime() - Date.parse(attempt.start))
-        : 0
-      : null;
     const testInfo: TestInfoForAttemptDto = {
       testTitle: attempt.test.title,
       courseTitle: attempt.test.course.title,
-      timeRemaining: timeRemaining,
+      timeRemaining: null,
       questions: questions,
       testType: attempt.test.testType,
     };
@@ -617,6 +656,7 @@ export class AttemptService extends BaseService<Attempt> {
       testTitle: attempt.test.title,
       courseTitle: attempt.test.course.title,
       testType: attempt.test.testType,
+      timeRemaining: null,
     };
     this.log(
       `Attempt info for attempt ${attempt.attemptId} formatted`,

@@ -37,7 +37,8 @@ const WarningModal: React.FC<IAttemptModalProps> = ({type}) => {
         }
     }
     const handleSubmit = () => {
-        localStorage.removeItem(`bookmark-${testId}`);
+        console.log('remove')
+        localStorage.removeItem(`bookmark-${attemptId}`);
         
         if (isExit) {
             dispatch(flipShowExit());
@@ -67,10 +68,10 @@ const WarningModal: React.FC<IAttemptModalProps> = ({type}) => {
                 }
             </UniModal.Body>
             <UniModal.Footer>
-                <UniButton custombutton="exit" style={{width: 120}} className="button-gap" onClick={handleClose}>
+                <UniButton custombutton="exit" style={{width: 120, height: 40}} className="button-gap" onClick={handleClose}>
                     Cancel
                 </UniButton>
-                <UniButton custombutton="confirm" style={{width: 120}} onClick={handleSubmit}>
+                <UniButton custombutton="confirm" style={{width: 120, height: 40}} onClick={handleSubmit}>
                     Confirm
                 </UniButton>
             </UniModal.Footer>

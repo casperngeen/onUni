@@ -1,5 +1,5 @@
 import { AttemptRequest } from "@/utils/request/attempt.request";
-import { AnswerStatus, IDeleteAttempt, IGetAttempt, IGetCurrentAttempt, INewAttempt, ISaveAttempt, ISaveQuestionAttemptBody, QuestionInfo } from "@/utils/request/types/attempt.types";
+import { AnswerStatus, IDeleteAttempt, IGetAttempt, IGetCurrentAttempt, ISaveAttempt, ISaveQuestionAttemptBody, QuestionInfo, Status } from "@/utils/request/types/attempt.types";
 import { TestTypes } from "@/utils/request/types/test.types";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice } from "../hooks";
@@ -13,7 +13,6 @@ export enum SubmitStatus {
 }
 
 interface IInitialState {
-  testId: number,
   questionsAnswers: {[questionId: number]: number},
   bookmarked: number[],
   questions: QuestionInfo[],
@@ -34,7 +33,6 @@ interface IInitialState {
 }
 
 const initialState: IInitialState = {
-  testId: -1,
   courseTitle: '',
   testTitle: '',
   timeRemaining: null,
@@ -89,67 +87,6 @@ const attemptSlice = createAppSlice({
       state.errorCode = null;
       state.errorMessage = null;
     }),
-    fetchAttempt: create.asyncThunk.withTypes<{rejectValue: {message: string, errorCode: number}}>()(
-      async (params: IGetCurrentAttempt, thunkAPI) => {
-        try {
-          const testId = params.testId;
-          let { questions, testTitle, courseTitle, timeRemaining, testType } = 
-            await AttemptRequest.getTestInfoForAttempt({
-              courseId: params.courseId,
-              attemptId: params.attemptId,
-            })
-          const questionAnswers = await AttemptRequest.getQuestionAttempts({
-            attemptId: params.attemptId,
-          })
-          if (timeRemaining) {
-            timeRemaining = Math.round(timeRemaining / 1000)
-          }
-          return { testId, questions, testTitle, courseTitle, timeRemaining, testType, questionAnswers }
-        } catch (error) {
-          if (error instanceof RequestError) {
-            return thunkAPI.rejectWithValue({message: error.message, errorCode: error.getErrorCode()})
-          }
-        }
-      },
-      {
-        pending: state => {
-          state.submitStatus = SubmitStatus.UNSUBMITTED;
-          state.questionsAnswers = {};
-          state.bookmarked = [];
-          state.loading = true;
-        },
-        rejected: (state, action) => {
-            if (action.payload) {
-              state.errorMessage = action.payload.message;
-              state.errorCode = action.payload.errorCode;
-            }
-        },
-        fulfilled: (state, action) => {
-          if (action.payload) {
-            state.questions = action.payload.questions;
-            state.testTitle = action.payload.testTitle;
-            state.courseTitle = action.payload.courseTitle;
-            state.timeRemaining = action.payload.timeRemaining;
-            state.testType = action.payload.testType;
-            state.testId = action.payload.testId;
-            const bookmark = localStorage.getItem(`bookmark-${state.testId}`)
-            if (bookmark) {
-              state.bookmarked = JSON.parse(bookmark);
-            }
-            if (action.payload.questionAnswers) {
-              for (const qAttempt of action.payload.questionAnswers) {
-                state.questionsAnswers[qAttempt.questionId] = qAttempt.selectedOptionId;
-              }
-            }
-          }
-        },
-        // settled is called for both rejected and fulfilled actions
-        settled: state => {
-          state.loading = false;
-          state.submitStatus = SubmitStatus.UNSUBMITTED;
-        }
-      }
-    ),
     submitAttempt: create.asyncThunk.withTypes<{rejectValue: {message: string, errorCode: number}}>()(
       async (params: ISaveAttempt, thunkAPI) => {
         try {
@@ -203,7 +140,7 @@ const attemptSlice = createAppSlice({
         }
       }
     ),
-    getAttemptSummary: create.asyncThunk.withTypes<{rejectValue: {message: string, errorCode: number}}>()(
+    getAttempt: create.asyncThunk.withTypes<{rejectValue: {message: string, errorCode: number}}>()(
       async(params: IGetAttempt, thunkAPI) => {
         try {
           return await AttemptRequest.getAttempt(params);
@@ -216,6 +153,7 @@ const attemptSlice = createAppSlice({
         pending: state => {
           state.loading = true;
           state.answers = {};
+          state.questionsAnswers = {};
         },
         rejected: (state, action) => {
           if (action.payload) {
@@ -225,33 +163,47 @@ const attemptSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           if (action.payload) {
-            state.submitStatus = SubmitStatus.SUCCESS;
             state.questions = action.payload.questions;
             state.testTitle = action.payload.testTitle;
             state.courseTitle = action.payload.courseTitle;
             state.testType = action.payload.testType;
-            for (let i = 0; i < action.payload.questionAttempts.length; i++) {
-              const qAttempt = action.payload.questionAttempts[i];
-              const isCorrect = qAttempt.answerStatus === AnswerStatus.CORRECT;
-              state.answers[qAttempt.questionId] = {optionId: qAttempt.selectedOptionId, isCorrect: isCorrect};
+            state.timeRemaining = action.payload.timeRemaining;
+            if (action.payload.status === Status.SUBMIT || action.payload.status === Status.AUTOSUBMIT) {
+              state.submitStatus = SubmitStatus.SUCCESS;
+              for (let i = 0; i < action.payload.questionAttempts.length; i++) {
+                const qAttempt = action.payload.questionAttempts[i];
+                const isCorrect = qAttempt.answerStatus === AnswerStatus.CORRECT;
+                state.answers[qAttempt.questionId] = {optionId: qAttempt.selectedOptionId, isCorrect: isCorrect};
+              }
+              if (action.payload.score !== null) {
+                state.score = action.payload.score;
+              }
+              if (action.payload.timeTaken) {
+                state.timeTaken = action.payload.timeTaken;
+              }
+              state.readyForView = true;
+            } else {
+              state.submitStatus = SubmitStatus.UNSUBMITTED;
+              const bookmark = localStorage.getItem(`bookmark-${action.payload.attemptId}`)
+              if (bookmark) {
+                state.bookmarked = JSON.parse(bookmark);
+              } else {
+                state.bookmarked = [];
+              }
+              console.log(action.payload.questionAttempts)
+              for (const qAttempt of action.payload.questionAttempts) {
+                state.questionsAnswers[qAttempt.questionId] = qAttempt.selectedOptionId;
+              }
+              state.readyForView = false;
             }
-            if (action.payload.score !== null) {
-              state.score = action.payload.score;
-            }
-            if (action.payload.timeTaken) {
-              state.timeTaken = action.payload.timeTaken;
-            }
-            state.timeRemaining = null;
           }
         },
         settled: (state) => {
           state.loading = false;
-          state.readyForView = true;
         }
     }),
   }),
   selectors: {
-      selectTestId: (state) => state.testId,
       selectQuestionsAnswers: (state) => state.questionsAnswers,
       selectBookmarked: (state) => state.bookmarked,
       selectQuestions: (state) => state.questions,
@@ -273,16 +225,16 @@ const attemptSlice = createAppSlice({
 })
 
 export const { updateQuestionAnswer, bookmarkQuestion, unbookmarkQuestion, 
-  flipShowSubmit, getAttemptSummary, fetchAttempt,
+  flipShowSubmit, getAttempt, exitSummary,
   flipShowExit, submitAttempt, deleteAttempt,
-  setSubmitStatus, exitSummary, resetError,
+  setSubmitStatus, resetError,
 } = attemptSlice.actions;
 
-export const { selectQuestionsAnswers, selectTestId, selectViewStatus,
+export const { selectQuestionsAnswers, selectViewStatus, selectErrorCode,
   selectBookmarked, selectQuestions, selectLoading, 
   selectErrorMessage, selectCourseTitle, selectTestTitle, 
   selectTimeRemaining, selectShowSubmit, selectShowExit,
   selectSubmitStatus, selectAnswers, selectScore, 
-  selectTimeTaken, selectTestType, selectErrorCode  } = attemptSlice.selectors;
+  selectTimeTaken, selectTestType  } = attemptSlice.selectors;
 
 export default attemptSlice;

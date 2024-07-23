@@ -4,13 +4,13 @@ import BaseRequest from "./base.request";
 
 export default class AuthRequest extends BaseRequest {
 
-    public static async login(body: LoginBody ) {
+    public static async login(body: LoginBody, dispatch: any) {
         const response = await BaseRequest.request<LoginResponse>('auth/login', RequestTypes.POST, body);
         const { accessToken, refreshToken, name, profilePic } = response;
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('username', name);
-        return { profilePic: profilePic };
+        return { refreshToken: refreshToken, accessToken: accessToken };
     }
 
     public static async signUp(body: SignUpBody) {
@@ -26,7 +26,7 @@ export default class AuthRequest extends BaseRequest {
         await BaseRequest.request(`auth/changePassword/${token}`, RequestTypes.PUT, body);
     }
 
-    public static async logout() {
+    public static async logout(dispatch: any) {
         await BaseRequest.request(`auth/logout`, RequestTypes.POST, {});
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');

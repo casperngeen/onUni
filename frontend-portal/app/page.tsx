@@ -4,6 +4,7 @@ import NavBar from '@/components/navbar'
 import React from 'react'
 import DashboardContent from './components/content/content'
 import './dashboard.scss'
+import withAuth from '@/components/auth'
 
 const Dashboard: React.FC<{}> = () => {
   return (
@@ -14,4 +15,6 @@ const Dashboard: React.FC<{}> = () => {
   )
 }
 
-export default Dashboard
+const DashboardWithAuth = withAuth(Dashboard);
+
+export default DashboardWithAuth;

@@ -4,6 +4,7 @@ import React from 'react';
 import './course.scss';
 import NavBar from '@/components/navbar';
 import CourseContent from './components/content/content';
+import withAuth from '@/components/auth';
 
 const CoursePage: React.FC<{}> = () => {
   return (
@@ -14,4 +15,6 @@ const CoursePage: React.FC<{}> = () => {
   )
 }
 
-export default CoursePage;
+const CoursePageWithAuth = withAuth(CoursePage);
+
+export default CoursePageWithAuth;

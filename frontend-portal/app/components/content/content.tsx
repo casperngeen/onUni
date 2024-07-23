@@ -19,7 +19,6 @@ const DashboardContent: React.FC<{}> = () => {
     
     
     useEffect(() => {
-        dispatch(resetError());
         dispatch(fetchAllCourses());
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])

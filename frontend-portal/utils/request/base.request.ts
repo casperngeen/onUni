@@ -75,12 +75,13 @@ export default class BaseRequest {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('username');
-      } else if (jsonResponse.code != 0) {
+      }
+      if (jsonResponse.code != 0) {
         throw new RequestError(jsonResponse.code, jsonResponse.message);
       }
       return jsonResponse.data;
     } catch (error) {
-      console.error('Fetch error:', error);
+      console.error(error);
       throw error;
     }
   }

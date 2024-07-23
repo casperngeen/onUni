@@ -4,8 +4,9 @@ import attemptSlice from "../slicers/attempt.slicer";
 import testSlice from "../slicers/test.slicer";
 import courseSlice from "../slicers/course.slicer";
 import dashboardSlice from "../slicers/dashboard.slicer";
+import authSlice from "../slicers/auth.slicer";
 
-const rootReducer = combineSlices(attemptSlice, testSlice, courseSlice, dashboardSlice);
+const rootReducer = combineSlices(attemptSlice, testSlice, courseSlice, dashboardSlice, authSlice);
 export type RootState = ReturnType<typeof rootReducer>;
 
 

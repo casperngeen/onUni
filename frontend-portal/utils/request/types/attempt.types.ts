@@ -55,12 +55,13 @@ export interface AttemptResponse {
     courseTitle: string,
     testTitle: string,
     testType: TestTypes,
+    timeRemaining: number | null,
 }
 
 export interface QuestionAttemptResponse {
     questionId: number,
     selectedOptionId: number,
-    answerStatus: AnswerStatus,
+    answerStatus: AnswerStatus | null,
 }
 
 export interface ISaveQuestionAttemptBody {

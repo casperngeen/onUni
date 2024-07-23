@@ -1,36 +1,23 @@
 'use client'
 
-import { UniCol, UniContainer, UniRow } from "@/components/overwrite/uni.components";
 import { useAppDispatch, useAppSelector } from "@/utils/redux/hooks";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect } from "react";
-import SidebarHeader from "./sidebar/header/header";
-import { exitSummary, getAttemptSummary, resetError, selectErrorCode, selectQuestions, setSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
-import SideBarButtons from "./sidebar/button/button";
-import SidebarQuestions from "./sidebar/question/sidebar.question";
-import SingleQuestion from "./question/question";
-import './attempt.scss';
-import UniButton from "@/components/overwrite/uni.button";
-import SummaryTitle from "./summary/summary";
+import { SubmitStatus, getAttempt, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
+import AttemptSummary from "./components/summary";
+import AttemptInProgress from "./components/in-progress";
 
-const AttemptSummary: React.FC<{}> = () => {
-    const { courseId: courseIdString, testId: testIdString, attemptId: attemptIdString } = useParams();
-    const courseId = Array.isArray(courseIdString) ? parseInt(courseIdString[0]) : parseInt(courseIdString);
-    const testId = Array.isArray(testIdString) ? parseInt(testIdString[0]) : parseInt(testIdString);
+
+const AttemptPage: React.FC<{}> = () => {
+    const { attemptId: attemptIdString } = useParams();
     const attemptId = Array.isArray(attemptIdString) ? parseInt(attemptIdString[0]) : parseInt(attemptIdString);
     
-    const router = useRouter();
     const dispatch = useAppDispatch()();
     const selector = useAppSelector();
-    const questions = selector(selectQuestions);
+    const submitStatus = selector(selectSubmitStatus);
 
-    const reAttempt = () => {
-        dispatch(exitSummary());
-        router.push(`/course/${courseId}/test/${testId}/attempt/new`);
-    }
-    
     useEffect(() => {
-        dispatch(getAttemptSummary({attemptId: attemptId}));
+        dispatch(getAttempt({attemptId: attemptId}));
 
         const handleScroll = () => {
             const hash =  window.location.hash;
@@ -47,31 +34,15 @@ const AttemptSummary: React.FC<{}> = () => {
 
         handleScroll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [attemptId]);
+    }, [attemptId, submitStatus]);
 
+    if (submitStatus === SubmitStatus.SUCCESS) {
+        return <AttemptSummary />
+    } else if (submitStatus === SubmitStatus.UNSUBMITTED) {
+        return <AttemptInProgress />
+    }
 
-    return (
-        <UniContainer fluid className="attempt">
-            <UniRow className="attempt-wrapper">
-                <UniCol className="col-md-3 sidebar">
-                    <SidebarHeader />
-                    <SidebarQuestions />
-                    <SideBarButtons />
-                </UniCol>
-                <UniCol className="col-md-9 questions">
-                    <div className="header">
-                        <SummaryTitle />
-                        <UniButton custombutton="exit" style={{width: 200}} onClick={reAttempt}>Re-attempt</UniButton>
-                    </div>
-                    {questions.map((question, index) => (
-                        <div key={question.questionId} id={`question-${index+1}`}>
-                            <SingleQuestion questionInfo={question} questionNumber={index+1}></SingleQuestion>
-                        </div>
-                    ))}
-                </UniCol>
-            </UniRow>
-        </UniContainer>
-    );
+    
 }
 
-export default AttemptSummary;
+export default AttemptPage;

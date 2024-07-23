@@ -5,9 +5,11 @@ import { Dropdown, Image } from "react-bootstrap"
 import '../utils/styles/components/navbar.scss';
 import AuthRequest from "@/utils/request/auth.request";
 import { useEffect, useState } from "react";
+import { useAppDispatch } from "@/utils/redux/hooks";
 
 const NavBar: React.FC<{}> = () => {
     const router = useRouter();
+    const dispatch = useAppDispatch()();
     const [name, setName] = useState('');
 
     useEffect(()=> {
@@ -22,7 +24,11 @@ const NavBar: React.FC<{}> = () => {
     }
 
     const clickLogout = async () => {
-        await AuthRequest.logout();
+        try {
+            await AuthRequest.logout(dispatch);
+        } catch (error) {
+            console.error(error);
+        }
         router.push(`/login`);
     }
 
