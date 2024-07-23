@@ -86,18 +86,6 @@ export class AttemptController {
     response.status(200).json(ResponseHandler.success(questionAttempts));
   }
 
-  @UseGuards(CourseUserGuard)
-  @Get('attempt/:attemptId/test')
-  async getTestInfoForAttempt(
-    @Param('attemptId') attemptId: number,
-    @Res() response: Response,
-  ) {
-    const testInfo = await this.attemptService.getTestInfoForAttempt({
-      attemptId: attemptId,
-    });
-    response.status(200).json(ResponseHandler.success(testInfo));
-  }
-
   @UseGuards(AttemptUserGuard)
   @Put('attempt/:attemptId')
   async submitAttempt(
@@ -113,8 +101,6 @@ export class AttemptController {
     await this.attemptService.submitAttempt(submitAttempt);
     response.status(200).json(ResponseHandler.success());
   }
-
-  // new route to save attempt
 
   @UseGuards(AttemptUserGuard)
   @Put('attempt/:attemptId/question')

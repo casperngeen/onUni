@@ -8,7 +8,7 @@ import { Image, Spinner } from "react-bootstrap";
 import { AttemptRequest } from "@/utils/request/attempt.request";
 import RequestError from "@/utils/request/request.error";
 import { useAppDispatch } from "@/utils/redux/hooks";
-import { resetState, setSubmitStatus, SubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
+import { resetState } from "@/utils/redux/slicers/attempt.slicer";
 
 const CreateAttempt: React.FC<{}> = () => {
     const dispatch = useAppDispatch()();

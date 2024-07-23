@@ -5,7 +5,6 @@ import {
   AttemptIdDto,
   AttemptInfoDto,
   SubmitAttemptDto,
-  TestInfoForAttemptDto,
   UserTestDto,
 } from './attempt.entity';
 import { AnswerStatus, Status } from './attempt.enum';
@@ -23,7 +22,7 @@ import { LoggerService } from '../logger/logger.service';
 import BaseService from 'src/base/base.service';
 import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
-import { Question } from '../question/question.entity';
+import { Question, QuestionOrderDto } from '../question/question.entity';
 import {
   AttemptAlreadySubmittedException,
   AttemptNotFoundException,
@@ -176,6 +175,17 @@ export class AttemptService extends BaseService<Attempt> {
       `User ${user.userId} has satsified the prerequisites for test ${testId}`,
       this.context,
     );
+    this.log(`Shuffling questions and options for attempt`, this.context);
+    const questionOrder: QuestionOrderDto[] = [];
+    const shuffledQuestions: Question[] = this.shuffleArray(test.questions);
+    for (const question of shuffledQuestions) {
+      this.shuffleArray(question.options);
+      questionOrder.push({
+        questionId: question.questionId,
+        optionOrder: question.options.map((option) => option.optionId),
+      });
+    }
+
     this.log(
       `Creating and inserting new attempt for test ${testId} for user ${userId} into DB`,
       this.context,
@@ -186,24 +196,12 @@ export class AttemptService extends BaseService<Attempt> {
       questionAttempts: [],
       test: test,
       user: user,
+      questionOrder: questionOrder,
     });
     this.log(
       `Created and inserted new attempt for test ${testId} for user ${userId} into DB`,
       this.context,
     );
-    this.log(
-      `Shuffling questions and options for attempt ${attempt.attemptId}`,
-      this.context,
-    );
-    const shuffledQuestions: Question[] = this.shuffleArray(test.questions);
-    for (const question of shuffledQuestions) {
-      this.shuffleArray(question.options);
-    }
-    this.log(
-      `Saving questions and options for attempt ${attempt.attemptId} to Redis...`,
-      this.context,
-    );
-    await this.saveQuestionsToRedis(shuffledQuestions, attempt.attemptId);
     this.log(
       `Query to create new attempt for user ${userId} for test ${testId} completed`,
       this.context,
@@ -262,10 +260,13 @@ export class AttemptService extends BaseService<Attempt> {
       return attemptInfo;
     } else {
       this.log(
-        `Retrieving shuffled questions for attempt ${attemptId}...`,
+        `Formatting question order for attempt ${attemptId}...`,
         this.context,
       );
-      const questions: Question[] = await this.getQuestionFromRedis(attemptId);
+      const questions: Question[] = this.formatQuestionOrder(
+        attempt.test.questions,
+        attempt.questionOrder,
+      );
       const timeRemaining = attempt.test.timeLimit
         ? new Date().getTime() - Date.parse(attempt.start) <
           attempt.test.timeLimit * 1000 * 60
@@ -417,7 +418,6 @@ export class AttemptService extends BaseService<Attempt> {
     });
     this.log(`Attempt ${attemptId} updated`, this.context);
     await this.deleteQuestionAttemptsFromRedis(attemptId);
-    await this.deleteQuestionFromRedis(attemptId);
     this.log(`Query to update attempt ${attemptId} completed`, this.context);
   }
 
@@ -466,7 +466,6 @@ export class AttemptService extends BaseService<Attempt> {
     this.log(`Query to delete attempt ${attemptId}`, this.context);
     await this.checkIfAttemptInRepo(attemptId);
     await this.deleteQuestionAttemptsFromRedis(attemptId);
-    await this.deleteQuestionFromRedis(attemptId);
     this.log(`Deleting attempt from DB...`, this.context);
     await this.delete(attemptId);
     this.log(`Query to delete attempt ${attemptId} completed`, this.context);
@@ -490,47 +489,6 @@ export class AttemptService extends BaseService<Attempt> {
     }
     this.log(`Attempt ${id} retrieved`, this.context);
     return attempt;
-  }
-
-  public async getTestInfoForAttempt(attemptIdObject: AttemptIdDto) {
-    const { attemptId } = attemptIdObject;
-    this.log(
-      `Query for test information for attempt ${attemptId}...`,
-      this.context,
-    );
-    this.log(`Querying DB for test information...`, this.context);
-    const attempt: Attempt = await this.findOne({
-      relations: [
-        'test',
-        'test.course',
-        'test.questions',
-        'test.questions.options',
-      ],
-      where: { attemptId: attemptId },
-    });
-    if (!attempt) {
-      this.error(
-        `Attempt ${attemptId} could not be found`,
-        this.context,
-        this.getTrace(),
-      );
-    }
-    this.log(`Attempt ${attemptId} found`, this.context);
-    this.log(
-      `Retrieving shuffled questions for attempt ${attemptId}...`,
-      this.context,
-    );
-    const questions: Question[] = await this.getQuestionFromRedis(attemptId);
-    this.log(`Formatting test information for attempt...`, this.context);
-    const testInfo: TestInfoForAttemptDto = {
-      testTitle: attempt.test.title,
-      courseTitle: attempt.test.course.title,
-      timeRemaining: null,
-      questions: questions,
-      testType: attempt.test.testType,
-    };
-    this.log(`Test information for attempt formatted`, this.context);
-    return testInfo;
   }
 
   private async checkIfAttemptInRepo(id: number): Promise<Attempt> {
@@ -637,6 +595,15 @@ export class AttemptService extends BaseService<Attempt> {
         };
       });
     this.log(
+      `Formatting question order for attempt ${attempt.attemptId}...`,
+      this.context,
+    );
+    const questions = this.formatQuestionOrder(
+      attempt.test.questions,
+      attempt.questionOrder,
+    );
+
+    this.log(
       `Formatting attempt info for attempt ${attempt.attemptId}...`,
       this.context,
     );
@@ -652,7 +619,7 @@ export class AttemptService extends BaseService<Attempt> {
       timeTaken: timeTaken,
       score: attempt.score,
       questionAttempts: questionAttemptResponse,
-      questions: attempt.test.questions,
+      questions: questions,
       testTitle: attempt.test.title,
       courseTitle: attempt.test.course.title,
       testType: attempt.test.testType,
@@ -663,6 +630,33 @@ export class AttemptService extends BaseService<Attempt> {
       this.context,
     );
     return attemptInfo;
+  }
+
+  private formatQuestionOrder(
+    questions: Question[],
+    questionOrder: QuestionOrderDto[],
+  ) {
+    const questionOrderMap = new Map(
+      questionOrder.map((question, index) => [question.questionId, index]),
+    );
+
+    const orderedQuestions = questions.sort(
+      (a, b) =>
+        questionOrderMap.get(a.questionId) - questionOrderMap.get(b.questionId),
+    );
+
+    for (const question of orderedQuestions) {
+      const optionOrderMap = new Map(
+        questionOrder
+          .find((q) => q.questionId === question.questionId)
+          .optionOrder.map((optionId, index) => [optionId, index]),
+      );
+      question.options.sort(
+        (a, b) =>
+          optionOrderMap.get(a.optionId) - optionOrderMap.get(b.optionId),
+      );
+    }
+    return orderedQuestions;
   }
 
   private async getQuestionAttemptsFromRedis(
@@ -780,65 +774,5 @@ export class AttemptService extends BaseService<Attempt> {
       [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
-  }
-
-  private async saveQuestionsToRedis(questions: Question[], attemptId: number) {
-    try {
-      await this.redis.hset(
-        `shuffled-attempt:${attemptId}`,
-        `questions`,
-        JSON.stringify(questions),
-      );
-      this.log(
-        `Saved shuffled questions and options of attempt ${attemptId} to Redis`,
-        this.context,
-      );
-    } catch (error) {
-      this.error(
-        `Error saving shuffled questions and options of attempt ${attemptId} to Redis: ${error}`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new RedisException();
-    }
-  }
-
-  private async getQuestionFromRedis(attemptId: number) {
-    try {
-      const questionsString = await this.redis.hget(
-        `shuffled-attempt:${attemptId}`,
-        `questions`,
-      );
-      this.log(
-        `Retrieved shuffled questions and options of attempt ${attemptId} from Redis`,
-        this.context,
-      );
-      const questions: Question[] = JSON.parse(questionsString);
-      return questions;
-    } catch (error) {
-      this.error(
-        `Error retrieving shuffled questions and options of attempt ${attemptId}: ${error}`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new RedisException();
-    }
-  }
-
-  private async deleteQuestionFromRedis(attemptId: number) {
-    try {
-      await this.redis.hdel(`shuffled-attempt:${attemptId}`, `questions`);
-      this.log(
-        `Deleted shuffled questions and options of attempt ${attemptId} from Redis`,
-        this.context,
-      );
-    } catch (error) {
-      this.error(
-        `Error retrieving shuffled questions and options of attempt ${attemptId}: ${error}`,
-        this.context,
-        this.getTrace(),
-      );
-      throw new RedisException();
-    }
   }
 }

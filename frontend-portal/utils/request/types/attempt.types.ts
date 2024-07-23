@@ -86,10 +86,6 @@ export interface IGetAttempt {
     attemptId: number,
 }
 
-export interface IGetTestInfoForAttempt extends IGetAttempt {
-    courseId: number,
-}
-
 export interface IDeleteAttempt extends IGetAttempt {}
 
 export interface ISaveAttempt extends IGetAttempt {}

@@ -69,3 +69,13 @@ export class UpdateQuestionDto extends QuestionIdDto {
   @IsString()
   questionText: string;
 }
+
+export class QuestionOrderDto {
+  @IsNotEmpty()
+  @IsInt()
+  questionId: number;
+
+  @IsArray()
+  @IsInt({ each: true })
+  optionOrder: number[];
+}

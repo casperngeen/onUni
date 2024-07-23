@@ -23,7 +23,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { QuestionInfoDto } from '../question/question.entity';
+import { QuestionInfoDto, QuestionOrderDto } from '../question/question.entity';
 import { Status } from './attempt.enum';
 import { TestTypes } from '../test/test.enum';
 
@@ -50,6 +50,9 @@ export class Attempt {
 
   @Column('int', { nullable: true })
   score: number | null;
+
+  @Column('jsonb', { nullable: true })
+  questionOrder: QuestionOrderDto[];
 
   @OneToMany(
     () => QuestionAttempt,
@@ -146,29 +149,6 @@ export class AttemptInfoDto {
   @IsOptional()
   @IsInt()
   timeRemaining: number | null;
-}
-
-export class TestInfoForAttemptDto {
-  @IsNotEmpty()
-  @IsString()
-  testTitle: string;
-
-  @IsNotEmpty()
-  @IsString()
-  courseTitle: string;
-
-  @IsOptional()
-  @IsInt()
-  timeRemaining: number | null;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => QuestionInfoDto)
-  questions: QuestionInfoDto[];
-
-  @IsNotEmpty()
-  @IsEnum(TestTypes)
-  testType: TestTypes;
 }
 
 export class AttemptHistory {
