@@ -16,6 +16,8 @@ function withAuth<P extends object>(
       };
       const checkTokenInterval = setInterval(checkToken, 1000);
 
+      // rewrite this to use a backend api to check for token validity
+
       return () => {
         clearInterval(checkTokenInterval);
       };
