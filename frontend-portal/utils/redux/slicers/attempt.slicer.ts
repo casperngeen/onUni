@@ -175,8 +175,12 @@ const attemptSlice = createAppSlice({
             state.testTitle = action.payload.testTitle;
             state.courseTitle = action.payload.courseTitle;
             state.testType = action.payload.testType;
-            if (action.payload.timeRemaining) {
-              state.timeRemaining = Math.floor(action.payload.timeRemaining/1000) + 1
+            if (action.payload.timeRemaining !== null) {
+              if (action.payload.timeRemaining === 0) {
+                state.timeRemaining = 0;
+              } else {
+                state.timeRemaining = Math.floor(action.payload.timeRemaining/1000) + 1;
+              }
             }
             if (action.payload.status === Status.SUBMIT || action.payload.status === Status.AUTOSUBMIT) {
               state.submitStatus = SubmitStatus.SUCCESS;

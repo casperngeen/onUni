@@ -28,7 +28,7 @@ const SidebarHeader: React.FC<{}> = () => {
                 <div className="sidebar-test-title-text">
                     {testTitle}
                 </div>
-                {timeRemaining && unsubmitted &&
+                {timeRemaining !== null && unsubmitted &&
                     <div className="timer">
                         <Clock size={16}/>
                         <Timer 
