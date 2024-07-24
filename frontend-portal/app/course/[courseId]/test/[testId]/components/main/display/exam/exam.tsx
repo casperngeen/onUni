@@ -17,7 +17,9 @@ const ExamContentPage: React.FC<{}> = () => {
     const timeLimit = selector(selectTimeLimit);
     const startDate = selector(selectStartTime);
     const endDate = selector(selectDeadline);
-    const scores = selector(selectAttemptHistory).map((attempt) => attempt.score);
+    const scores = selector(selectAttemptHistory)
+        .filter((attempt) => attempt.submitted)
+        .map((attempt) => attempt.score);
     const maxScore = selector(selectMaxScore);
 
     const renderCurrScore = () => {

@@ -10,7 +10,7 @@ import { Image } from 'react-bootstrap';
 const PracticeContentPage: React.FC<{}> = () => {
     const selector = useAppSelector();
     const maxScore = selector(selectMaxScore);
-    const attempts = selector(selectAttemptHistory);
+    const attempts = selector(selectAttemptHistory).filter((attempt) => attempt.submitted);
     const timeLimit = selector(selectTimeLimit);
     return (
         <div className='practice-content'>
@@ -21,9 +21,9 @@ const PracticeContentPage: React.FC<{}> = () => {
                     </div>
                     <div className='score-number-practice'>
                         {attempts.length
-                            ? `${attempts.
-                                map(x => x.score as number).
-                                reduce((x,y) => y > x ? y : x, 0)}/${maxScore}`
+                            ? `${attempts
+                                .map(x => x.score as number)
+                                .reduce((x,y) => y > x ? y : x, 0)}/${maxScore}`
                             : `--`
                         }
                     </div>
