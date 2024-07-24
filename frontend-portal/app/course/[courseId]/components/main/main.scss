@@ -1,9 +1,9 @@
-@import '../../../../../utils/styles/styles.scss';
+@import "../../../../../utils/styles/styles.scss";
 
 .course-main {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    flex: 1;
-    scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  flex: 1;
+  scroll-behavior: smooth;
 }

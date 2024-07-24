@@ -1,96 +1,96 @@
-@import '../../../../../../../utils/styles/styles.scss';
+@import "../../../../../../../utils/styles/styles.scss";
 
 .single-test,
-.single-test-quiz  {
-    border-width: 1px;
-    border-style: solid;
-    border-color: $gray-200;
-    border-radius: $rounded-3;
-    display: flex;
-    flex-direction: column;
-    background-color: $white;
+.single-test-quiz {
+  border-width: 1px;
+  border-style: solid;
+  border-color: $gray-200;
+  border-radius: $rounded-3;
+  display: flex;
+  flex-direction: column;
+  background-color: $white;
 }
 
 .single-test-quiz {
-    padding: $p-3 $p-4;
-    gap: $gap-2;
+  padding: $p-3 $p-4;
+  gap: $gap-2;
 }
 
 .test-title-deadline-container {
-    padding: $p-3 $p-4;
-    display: flex;
-    flex-direction: column;
-    gap: $gap-2;
-    border-style: solid;
-    border-width: 0px 0px 1px 0px;
-    border-color: $gray-200;
+  padding: $p-3 $p-4;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-2;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+  border-color: $gray-200;
 }
 
 .test-title {
-    color: $blue-700;
-    font-size: $font-size-S;
-    line-height: 24px;
-    font-weight: 700;
+  color: $blue-700;
+  font-size: $font-size-S;
+  line-height: 24px;
+  font-weight: 700;
 }
 
 .item-description,
 .test-deadline,
 .not-eligible,
 .quiz-status {
-    color: $gray-700;
-    font-size: $font-size-XS;
-    line-height: 21px;
-    font-weight: 400;
+  color: $gray-700;
+  font-size: $font-size-XS;
+  line-height: 21px;
+  font-weight: 400;
 }
 
 .test-info-container {
-    padding: $p-3 $p-4;
-    display: flex;
-    gap: $gap-6;
-    justify-content: space-between;
+  padding: $p-3 $p-4;
+  display: flex;
+  gap: $gap-6;
+  justify-content: space-between;
 }
 
 .test-info {
-    display: flex;
-    gap: $gap-12;
+  display: flex;
+  gap: $gap-12;
 }
 
 .not-eligible-container,
 .test-info-item {
-    display: flex;
-    flex-direction: column;
-    gap: $gap-1;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-1;
 }
 
 .item-value {
-    color: $body-color;
-    font-size: $font-size-XS;
-    line-height: 21px;
-    font-weight: 500;
+  color: $body-color;
+  font-size: $font-size-XS;
+  line-height: 21px;
+  font-weight: 500;
 }
 
 .not-eligible-container {
-    align-items: start;
-    justify-content: center;
+  align-items: start;
+  justify-content: center;
 }
 
 .test-detail-link {
-    display: flex;
-    gap: $gap-2;
-    align-items: center;
-    &:hover {
-        cursor: pointer;
-    }
+  display: flex;
+  gap: $gap-2;
+  align-items: center;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .test-detail {
-    color: $primary;
-    font-weight: 500;
-    font-size: $font-size-XS;
-    line-height: 24px;
+  color: $primary;
+  font-weight: 500;
+  font-size: $font-size-XS;
+  line-height: 24px;
 }
 
 .quiz-status-with-button {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }

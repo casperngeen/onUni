@@ -1,66 +1,66 @@
 @import "../../../../../../../../../utils/styles/styles.scss";
 
 .sidebar-header-title {
-    border-style: solid;
-    border-color: $gray-200;
-    border-width: 0px 0px 1px 0px;
-    padding: $p-2 $p-4;
-    background-color: $white;
-    display: flex;
-    flex-direction: column;
-    gap: $gap-1;
+  border-style: solid;
+  border-color: $gray-200;
+  border-width: 0px 0px 1px 0px;
+  padding: $p-2 $p-4;
+  background-color: $white;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-1;
 }
 
 .sidebar-course {
-    padding: $p-2;
-    display: flex;
-    margin-bottom: $gap-1;
-    align-items: center;
-    gap: $gap-4;
+  padding: $p-2;
+  display: flex;
+  margin-bottom: $gap-1;
+  align-items: center;
+  gap: $gap-4;
 }
 
 .sidebar-course-logo {
-    height: 48px;
-    width: 48px;
-    border-radius: 40px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: $blue-200;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  height: 48px;
+  width: 48px;
+  border-radius: 40px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: $blue-200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .sidebar-course-title {
-    font-size: $font-size-S;
-    font-weight: 500;
-    line-height: 24px;
-    overflow: hidden;
+  font-size: $font-size-S;
+  font-weight: 500;
+  line-height: 24px;
+  overflow: hidden;
 }
 
 .sidebar-test-title {
-    padding: $p-2 $p-1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: $gap-2;
+  padding: $p-2 $p-1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $gap-2;
 }
 
 .sidebar-test-title-text {
-    color: $blue-700;
-    font-weight: 600;
-    line-height: 25px;
-    font-size: $font-size-M;
+  color: $blue-700;
+  font-weight: 600;
+  line-height: 25px;
+  font-size: $font-size-M;
 }
 
 .timer {
-    display: flex;
-    gap: $gap-2;
-    align-items: center;
+  display: flex;
+  gap: $gap-2;
+  align-items: center;
 }
 
 .timer-time {
-    font-weight: 700;
-    font-size: $font-size-S;
-    line-height: 24px;
+  font-weight: 700;
+  font-size: $font-size-S;
+  line-height: 24px;
 }

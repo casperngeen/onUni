@@ -1,11 +1,11 @@
-@import '../styles.scss';
+@import "../styles.scss";
 
 .uni-progress-attempt {
-    height: 0.5rem !important;
-    flex: 1;
-    .progress-bar {
-        height: 0.5rem;
-        border-radius: $rounded-2;
-        background-color: $--Theme-Success;
-    }
+  height: 0.5rem !important;
+  flex: 1;
+  .progress-bar {
+    height: 0.5rem;
+    border-radius: $rounded-2;
+    background-color: $--Theme-Success;
+  }
 }

@@ -1,21 +1,21 @@
 import { QuestionInfo } from "./attempt.types";
 
 export interface NewQuestionBody {
-    testId: number,
-    questionText: string,
+  testId: number;
+  questionText: string;
 }
 
 export interface NewQuestionResponse {
-    questionId: number,
+  questionId: number;
 }
 
 export interface NewOptionBody {
-    optionText: string,
-    isCorrect: boolean,
+  optionText: string;
+  isCorrect: boolean;
 }
 
 export interface NewOptionResponse {
-    optionId: number,
+  optionId: number;
 }
 
 export interface GetQuestionResponse extends QuestionInfo {}

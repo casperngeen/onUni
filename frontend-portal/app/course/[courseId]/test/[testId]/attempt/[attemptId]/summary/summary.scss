@@ -1,35 +1,35 @@
 @import "../../../../../../../../utils/styles/styles.scss";
 
 .summary {
-    display: flex;
-    background-color: rgba($white, 0.3);
-    padding: $p-6;
-    gap: $gap-4;
-    border-radius: $rounded-6;
+  display: flex;
+  background-color: rgba($white, 0.3);
+  padding: $p-6;
+  gap: $gap-4;
+  border-radius: $rounded-6;
 }
 
 .summary-item {
-    width: 167.5px;
-    display: flex;
-    flex-direction: column;
-    gap: $gap-1;
-    align-items: center;
+  width: 167.5px;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-1;
+  align-items: center;
 }
 
 .title {
-    display: flex;
-    color: $gray-100;
-    font-weight: 600;
-    font-size: $font-size-S;
-    line-height: 21px;
-    gap: $gap-1;
-    align-items: center;
+  display: flex;
+  color: $gray-100;
+  font-weight: 600;
+  font-size: $font-size-S;
+  line-height: 21px;
+  gap: $gap-1;
+  align-items: center;
 }
 
 .display {
-    font-weight: 700;
-    font-size: $font-size-3XL;
-    line-height: 50px;
-    color: $white;
-    opacity: 1;
+  font-weight: 700;
+  font-size: $font-size-3XL;
+  line-height: 50px;
+  color: $white;
+  opacity: 1;
 }

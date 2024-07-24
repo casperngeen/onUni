@@ -1,49 +1,49 @@
 import { ITestResponseWithAttemptInfo, TestTypes } from "./test.types";
 
 export interface NewCourseBody {
-    title: string,
-    description: string,
-    startDate: string,
-    endDate: string,
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
 }
 
 export interface NewUserBody {
-    userId: number,
+  userId: number;
 }
 
 interface CourseResponse {
-    courseId: number, 
-    title: string,
-    startDate: string,
-    endDate: string,
+  courseId: number;
+  title: string;
+  startDate: string;
+  endDate: string;
 }
 
 export interface INextTest {
-    courseId: number,
-    testId: number,
-    testType: TestTypes,
-    testTitle: string,
-    courseTitle: string,
+  courseId: number;
+  testId: number;
+  testType: TestTypes;
+  testTitle: string;
+  courseTitle: string;
 }
 
 export interface AllCourseResponse extends CourseResponse {
-    progress: number,
+  progress: number;
 }
 
 export interface AllCourseResponseObject {
-    courses: AllCourseResponse[],
-    nextTest: INextTest | null,
+  courses: AllCourseResponse[];
+  nextTest: INextTest | null;
 }
 
 export interface SingleCourseResponse extends CourseResponse {
-    description: string,
-    tests: ITestResponseWithAttemptInfo[],
+  description: string;
+  tests: ITestResponseWithAttemptInfo[];
 }
 
 export interface NewCourseResponse {
-    courseId: number, 
+  courseId: number;
 }
 
 export interface IGetCourse {
-    courseId: number,
+  courseId: number;
 }

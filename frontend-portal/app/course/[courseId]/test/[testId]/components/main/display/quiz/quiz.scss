@@ -1,59 +1,59 @@
-@import '../../../../../../../../../utils/styles/styles.scss';
+@import "../../../../../../../../../utils/styles/styles.scss";
 
 .quiz-content {
-    border-style: hidden;
-    border-radius: $rounded-4;
-    background-color: $white;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+  border-style: hidden;
+  border-radius: $rounded-4;
+  background-color: $white;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .quiz-info {
-    border-top-left-radius: $rounded-4;
-    border-top-right-radius: $rounded-4;
-    padding: $p-6 0 0 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: $gap-4;
-    background-color: $blue-100;
+  border-top-left-radius: $rounded-4;
+  border-top-right-radius: $rounded-4;
+  padding: $p-6 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $gap-4;
+  background-color: $blue-100;
 }
 
 .info-title {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: $gap-3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $gap-3;
 }
 
 .quiz-test-title {
-    font-size: $font-size-3XL;
-    font-weight: 600;
-    line-height: 50px;
-    color: $body-color;
+  font-size: $font-size-3XL;
+  font-weight: 600;
+  line-height: 50px;
+  color: $body-color;
 }
 
 .test-questions {
-    font-size: $font-size-M;
-    line-height: 24px;
-    color: $gray-700;
-    font-weight: 600;
+  font-size: $font-size-M;
+  line-height: 24px;
+  color: $gray-700;
+  font-weight: 600;
 }
 
 .quiz-test-description {
-    font-size: $font-size-XS;
-    line-height: 21px;
-    color: $gray-700;
-    font-weight: 500;
+  font-size: $font-size-XS;
+  line-height: 21px;
+  color: $gray-700;
+  font-weight: 500;
 }
 
 .quiz-image {
-    height: 160px;
-    width: 220px;
+  height: 160px;
+  width: 220px;
 }
 
 .history-container {
-    padding: $p-4 $p-6;
-    display: flex;
+  padding: $p-4 $p-6;
+  display: flex;
 }

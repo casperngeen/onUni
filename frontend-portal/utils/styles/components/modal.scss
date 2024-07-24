@@ -1,60 +1,60 @@
-@import '../styles.scss';
+@import "../styles.scss";
 
 .modal-warning,
 .modal-loading {
-    width: 100vw;
+  width: 100vw;
 
-    .modal-content {
-        width: 480px;
-    }
-    .modal-backdrop {
-        background-color: #000000;
-        opacity: 80%;
-    }
+  .modal-content {
+    width: 480px;
+  }
+  .modal-backdrop {
+    background-color: #000000;
+    opacity: 80%;
+  }
 }
 
 .modal-warning {
-    .modal-header {
-        border-width: 0px 0px 1px 0px;
-        border-style: solid;
-        border-color: $gray-200;
-        padding: $p-4 $p-6;
-        display: flex;
-        color: $body-color;
-        font-weight: 600;
-        font-size: $font-size-M;
-    }
+  .modal-header {
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+    border-color: $gray-200;
+    padding: $p-4 $p-6;
+    display: flex;
+    color: $body-color;
+    font-weight: 600;
+    font-size: $font-size-M;
+  }
 
-    .modal-body {
-        padding: $p-4 $p-6;
-        color: $body-color;
-        font-size: $font-size-S;
-        font-weight: 400;
-        display: flex;
-        align-items: center;
-        text-justify: auto;
-    }
+  .modal-body {
+    padding: $p-4 $p-6;
+    color: $body-color;
+    font-size: $font-size-S;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    text-justify: auto;
+  }
 
-    .modal-footer {
-        border-width: 1px 0px 0px 0px;
-        border-style: solid;
-        border-color: $gray-200;
-        padding: $p-4 $p-6;
-        display: flex;
-        justify-content: flex-end;
-    }
+  .modal-footer {
+    border-width: 1px 0px 0px 0px;
+    border-style: solid;
+    border-color: $gray-200;
+    padding: $p-4 $p-6;
+    display: flex;
+    justify-content: flex-end;
+  }
 }
 
 .modal-loading {
-    .modal-content {
-        display: flex;
-        flex-direction: column;
-        gap: $gap-6;
-        align-items: center;
-        justify-content: center;
-    }
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-6;
+    align-items: center;
+    justify-content: center;
+  }
 
-    .modal-content {
-        padding: $p-6;
-    }
+  .modal-content {
+    padding: $p-6;
+  }
 }

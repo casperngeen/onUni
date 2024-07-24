@@ -1,86 +1,86 @@
-@import '../../../../../../../../utils/styles/styles.scss';
+@import "../../../../../../../../utils/styles/styles.scss";
 
 .sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    border-width: 0px 0px 1px 0px;
-    border-color: $gray-200;
-    border-style: solid;
+  display: flex;
+  flex-direction: column;
+  border-width: 0px 0px 1px 0px;
+  border-color: $gray-200;
+  border-style: solid;
 }
 
 .hide {
-    padding: $p-3 $p-6;
-    display: flex;
-    gap: $gap-2;
-    border-width: 0px 0px 1px 0px;
-    border-color: $gray-200;
-    border-style: solid;
-    align-items: center;
-    color: $gray-700;
-    font-weight: 500;
-    font-size: $font-size-XS;
-    line-height: 21px;
+  padding: $p-3 $p-6;
+  display: flex;
+  gap: $gap-2;
+  border-width: 0px 0px 1px 0px;
+  border-color: $gray-200;
+  border-style: solid;
+  align-items: center;
+  color: $gray-700;
+  font-weight: 500;
+  font-size: $font-size-XS;
+  line-height: 21px;
 }
 
 .nav-container {
-    display: flex;
-    flex-direction: column;
-    padding: $p-2 $p-4;
-    gap: $gap-1;
+  display: flex;
+  flex-direction: column;
+  padding: $p-2 $p-4;
+  gap: $gap-1;
 }
 
 .test-sidebar-course-info {
-    padding: $p-2;
-    display: flex;
-    flex-direction: row;
-    margin-bottom: $gap-1;
-    align-items: center;
-    gap: $gap-4;
+  padding: $p-2;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: $gap-1;
+  align-items: center;
+  gap: $gap-4;
 
-    &:hover {
-        cursor: pointer;
-    }
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .test-sidebar-course-logo {
-    height: 48px;
-    width: 48px;
-    border-radius: 40px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: $blue-200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  height: 48px;
+  width: 48px;
+  border-radius: 40px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: $blue-200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .test-sidebar-course-title {
-    font-size: $font-size-S;
-    font-weight: 500;
-    line-height: 24px;
-    overflow: hidden;
+  font-size: $font-size-S;
+  font-weight: 500;
+  line-height: 24px;
+  overflow: hidden;
 }
 
 .test-toggle {
-    display: flex;
-    padding: $p-2 $p-1;
-    gap: $gap-2;
-    align-items: center;
+  display: flex;
+  padding: $p-2 $p-1;
+  gap: $gap-2;
+  align-items: center;
 }
 
 .test-description {
-    flex: 1;
-    text-align: center;
-    color: $blue-700;
-    line-height: 24px;
-    font-size: $font-size-S;
-    font-weight: 500;
+  flex: 1;
+  text-align: center;
+  color: $blue-700;
+  line-height: 24px;
+  font-size: $font-size-S;
+  font-weight: 500;
 }
 
 .collapse-icon {
-    height: 24px;
-    width: 24px;
-    &:hover {
-        cursor: pointer;
-    }
+  height: 24px;
+  width: 24px;
+  &:hover {
+    cursor: pointer;
+  }
 }

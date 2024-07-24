@@ -1,28 +1,28 @@
-@import '../../../../../../../../utils/styles/styles.scss';
+@import "../../../../../../../../utils/styles/styles.scss";
 
 .prereq-fulfilled,
 .prereq-unfulfilled {
-    padding: $p-4 $p-6;
-    border-width: 0px 0px 0px 8px;
-    border-style: solid;
-    display: flex;
-    gap: $gap-4;
-    align-items: center;
+  padding: $p-4 $p-6;
+  border-width: 0px 0px 0px 8px;
+  border-style: solid;
+  display: flex;
+  gap: $gap-4;
+  align-items: center;
 }
 
 .prereq-fulfilled {
-    background-color: $blue-100;
-    border-color: $primary;
+  background-color: $blue-100;
+  border-color: $primary;
 }
 
 .prereq-unfulfilled {
-    background-color: $red-100;
-    border-color: $danger;
+  background-color: $red-100;
+  border-color: $danger;
 }
 
 .prereq-test-title {
-    color: $body-color;
-    font-weight: 600;
-    font-size: $font-size-S;
-    line-height: 24px;
+  color: $body-color;
+  font-weight: 600;
+  font-size: $font-size-S;
+  line-height: 24px;
 }

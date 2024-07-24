@@ -1,17 +1,17 @@
 @import "../../../../../../../utils/styles/styles.scss";
 
 .description {
-    display: flex;
-    gap: $gap-3;
-    align-items: center;
-    color: $body-color;
-    font-size: $font-size-S;
-    line-height: 24px;
-    font-weight: 400;
-    text-align: center;
+  display: flex;
+  gap: $gap-3;
+  align-items: center;
+  color: $body-color;
+  font-size: $font-size-S;
+  line-height: 24px;
+  font-weight: 400;
+  text-align: center;
 }
 
 .error {
-    color: $--Theme-Danger;
-    font-weight: 500;
+  color: $--Theme-Danger;
+  font-weight: 500;
 }

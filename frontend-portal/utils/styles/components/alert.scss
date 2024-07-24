@@ -1,30 +1,33 @@
 @use "sass:map";
-@import '../styles.scss';
+@import "../styles.scss";
 
 .alert-success,
 .alert-error {
-    width: 100%;
-    border-radius: 1rem;
-    border-style: solid;
-    border-width: 1px;
-    padding: $p-3 $p-4;
-    display: flex;
-    font-size: $font-size-S;
-    font-weight: 500;
-    line-height: 24px;
-    align-items: center;
-    justify-content: flex-start;
-    gap: $gap-2;
+  width: 100%;
+  border-radius: 1rem;
+  border-style: solid;
+  border-width: 1px;
+  padding: $p-3 $p-4;
+  display: flex;
+  font-size: $font-size-S;
+  font-weight: 500;
+  line-height: 24px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: $gap-2;
 }
 
 .alert-success {
-    background-color: map-get($alert-color, 'alert-success-background') !important;
-    border-color: map-get($alert-color, 'alert-success-border') !important;
-    color: map-get($alert-color, 'alert-success-text') !important;
+  background-color: map-get(
+    $alert-color,
+    "alert-success-background"
+  ) !important;
+  border-color: map-get($alert-color, "alert-success-border") !important;
+  color: map-get($alert-color, "alert-success-text") !important;
 }
 
 .alert-error {
-    background-color: map-get($alert-color, 'alert-error-background') !important;
-    border-color: map-get($alert-color, 'alert-error-border') !important;
-    color: map-get($alert-color, 'alert-error-text') !important;
+  background-color: map-get($alert-color, "alert-error-background") !important;
+  border-color: map-get($alert-color, "alert-error-border") !important;
+  color: map-get($alert-color, "alert-error-text") !important;
 }

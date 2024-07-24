@@ -1,97 +1,97 @@
-@import '../../../../../../utils/styles/styles.scss';
+@import "../../../../../../utils/styles/styles.scss";
 
 .test-list-container {
-    flex: 1;
-    padding: $p-8 $p-7;
-    display: flex;
-    flex-direction: column;
-    gap: $gap-10;
-    background-color: $gray-100;
+  flex: 1;
+  padding: $p-8 $p-7;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-10;
+  background-color: $gray-100;
 }
 
 .course-intro {
-    display: flex;
-    flex-direction: column;
-    gap: $gap-3;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-3;
 }
 
 .course-intro-title {
-    color: $body-color;
-    font-weight: 600;
-    line-height: 24px;
-    font-size: $font-size-S;
+  color: $body-color;
+  font-weight: 600;
+  line-height: 24px;
+  font-size: $font-size-S;
 }
 
 .course-intro-content {
-    display: flex;
-    gap: $gap-10;
+  display: flex;
+  gap: $gap-10;
 }
 
 .course-intro-description {
-    width: 720px;
-    color: $gray-700;
-    line-height: 24px;
-    font-weight: 400;
-    font-size: $font-size-S;
-    text-justify: auto;
-    word-wrap: break-word;
+  width: 720px;
+  color: $gray-700;
+  line-height: 24px;
+  font-weight: 400;
+  font-size: $font-size-S;
+  text-justify: auto;
+  word-wrap: break-word;
 }
 
 .course-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: $gap-3;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-3;
 }
 
 .date-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: $gap-1;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-1;
 }
 
 .date-description {
-    color: $gray-700;
-    line-height: 21px;
-    font-weight: 400;
-    font-size: $font-size-XS;
+  color: $gray-700;
+  line-height: 21px;
+  font-weight: 400;
+  font-size: $font-size-XS;
 }
 
 .date-value {
-    color: $body-color;
-    line-height: 21px;
-    font-weight: 500;
-    font-size: $font-size-XS;
+  color: $body-color;
+  line-height: 21px;
+  font-weight: 500;
+  font-size: $font-size-XS;
 }
 
 .test-list-with-header {
-    display: flex;
-    flex-direction: column;
-    gap: $gap-4;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-4;
 }
 
 .test-list-header {
-    display: flex;
-    flex-direction: column;
-    gap: $gap-1;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-1;
 }
 
 .test-list-title {
-    color: $body-color;
-    line-height: 24px;
-    font-weight: 600;
-    font-size: $font-size-S;
+  color: $body-color;
+  line-height: 24px;
+  font-weight: 600;
+  font-size: $font-size-S;
 }
 
 .header-test-number {
-    color: $gray-700;
-    line-height: 21px;
-    font-weight: 400;
-    font-size: $font-size-XS;
+  color: $gray-700;
+  line-height: 21px;
+  font-weight: 400;
+  font-size: $font-size-XS;
 }
 
 .test-list {
-    display: flex;
-    flex-direction: column;
-    gap: $gap-6;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-6;
 }

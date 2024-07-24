@@ -1,31 +1,31 @@
-@import '../../../../../../../../utils/styles/styles.scss';
+@import "../../../../../../../../utils/styles/styles.scss";
 
 .test-display {
-    overflow: auto;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: $p-4 $p-7;
-    gap: $gap-4;
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: $p-4 $p-7;
+  gap: $gap-4;
 }
 
 .test-header {
-    display: flex;
-    gap: $gap-4;
+  display: flex;
+  gap: $gap-4;
 }
 
 .expand-icon {
-    height: 24px;
-    width: 24px;
-    &:hover {
-        cursor: pointer;
-    }
+  height: 24px;
+  width: 24px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .test-title {
-    flex: 1;
-    font-size: $font-size-M;
-    font-weight: 600;
-    line-height: 25px;
-    color: $body-color;
+  flex: 1;
+  font-size: $font-size-M;
+  font-weight: 600;
+  line-height: 25px;
+  color: $body-color;
 }

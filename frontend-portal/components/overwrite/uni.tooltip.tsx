@@ -14,7 +14,11 @@ interface IUniTooltip {
 const UniTooltip = (props: IUniTooltip) => {
   const { children, title, placement, classTooltip, showToolTip } = props;
   const renderTooltip = (propsTooltip: any) => (
-    <Tooltip id="uni-tooltip" {...propsTooltip} className={classTooltip ? `${classTooltip}` : "uni-tooltip-container"}>
+    <Tooltip
+      id="uni-tooltip"
+      {...propsTooltip}
+      className={classTooltip ? `${classTooltip}` : "uni-tooltip-container"}
+    >
       {title}
     </Tooltip>
   );
@@ -32,4 +36,3 @@ const UniTooltip = (props: IUniTooltip) => {
 };
 
 export default UniTooltip;
-

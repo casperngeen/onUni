@@ -27,7 +27,7 @@ $spacers: (
   special-2: $spacer * 1.375,
   special-3: $spacer * 1.875,
   valid-email: $spacer * 1.40625,
-  header: $spacer * 7.5
+  header: $spacer * 7.5,
 );
 
 // standardize all the sizes here so in the future, these variables can be referenced in the future
@@ -43,11 +43,13 @@ $current-lesson-sidebarH: 9.375rem;
 $task-text-sidebarW: 17.25rem;
 $lesson-exercise-cover-buttonH: 4rem;
 $lesson-exercise-cover-buttonH-mobile: 3.3125rem;
-$lesson-exercise-img-introH: calc(100vh - $headerH - 2rem - $lesson-exercise-cover-buttonH - 2.5625rem);
+$lesson-exercise-img-introH: calc(
+  100vh - $headerH - 2rem - $lesson-exercise-cover-buttonH - 2.5625rem
+);
 // $lesson-side-unitW-tablet: 13rem;
 
 $--Theme-Success: #1aa179;
 $--Theme-Danger: #dc3545;
 
 // import after adjusting the values -> to set the values
-@import '~bootstrap/scss/bootstrap';
+@import "~bootstrap/scss/bootstrap";

@@ -1,56 +1,56 @@
 @import "../../../../../../../../../utils/styles/styles.scss";
 
 .sidebar-questions-wrapper {
-    flex: 1;
-    overflow: auto;
+  flex: 1;
+  overflow: auto;
 }
 
 .sidebar-questions {
-    padding: $p-3 $p-4;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-auto-rows: minmax(40, auto);
-    gap: $p-3;
+  padding: $p-3 $p-4;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(40, auto);
+  gap: $p-3;
 
-    &::before {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: $gray-100;
-        z-index: -1;
-    }
+  &::before {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $gray-100;
+    z-index: -1;
+  }
 }
 
 .sidebar-single-question {
-    border-style:solid;
-    border-radius: $rounded-2;
-    border-color: $gray-200;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: $body-color;
-    gap: $gap-2;
-    &:hover {
-        background-color: $blue-100;
-    }
+  border-style: solid;
+  border-radius: $rounded-2;
+  border-color: $gray-200;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $body-color;
+  gap: $gap-2;
+  &:hover {
+    background-color: $blue-100;
+  }
 }
 
 .sidebar-single-question-attempted {
-    @extend .sidebar-single-question;
-    background-color: $teal-500;
+  @extend .sidebar-single-question;
+  background-color: $teal-500;
 }
 
 .question-number {
-    font-size: $font-size-XS;
-    line-height: 21px;
-    font-weight: 500px;
-    margin-right: $gap-0 !important;
+  font-size: $font-size-XS;
+  line-height: 21px;
+  font-weight: 500px;
+  margin-right: $gap-0 !important;
 }
 
 .question-number-attempted {
-    @extend .question-number;
-    color: $white;
+  @extend .question-number;
+  color: $white;
 }

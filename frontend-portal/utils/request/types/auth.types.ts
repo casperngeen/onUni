@@ -1,41 +1,41 @@
 import { ApiResponse } from "./base.types";
 
 export interface LoginBody {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 export enum Roles {
-    STUDENT = 'student',
-    TEACHER = 'teacher',
+  STUDENT = "student",
+  TEACHER = "teacher",
 }
-  
+
 export interface SignUpBody {
-    email: string;
-    password: string;
-    role: Roles;
+  email: string;
+  password: string;
+  role: Roles;
 }
 
 export interface ForgetPasswordBody {
-    email: string;
+  email: string;
 }
 
 export interface ChangePasswordBody {
-    password: string;
+  password: string;
 }
 
 export interface LoginResponse {
-    accessToken: string,
-    refreshToken: string,
-    profilePic: string | null,
-    name: string,
+  accessToken: string;
+  refreshToken: string;
+  profilePic: string | null;
+  name: string;
 }
 
 export interface ForgetPasswordResponse {
-    url: string,
+  url: string;
 }
 
 export interface RefreshResponse {
-    accessToken: string,
-    refreshToken: string,
+  accessToken: string;
+  refreshToken: string;
 }

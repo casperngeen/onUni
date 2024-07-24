@@ -6,8 +6,8 @@ export enum RequestTypes {
 }
 
 export interface ApiResponse<T> {
-  status: string,
-  code: number,
-  message: string,
-  data: T,
+  status: string;
+  code: number;
+  message: string;
+  data: T;
 }

@@ -1,114 +1,114 @@
-@import '../../../../../../../../../utils/styles/styles.scss';
+@import "../../../../../../../../../utils/styles/styles.scss";
 
 .exam-content {
-    flex: 1;
-    padding: $p-4 $p-6;
-    border-radius: $rounded-4;
-    border-style: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: $gap-6;
-    background-color: $white;
+  flex: 1;
+  padding: $p-4 $p-6;
+  border-radius: $rounded-4;
+  border-style: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-6;
+  background-color: $white;
 }
 
 .info-panel-exam {
-    display: flex;
-    gap: $gap-4;
+  display: flex;
+  gap: $gap-4;
 }
 
 .score-panel-exam {
-    flex: 1;
-    border-radius: $rounded-4;
-    border-style: hidden;
-    background-color: $gray-100;
-    position: relative;
+  flex: 1;
+  border-radius: $rounded-4;
+  border-style: hidden;
+  background-color: $gray-100;
+  position: relative;
 }
 
 .score {
-    position: absolute;
-    top: $p-4;
-    left: $p-4;
-    display: flex;
-    flex-direction: column;
+  position: absolute;
+  top: $p-4;
+  left: $p-4;
+  display: flex;
+  flex-direction: column;
 }
 
 .score-description {
-    color: $gray-700;
-    font-weight: 400px;
-    font-size: $font-size-XS;
-    line-height: 21px;  
+  color: $gray-700;
+  font-weight: 400px;
+  font-size: $font-size-XS;
+  line-height: 21px;
 }
 
 .score-number {
-    font-weight: 700;
-    font-size: $font-size-3XL;
-    line-height: 50px;
-    color: $body-color;
+  font-weight: 700;
+  font-size: $font-size-3XL;
+  line-height: 50px;
+  color: $body-color;
 }
 
 .exam-score-image {
-    position: absolute;
-    bottom: 0px;
-    right: $p-7;
-    width: 160px;
-    height: 128px;
+  position: absolute;
+  bottom: 0px;
+  right: $p-7;
+  width: 160px;
+  height: 128px;
 }
 
 .other-info-exam {
-    display: flex;
-    flex-direction: column;
-    gap: $gap-3;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-3;
 }
 
 .info-row-exam {
-    display: flex;
-    gap: $gap-3;
+  display: flex;
+  gap: $gap-3;
 }
 
 .panel-item-exam {
-    $border-radius: $rounded-2;
-    background-color: $gray-100;
-    display: flex;
-    flex-direction: column;
-    gap: $gap-2;
-    padding: $p-3 $p-4;
+  $border-radius: $rounded-2;
+  background-color: $gray-100;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-2;
+  padding: $p-3 $p-4;
 }
 
 .panel-title-exam {
-    width: 202px;
-    font-size: $font-size-XS;
-    line-height: 21px;
-    color: $gray-700;
-    font-weight: 400;
+  width: 202px;
+  font-size: $font-size-XS;
+  line-height: 21px;
+  color: $gray-700;
+  font-weight: 400;
 }
 
 .panel-content-exam {
-    width: 202px;
-    font-size: $font-size-XS;
-    line-height: 21px;
-    color: $body-color;
-    font-weight: 500;
-    white-space: pre-wrap; /* Allow wrapping and preserve whitespace */
-    word-wrap: break-word;
+  width: 202px;
+  font-size: $font-size-XS;
+  line-height: 21px;
+  color: $body-color;
+  font-weight: 500;
+  white-space: pre-wrap; /* Allow wrapping and preserve whitespace */
+  word-wrap: break-word;
 }
 
 .instructions {
-    display: flex;
-    flex-direction: column;
-    gap: $gap-1;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-1;
 }
 
 .instruction-title {
-    font-weight: 400;
-    font-size: $font-size-XS;
-    line-height: 21px;
-    color: $body-color;
+  font-weight: 400;
+  font-size: $font-size-XS;
+  line-height: 21px;
+  color: $body-color;
 }
 
 .instruction-info {
-    font-weight: 500;
-    font-size: $font-size-XS;
-    line-height: 21px;
-    color: $body-color;
-    white-space: normal;
+  font-weight: 500;
+  font-size: $font-size-XS;
+  line-height: 21px;
+  color: $body-color;
+  white-space: normal;
 }

@@ -1,28 +1,28 @@
 @import "../../../../../../../../utils/styles/styles.scss";
 
 .warning-icon {
-    height: 2rem;
-    width: 2rem;
-    border-radius: 50%;
-    background-color: $orange-100;
-    margin-right: $gap-4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  background-color: $orange-100;
+  margin-right: $gap-4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button-gap {
-    margin-right: $gap-6;
+  margin-right: $gap-6;
 }
 
 .image-gap {
-    margin-bottom: $gap-6;
+  margin-bottom: $gap-6;
 }
 
 .description {
-    display: flex;
-    gap: $gap-3;
-    align-items: center;
-    color: $body-color;
-    font-weight: 400;
+  display: flex;
+  gap: $gap-3;
+  align-items: center;
+  color: $body-color;
+  font-weight: 400;
 }
