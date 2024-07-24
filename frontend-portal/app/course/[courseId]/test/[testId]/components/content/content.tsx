@@ -14,7 +14,7 @@ const TestPageContent: React.FC<{}> = () => {
     const testId = Array.isArray(testIdString) ? parseInt(testIdString[0]) : parseInt(testIdString);
     const dispatch = useAppDispatch()();
     const selector = useAppSelector();
-    const testOrder = selector(selectTestOrder);
+    const testOrder = selector(selectTestOrder).map((test) => test.testId);
     const errorCode = selector(selectErrorCode);
 
     useEffect(() => {
@@ -27,14 +27,19 @@ const TestPageContent: React.FC<{}> = () => {
             if (!errorCode) {
                 await dispatch(getAllTests({ courseId: courseId }));
             }
-            
-            if (testOrder && testId in testOrder) {
-                dispatch(setCurrIndex(testId));
-            }
         }
         initialise();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (testOrder.includes(testId)) {
+            console.log(testOrder)
+            console.log('setting')
+            dispatch(setCurrIndex(testId));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [testOrder])
 
     return (
         <div className="test-content">

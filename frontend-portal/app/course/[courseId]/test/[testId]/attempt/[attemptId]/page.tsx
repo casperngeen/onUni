@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { SubmitStatus, getAttempt, selectSubmitStatus } from "@/utils/redux/slicers/attempt.slicer";
 import AttemptSummary from "./components/summary";
 import AttemptInProgress from "./components/in-progress";
+import withAuth from "@/components/auth";
 
 
 const AttemptPage: React.FC<{}> = () => {
@@ -41,8 +42,8 @@ const AttemptPage: React.FC<{}> = () => {
     } else if (submitStatus === SubmitStatus.UNSUBMITTED) {
         return <AttemptInProgress />
     }
-
-    
 }
 
-export default AttemptPage;
+const AttemptWithAuth = withAuth(AttemptPage);
+
+export default AttemptWithAuth;

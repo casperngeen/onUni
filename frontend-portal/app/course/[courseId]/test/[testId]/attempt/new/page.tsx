@@ -9,6 +9,7 @@ import { AttemptRequest } from "@/utils/request/attempt.request";
 import RequestError from "@/utils/request/request.error";
 import { useAppDispatch } from "@/utils/redux/hooks";
 import { resetState } from "@/utils/redux/slicers/attempt.slicer";
+import withAuth from "@/components/auth";
 
 const CreateAttempt: React.FC<{}> = () => {
     const dispatch = useAppDispatch()();
@@ -57,4 +58,6 @@ const CreateAttempt: React.FC<{}> = () => {
     );
 }
 
-export default CreateAttempt;
+const CreateAttemptWithAuth = withAuth(CreateAttempt);
+
+export default CreateAttemptWithAuth;

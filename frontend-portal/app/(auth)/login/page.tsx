@@ -27,7 +27,6 @@ const LoginPage: React.FC<{}> = () => {
     
     const handleKeyDown = async (event: KeyboardEvent) => {
         if (event.key === 'Enter') {
-            console.log('pressed')
             if (!disabledRef.current) {
                 await submitLogin();
             }
