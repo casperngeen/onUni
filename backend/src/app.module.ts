@@ -16,6 +16,8 @@ import { CourseModule } from './modules/course/course.module';
 import { AttemptModule } from './modules/attempt/attempt.module';
 import { QuestionModule } from './modules/question/question.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TaskModule } from './modules/task/task.module';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { RedisModule } from '@nestjs-modules/ioredis';
       ],
       synchronize: true,
     }),
+    ScheduleModule.forRoot(),
+    TaskModule,
     AuthModule,
     CourseModule,
     LoggerModule,

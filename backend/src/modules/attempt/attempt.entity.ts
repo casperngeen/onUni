@@ -87,16 +87,6 @@ export class SubmitAttemptInfoDto {
   questionAttempts: SubmitQuestionAttemptDto[];
 }
 
-export class SubmitAttemptDto {
-  @IsNotEmpty()
-  @IsInt()
-  attemptId: number;
-
-  @IsNotEmpty()
-  @IsInt()
-  userId: number;
-}
-
 export class UserTestDto {
   @IsNotEmpty()
   @IsInt()

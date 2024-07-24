@@ -4,7 +4,6 @@ import {
   Attempt,
   AttemptIdDto,
   AttemptInfoDto,
-  SubmitAttemptDto,
   UserTestDto,
 } from './attempt.entity';
 import { AnswerStatus, Status } from './attempt.enum';
@@ -323,13 +322,13 @@ export class AttemptService extends BaseService<Attempt> {
     return questionAttempts;
   }
 
-  public async submitAttempt(submitAttemptDetails: SubmitAttemptDto) {
-    const { userId, attemptId } = submitAttemptDetails;
+  public async submitAttempt(submitAttemptDetails: AttemptIdDto) {
+    const { attemptId } = submitAttemptDetails;
     this.log(`Query to submit attempt ${attemptId}`, this.context);
     const attempt: Attempt = await this.checkIfAttemptInRepo(attemptId);
     if (attempt.status === Status.SUBMIT) {
       this.error(
-        `User ${userId} has already submitted attempt ${attemptId}`,
+        `User has already submitted attempt ${attemptId}`,
         this.context,
         this.getTrace(),
       );

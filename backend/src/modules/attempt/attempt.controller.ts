@@ -13,11 +13,7 @@ import {
 import { AttemptService } from './attempt.service';
 import { Response } from 'express';
 import { ResponseHandler } from 'src/base/base.response';
-import {
-  AttemptIdDto,
-  AttemptInfoDto,
-  SubmitAttemptDto,
-} from './attempt.entity';
+import { AttemptIdDto, AttemptInfoDto } from './attempt.entity';
 import { QuestionAttemptInfoDto } from './question.attempt.entity';
 import { CourseUserGuard } from '../course/course.user.guard';
 import { AttemptUserGuard } from './attempt.user.guard';
@@ -90,15 +86,9 @@ export class AttemptController {
   @Put('attempt/:attemptId')
   async submitAttempt(
     @Param('attemptId') attemptId: number,
-    @Req() request: Request,
     @Res() response: Response,
   ) {
-    const { userId } = request['user'];
-    const submitAttempt: SubmitAttemptDto = {
-      userId: userId,
-      attemptId: attemptId,
-    };
-    await this.attemptService.submitAttempt(submitAttempt);
+    await this.attemptService.submitAttempt({ attemptId: attemptId });
     response.status(200).json(ResponseHandler.success());
   }
 
