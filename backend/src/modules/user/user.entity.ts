@@ -108,6 +108,12 @@ export class EmailTokenDto {
   emailToken: number;
 }
 
+export class ValidateTokenDto {
+  @IsNotEmpty()
+  @IsString()
+  token: string;
+}
+
 export class AuthTokenDto {
   @IsNotEmpty()
   @IsString()

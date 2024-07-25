@@ -10,6 +10,10 @@ export enum Roles {
   TEACHER = "teacher",
 }
 
+export interface ValidateTokenBody {
+  token: string;
+}
+
 export interface SignUpBody {
   email: string;
   password: string;

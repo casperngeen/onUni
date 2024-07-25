@@ -26,12 +26,12 @@ import { TaskModule } from './modules/task/task.module';
       useFactory: () => ({
         // single means single node/server, cluster is multiple servers
         type: 'single',
-        url: 'redis://localhost:6379',
+        url: process.env.REDIS_URL,
       }),
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT),
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,

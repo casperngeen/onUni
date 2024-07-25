@@ -13,18 +13,20 @@ import {
   SignUpDto,
   User,
   UserIdDto,
+  ValidateTokenDto,
 } from '../user/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import {
+  ExpiredTokenException,
   HashFailedExcepion,
   MailNotSentException,
   PasswordIncorrectException,
   TokenGenerationFailedException,
 } from '../auth/auth.exception';
 // import nodemailer from 'nodemailer';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import {
   DuplicateUserException,
   UserNotFoundException,
@@ -119,7 +121,7 @@ export class AuthService extends BaseService<User> {
       role: user.role,
     };
 
-    const options = { expiresIn: '5m' };
+    const options = { expiresIn: '10m' };
     this.log('Generating access token...', this.context);
     try {
       const result = await this.jwtService.signAsync(payload, options);
@@ -146,7 +148,7 @@ export class AuthService extends BaseService<User> {
       role: user.role,
     };
 
-    const options = { expiresIn: '10m' };
+    const options = { expiresIn: '7d' };
     this.log('Generating refresh token...', this.context);
     try {
       const result = await this.jwtService.signAsync(payload, options);
@@ -212,6 +214,34 @@ export class AuthService extends BaseService<User> {
     });
     this.log('User successfully inserted', this.context);
     this.log(`Sign up for ${email} completed`, this.context);
+  }
+
+  public async validateToken(tokenDto: ValidateTokenDto) {
+    const { token } = tokenDto;
+    this.log(`Verifying the validity of token...`, this.context);
+    try {
+      await this.jwtService.verifyAsync(token);
+      this.log(`Token is valid`, this.context);
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        this.error(
+          `JWT has expired`,
+          this.context,
+          StackTrace.getSync()
+            .map((frame) => frame.toString())
+            .join('\n'),
+        );
+        throw new ExpiredTokenException();
+      }
+      this.error(
+        `Error verifying token ${error.toString()}`,
+        this.context,
+        StackTrace.getSync()
+          .map((frame) => frame.toString())
+          .join('\n'),
+      );
+      throw new UnauthorisedUserException();
+    }
   }
 
   /**

@@ -6,6 +6,7 @@ import {
   LoginDto,
   PasswordDto,
   SignUpDto,
+  ValidateTokenDto,
 } from '../user/user.entity';
 import { Public } from 'src/public.decorator';
 import { Request, Response } from 'express';
@@ -45,6 +46,16 @@ export class AuthController {
     @Res() response: Response,
   ) {
     await this.authService.changePassword({ emailToken: token }, password);
+    response.status(200).json(ResponseHandler.success());
+  }
+
+  @Public()
+  @Post('validate')
+  async validateToken(
+    @Body() token: ValidateTokenDto,
+    @Res() response: Response,
+  ) {
+    await this.authService.validateToken(token);
     response.status(200).json(ResponseHandler.success());
   }
 

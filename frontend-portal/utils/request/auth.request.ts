@@ -6,6 +6,7 @@ import {
   LoginResponse,
   RefreshResponse,
   SignUpBody,
+  ValidateTokenBody,
 } from "./types/auth.types";
 import { ApiResponse, RequestTypes } from "./types/base.types";
 import BaseRequest from "./base.request";
@@ -26,6 +27,10 @@ export default class AuthRequest extends BaseRequest {
 
   public static async signUp(body: SignUpBody) {
     await BaseRequest.request("auth/signup", RequestTypes.POST, body);
+  }
+
+  public static async validateToken(body: ValidateTokenBody) {
+    await BaseRequest.request("auth/validate", RequestTypes.POST, body);
   }
 
   public static async forget(body: ForgetPasswordBody) {

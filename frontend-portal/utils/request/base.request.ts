@@ -4,14 +4,10 @@ import { AuthException, UserException } from "./status.code";
 import { RefreshResponse } from "./types/auth.types";
 
 export default class BaseRequest {
-  private static readonly baseRoute = `http://localhost:3000`;
+  private static readonly baseRoute = process.env.NEXT_PUBLIC_API_ROUTE;
 
   protected static getAccessToken() {
     return localStorage.getItem("accessToken");
-  }
-
-  protected static getRefreshToken() {
-    return localStorage.getItem("refreshToken");
   }
 
   protected static async request<T>(
@@ -36,58 +32,6 @@ export default class BaseRequest {
 
       console.log(jsonResponse);
 
-      // handle access token expiry
-      if (jsonResponse.code == AuthException.EXPIRED_TOKEN) {
-        const refresh = BaseRequest.getRefreshToken();
-        const refreshResponse: ApiResponse<RefreshResponse> = await fetch(
-          `${this.baseRoute}/auth/refresh`,
-          {
-            method: RequestTypes.POST,
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              Authorization: `Bearer ${refresh}`,
-            },
-          },
-        ).then((response) => response.json());
-
-        console.log(refreshResponse);
-
-        // if the refresh was successful -> set cookies and fetch original request again
-        if (refreshResponse.code === 0) {
-          const { accessToken, refreshToken } = refreshResponse.data;
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-          jsonResponse = await fetch(`${this.baseRoute}/${path}`, {
-            method: method,
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: method === RequestTypes.GET ? null : JSON.stringify(bodyData),
-          }).then((response) => response.json());
-          console.log(jsonResponse);
-        } else if (
-          refreshResponse.code === AuthException.EXPIRED_TOKEN ||
-          refreshResponse.code === UserException.UNAUTHORISED_USER
-        ) {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          localStorage.removeItem("username");
-        } else {
-          throw new RequestError(refreshResponse.code, refreshResponse.message);
-        }
-      }
-
-      if (
-        jsonResponse.code === AuthException.EXPIRED_TOKEN ||
-        jsonResponse.code === UserException.UNAUTHORISED_USER
-      ) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("username");
-      }
       if (jsonResponse.code != 0) {
         throw new RequestError(jsonResponse.code, jsonResponse.message);
       }
