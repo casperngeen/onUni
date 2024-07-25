@@ -10,15 +10,17 @@ import { AttemptService } from '../attempt/attempt.service';
 
 @Injectable()
 export class TaskWorker {
+  private context: string;
   constructor(
     @InjectRepository(Attempt)
     private readonly attemptRepository: Repository<Attempt>,
     private readonly attemptService: AttemptService,
     private readonly loggerService: LoggerService,
-    private context = StackTrace.getSync().map((frame) =>
+  ) {
+    this.context = StackTrace.getSync().map((frame) =>
       path.basename(frame.fileName),
-    )[0],
-  ) {}
+    )[0];
+  }
 
   // scheduled for once per day at 12mn
   @Cron('0 0 * * *')
