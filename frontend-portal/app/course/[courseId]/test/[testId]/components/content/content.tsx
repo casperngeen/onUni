@@ -11,8 +11,9 @@ import {
     selectTestOrder,
     setCurrIndex,
 } from "@/utils/redux/slicers/test.slicer";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import "./content.scss";
+import { AuthContext } from "@/components/auth";
 
 const TestPageContent: React.FC<{}> = () => {
     const { courseId: courseIdString, testId: testIdString } = useParams();
@@ -26,6 +27,7 @@ const TestPageContent: React.FC<{}> = () => {
     const selector = useAppSelector();
     const testOrder = selector(selectTestOrder).map((test) => test.testId);
     const errorCode = selector(selectErrorCode);
+    const isVerified = useContext(AuthContext);
 
     useEffect(() => {
         const initialise = async () => {
@@ -40,9 +42,11 @@ const TestPageContent: React.FC<{}> = () => {
                 await dispatch(getAllTests({ courseId: courseId }));
             }
         };
-        initialise();
+        if (isVerified) {
+            initialise();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isVerified]);
 
     useEffect(() => {
         if (testOrder.includes(testId)) {
