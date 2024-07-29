@@ -1,8 +1,8 @@
-name: backend
+name: onuni
 
 services:
-  nest-backend:
-    build: .
+  backend:
+    build: ./backend
     container_name: backend
     env_file:
       - .env
@@ -12,6 +12,15 @@ services:
     ports:
       - '3000:3000'
     command: npm run start:dev
+  
+  frontend:
+    build: ./frontend-portal
+    container_name: frontend
+    env_file:
+      - .env.local
+    ports:
+      - '3001:3001'
+    command: npm run dev
 
   postgres:
     image: postgres:16-alpine
@@ -21,7 +30,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - onuni-db:/var/lib/postgresql/data
+      - backend_onuni-db:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
@@ -29,6 +38,6 @@ services:
     ports:
       - '6379:6379'
 volumes:
-  onuni-db:
-
-
+  backend_onuni-db:
+    # remove this line if you are using this docker compose for the first time
+    external: true 
