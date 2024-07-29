@@ -20,7 +20,7 @@ services:
       - .env.local
     ports:
       - '3001:3001'
-    command: npm run dev
+    command: npx next start
 
   postgres:
     image: postgres:16-alpine
