@@ -30,6 +30,7 @@ function withAuth<P extends object>(
 					try {
 						await AuthRequest.validateToken({token: accessToken});
 						setIsVerified(true);
+						return true
 					} catch (error) {
 						if (error instanceof RequestError) {
 							const code = error.getErrorCode();
@@ -54,6 +55,7 @@ function withAuth<P extends object>(
 											localStorage.setItem("accessToken", accessToken);
 											localStorage.setItem("refreshToken", refreshToken);
 											setIsVerified(true);
+											return true
 										} else {
 											throw new RequestError(refreshResponse.code, refreshResponse.message);
 										}
