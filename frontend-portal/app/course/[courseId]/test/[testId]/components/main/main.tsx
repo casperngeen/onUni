@@ -5,12 +5,12 @@ import StartButton from "./start/start";
 import "./main.scss";
 
 const MainContent: React.FC<{}> = () => {
-  return (
-    <div className="main">
-      <TestDisplay />
-      <StartButton />
-    </div>
-  );
+    return (
+        <div className="main">
+            <TestDisplay />
+            <StartButton />
+        </div>
+    );
 };
 
 export default MainContent;
