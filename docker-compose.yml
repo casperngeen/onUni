@@ -3,40 +3,49 @@ name: onuni
 services:
   backend:
     build: ./backend
-    container_name: backend
+    container_name: ${SERVER_HOST}
     env_file:
       - .env
     depends_on:
       - postgres
       - redis
     ports:
-      - '3000:3000'
+      - '${SERVER_PORT}:${SERVER_PORT}'
     command: npm run start:dev
   
   frontend:
     build: ./frontend-portal
-    container_name: frontend
-    env_file:
-      - .env.local
-    ports:
-      - '3001:3001'
-    command: npx next start
-
-  postgres:
-    image: postgres:16-alpine
-    container_name: postgres
+    container_name: ${FRONTEND_HOST}
     env_file:
       - .env
     ports:
-      - '5432:5432'
+      - '${FRONTEND_PORT}:${FRONTEND_PORT}'
+    command: npx next start -p ${FRONTEND_PORT}
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ${DB_HOST}
+    env_file:
+      - .env
+    ports:
+      - '${DB_PORT}:${DB_PORT}'
     volumes:
       - backend_onuni-db:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
-    container_name: redis
+    container_name: ${REDIS_HOST}
     ports:
-      - '6379:6379'
+      - '${REDIS_PORT}:${REDIS_PORT}'
+  
+  nginx:
+    build: ./nginx
+    container_name: ${NGINX_HOST}
+    env_file:
+      - .env
+    ports:
+      - '${NGINX_PORT}:${NGINX_PORT}'
+
 volumes:
   backend_onuni-db:
     # remove this line if you are using this docker compose for the first time
