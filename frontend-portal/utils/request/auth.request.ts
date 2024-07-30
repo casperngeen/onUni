@@ -50,7 +50,7 @@ export default class AuthRequest extends BaseRequest {
     );
   }
 
-  public static async logout(dispatch: any) {
+  public static async logout() {
     await BaseRequest.request(`auth/logout`, RequestTypes.POST, {});
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
