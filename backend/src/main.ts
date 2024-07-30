@@ -10,7 +10,7 @@ import 'dotenv/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    cors: { origin: [process.env.FRONTEND_PORTAL] },
+    cors: { origin: [process.env.NGINX_SERVER] },
   });
   const logger = app.get(LoggerService);
   logger.log(

@@ -1,7 +1,5 @@
 import { ApiResponse, RequestTypes } from "./types/base.types";
 import RequestError from "./request.error";
-import { AuthException, UserException } from "./status.code";
-import { RefreshResponse } from "./types/auth.types";
 
 export default class BaseRequest {
   private static readonly baseRoute = process.env.NEXT_PUBLIC_API_ROUTE;
