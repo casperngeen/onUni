@@ -11,7 +11,7 @@ services:
       replicas: 3
       restart_policy:
         condition: on-failure
-    command: npm run start:dev
+    command: npm run start
   
   frontend:
     build: ./frontend-portal
