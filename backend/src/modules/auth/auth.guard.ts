@@ -11,6 +11,7 @@ import {
 import { LoggerService } from '../logger/logger.service';
 import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
+import { isRabbitContext } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -37,7 +38,7 @@ export class AuthGuard implements CanActivate {
       context.getHandler(),
     );
 
-    if (isPublic) {
+    if (isPublic || isRabbitContext(context)) {
       this.loggerService.log(`Route is public`, this.context);
       return true;
     }

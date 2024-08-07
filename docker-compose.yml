@@ -6,6 +6,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - rabbitmq
     deploy:
       mode: replicated
       replicas: 3
@@ -39,6 +40,12 @@ services:
       - '${NGINX_PORT}:${NGINX_PORT}'
     depends_on:
       - backend
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - '${RABBIT_MQ_PORT}:${RABBIT_MQ_PORT}'
+      - '${RABBIT_MQ_UI_PORT}:${RABBIT_MQ_UI_PORT}'
 
 volumes:
   backend_onuni-db:

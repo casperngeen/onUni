@@ -158,3 +158,8 @@ export class AttemptHistory {
   @IsInt()
   score: number | null;
 }
+
+export interface IUpdateProgress {
+  courseId: number;
+  userId: number;
+}

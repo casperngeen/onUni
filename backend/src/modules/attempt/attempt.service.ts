@@ -4,6 +4,7 @@ import {
   Attempt,
   AttemptIdDto,
   AttemptInfoDto,
+  IUpdateProgress,
   UserTestDto,
 } from './attempt.entity';
 import { AnswerStatus, Status } from './attempt.enum';
@@ -40,6 +41,7 @@ import { DatabaseException, RedisException } from 'src/base/base.exception';
 import { QuestionNotFoundException } from '../question/question.exception';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class AttemptService extends BaseService<Attempt> {
@@ -61,6 +63,8 @@ export class AttemptService extends BaseService<Attempt> {
 
     @InjectRedis()
     private readonly redis: Redis,
+
+    private readonly amqpConnection: AmqpConnection,
 
     loggerService: LoggerService,
   ) {
@@ -417,14 +421,17 @@ export class AttemptService extends BaseService<Attempt> {
     });
     this.log(`Attempt ${attemptId} updated`, this.context);
     await this.deleteQuestionAttemptsFromRedis(attemptId);
+    await this.amqpConnection.publish<IUpdateProgress>(
+      'progress-exchange',
+      'update-progress',
+      { courseId: attempt.test.course.courseId, userId: attempt.user.userId },
+    );
     this.log(`Query to update attempt ${attemptId} completed`, this.context);
   }
 
   public async saveQuestionAttempt(
     selectOptionDetails: UpdateQuestionAttemptDto,
   ) {
-    // const time = new Date().toISOString();
-    // check end time in redis
     const { attemptId, selectedOptionId, questionId } = selectOptionDetails;
     const attempt = await this.checkIfAttemptInRepo(attemptId);
     if (attempt.end && new Date().toISOString() > attempt.end) {

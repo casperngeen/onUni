@@ -18,6 +18,7 @@ import { QuestionModule } from './modules/question/question.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TaskModule } from './modules/task/task.module';
+import { RabbitMQUniModule } from './modules/rabbitmq/rabbitmq.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { TaskModule } from './modules/task/task.module';
     UserModule,
     AttemptModule,
     QuestionModule,
+    RabbitMQUniModule,
   ],
 })
 export class AppModule {}

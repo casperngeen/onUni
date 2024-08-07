@@ -10,6 +10,7 @@ import { AttemptService } from './attempt.service';
 import { CourseModule } from '../course/course.module';
 import { AttemptTeacherGuard } from './attempt.teacher.guard';
 import { AttemptUserGuard } from './attempt.user.guard';
+import { RabbitMQUniModule } from '../rabbitmq/rabbitmq.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AttemptUserGuard } from './attempt.user.guard';
     TestModule,
     QuestionModule,
     CourseModule,
+    RabbitMQUniModule,
     TypeOrmModule.forFeature([Attempt, QuestionAttempt]),
   ],
   controllers: [AttemptController],

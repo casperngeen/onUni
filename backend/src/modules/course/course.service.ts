@@ -22,11 +22,13 @@ import { UserNotFoundException } from '../user/user.exception';
 import { LoggerService } from '../logger/logger.service';
 import * as StackTrace from 'stacktrace-js';
 import * as path from 'path';
-import { DatabaseException } from 'src/base/base.exception';
+import { DatabaseException, RedisException } from 'src/base/base.exception';
 import { Roles } from '../user/user.enum';
 import { ScoringFormats, TestTypes } from '../test/test.enum';
 import { Status } from '../attempt/attempt.enum';
 import { NextTestDto } from '../test/test.entity';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import { Redis } from 'ioredis';
 
 @Injectable()
 export class CourseService extends BaseService<Course> {
@@ -36,6 +38,9 @@ export class CourseService extends BaseService<Course> {
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
+    @InjectRedis()
+    private readonly redis: Redis,
     loggerService: LoggerService,
   ) {
     super(courseRepository, loggerService);
@@ -71,8 +76,8 @@ export class CourseService extends BaseService<Course> {
       `Formatting course information for user ${userId}...`,
       this.context,
     );
-    const courseInfo: AllCourseInfoDto[] = courses.map((course) =>
-      this.formatCourseInfo(course, userId),
+    const courseInfo: AllCourseInfoDto[] = await Promise.all(
+      courses.map((course) => this.formatCourseInfo(course, userId)),
     );
     const sortedCourses = courseInfo.sort((x, y) => x.courseId - y.courseId);
     this.log(`Course information for user ${userId} formatted`, this.context);
@@ -293,24 +298,69 @@ export class CourseService extends BaseService<Course> {
     return user;
   }
 
-  private formatCourseInfo(course: Course, userId: number): AllCourseInfoDto {
-    const completed = course.tests.filter(
-      (test) =>
-        test.attempts
-          .filter((attempt) => attempt.user.userId == userId)
-          .findIndex((attempt) => attempt.submitted !== null) !== -1,
-    ).length;
-    const progress =
-      course.tests.length === 0
-        ? 0
-        : Math.round((completed / course.tests.length) * 100);
-    return {
-      courseId: course.courseId,
-      title: course.title,
-      startDate: course.startDate,
-      endDate: course.endDate,
-      progress: progress,
-    };
+  private async formatCourseInfo(course: Course, userId: number) {
+    try {
+      this.log(
+        `Fetching user ${userId}'s progress from Redis...`,
+        this.context,
+      );
+      let progress: number;
+      const progressString = await this.redis.hget(
+        `course:${course.courseId}:user:${userId}`,
+        `progress`,
+      );
+      if (progressString === null) {
+        this.log(
+          `User ${userId}'s progress has not been saved to Redis`,
+          this.context,
+        );
+        const tests = course.tests;
+        const numCompleted = tests
+          .map((test) =>
+            test.attempts
+              .filter((attempt) => attempt.user.userId === userId)
+              .filter((attempt) => attempt.submitted != null).length > 0
+              ? 1
+              : 0,
+          )
+          .reduce((x, y) => x + y, 0);
+        progress = Math.round((numCompleted / tests.length) * 100);
+        try {
+          await this.redis.hset(
+            `course:${course.courseId}:user:${userId}`,
+            `progress`,
+            progress,
+          );
+          this.log(
+            `Saved user ${userId}'s progress to redis. Progress: ${progress}`,
+            this.context,
+          );
+        } catch (error) {
+          this.error(
+            `Error updating progress of course ${course.courseId} for user ${userId} to Redis`,
+            this.context,
+            this.getTrace(),
+          );
+          throw new RedisException();
+        }
+      } else {
+        progress = parseInt(progressString);
+      }
+      this.log(
+        `User ${userId}'s progress for course ${course.courseId}: ${progress}`,
+        this.context,
+      );
+      return {
+        courseId: course.courseId,
+        title: course.title,
+        startDate: course.startDate,
+        endDate: course.endDate,
+        progress: progress ? progress : 0,
+      };
+    } catch (error) {
+      this.error(`${error}`, this.context, this.getTrace());
+      throw new RedisException();
+    }
   }
 
   private formatCourseInfoWithTests(
