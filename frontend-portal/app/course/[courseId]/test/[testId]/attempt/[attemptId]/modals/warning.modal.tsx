@@ -58,7 +58,6 @@ const WarningModal: React.FC<IAttemptModalProps> = ({ type }) => {
         }
     };
     const handleSubmit = () => {
-        console.log("remove");
         localStorage.removeItem(`bookmark-${attemptId}`);
         setDisableButton(true);
 
