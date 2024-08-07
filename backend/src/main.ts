@@ -36,9 +36,9 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  await app.listen(3000);
+  await app.listen(parseInt(process.env.SERVER_PORT));
   logger.log(
-    'Application is running on port 3000',
+    `Application is running on port ${parseInt(process.env.SERVER_PORT)}`,
     StackTrace.getSync().map((frame) => path.basename(frame.fileName))[0],
   );
 }
