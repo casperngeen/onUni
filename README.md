@@ -1,73 +1,44 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+This project was created during my internship in OnSchool Edtech Group (in Hanoi). It is an education platform with features for test taking, and viewing attempt history.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+To run the project:
+1. Clone the project
+2. Install docker (if you haven't)
+3. Run:
+- docker compose build
+- docker compose up -d
+- docker compose down (to shut down the virtual containers)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Remember to add a .env file in the root directory and below are the variables you should include for this project:
+REDIS_PORT=xxxx
+DB_PORT=xxxx
+SERVER_PORT=xxxx
+FRONTEND_PORT=xxxx
+NGINX_PORT=xxxx
+RABBIT_MQ_PORT = xxxx
+RABBIT_MQ_UI_PORT=xxxx
 
-## Description
+REDIS_HOST=xxxx
+DB_HOST=xxxx
+SERVER_HOST=xxxx
+FRONTEND_HOST=xxxx
+NGINX_HOST=xxxx
+RABBIT_MQ_HOST=xxxx
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+DB_USER=xxxx
+DB_PASSWORD=xxxx
+JWT_SECRET=xxxx
+REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}
+NGINX_SERVER=http://${NGINX_HOST}:${NGINX_PORT}
 
-## Installation
+FRONTEND_PORTAL=http://localhost:${FRONTEND_PORT}
+NEXT_PUBLIC_API_ROUTE=http://localhost:${NGINX_PORT}
 
-```bash
-$ npm install
-```
+POSTGRES_USER=${DB_USER}
+POSTGRES_PASSWORD=${DB_PASSWORD}
+POSTGRES_DB=xxxx
 
-## Running the app
+RABBITMQ_DEFAULT_USER=xxxx
+RABBITMQ_DEFAULT_PASS=xxxx
+RABBIT_MQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBIT_MQ_HOST}:${RABBIT_MQ_PORT}
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+TZ="Asia/Bangkok"
