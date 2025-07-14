@@ -9,6 +9,7 @@ To run the project:
 - docker compose down (to shut down the virtual containers)
 
 Remember to add a .env file in the root directory and below are the variables you should include for this project:
+```
 REDIS_PORT=xxxx
 DB_PORT=xxxx
 SERVER_PORT=xxxx
@@ -42,3 +43,4 @@ RABBITMQ_DEFAULT_PASS=xxxx
 RABBIT_MQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBIT_MQ_HOST}:${RABBIT_MQ_PORT}
 
 TZ="Asia/Bangkok"
+```
