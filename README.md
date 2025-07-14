@@ -4,9 +4,9 @@ To run the project:
 1. Clone the project
 2. Install docker (if you haven't)
 3. Run:
-- docker compose build
-- docker compose up -d
-- docker compose down (to shut down the virtual containers)
+- `docker compose build`
+- `docker compose up -d`
+- `docker compose down` (to shut down the virtual containers)
 
 Remember to add a .env file in the root directory and below are the variables you should include for this project:
 ```
